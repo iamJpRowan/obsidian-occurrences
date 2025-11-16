@@ -136,18 +136,18 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
     this.configureMenu()
 
     // Apply font variation for toProcess items instead of icons
-    if (this.occurrence.properties.toProcess) {
+    if (this.occurrence.toProcess) {
       this.getTitleEl().addClass("occurrence-to-process")
     }
 
     // Add location icon
-    if (this.occurrence.properties.location) {
+    if (this.occurrence.location) {
       this.addIconAfter("map-pin")
     }
 
     // Add participant icons
-    if (this.occurrence.properties.participants.length) {
-      if (this.occurrence.properties.participants.length === 1) {
+    if (this.occurrence.participants.length) {
+      if (this.occurrence.participants.length === 1) {
         this.addIconAfter("user")
       } else {
         this.addIconAfter("users")
@@ -155,8 +155,8 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
     }
 
     // Add intent icons
-    if (this.occurrence.properties.intents.length) {
-      if (this.occurrence.properties.intents.length === 1) {
+    if (this.occurrence.intents.length) {
+      if (this.occurrence.intents.length === 1) {
         this.addIconAfter("square-check")
       } else {
         this.addIconAfter("list-todo")
@@ -165,7 +165,7 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
 
     // Add date and time if enabled
     if (this.showDate) {
-      const dateStr = this.occurrence.properties.occurredAt.toLocaleDateString(
+      const dateStr = this.occurrence.occurredAt.toLocaleDateString(
         "en-US",
         {
           month: "short",
@@ -179,7 +179,7 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
 
     if (this.showTime) {
       this.addTextRight(
-        this.occurrence.properties.occurredAt.toLocaleTimeString("en-US", {
+        this.occurrence.occurredAt.toLocaleTimeString("en-US", {
           hour: "numeric",
           minute: "2-digit",
         })

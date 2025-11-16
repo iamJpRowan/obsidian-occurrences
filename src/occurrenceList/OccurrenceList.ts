@@ -147,12 +147,12 @@ export class OccurrenceList extends Component {
    */
   private insertIntoGroup(listItem: OccurrenceListItem): void {
     const occurrence = listItem.getOccurrence()
-    const groupKey = this.getGroupKey(occurrence.properties.occurredAt)
+    const groupKey = this.getGroupKey(occurrence.occurredAt)
 
     let group = this.groups.get(groupKey)
     if (!group) {
       // Create new group
-      const groupTitle = this.getGroupTitle(occurrence.properties.occurredAt)
+      const groupTitle = this.getGroupTitle(occurrence.occurredAt)
       group = new ListGroup(this.listContainerEl, groupTitle, this.plugin.app, {
         initialCollapsed: false,
         collapsible: true,
@@ -175,7 +175,7 @@ export class OccurrenceList extends Component {
    */
   private removeFromGroup(listItem: OccurrenceListItem): void {
     const occurrence = listItem.getOccurrence()
-    const groupKey = this.getGroupKey(occurrence.properties.occurredAt)
+    const groupKey = this.getGroupKey(occurrence.occurredAt)
     const group = this.groups.get(groupKey)
 
     if (group) {
@@ -237,7 +237,7 @@ export class OccurrenceList extends Component {
     group: ListGroup
   ): void {
     const occurrence = listItem.getOccurrence()
-    const occurredAt = occurrence.properties.occurredAt.getTime()
+    const occurredAt = occurrence.occurredAt.getTime()
     const existingItems = group.getListItems()
 
     // Find the correct insertion point to maintain sorted order
@@ -249,7 +249,7 @@ export class OccurrenceList extends Component {
       const occurrenceItem = existingItem as OccurrenceListItem
       const existingOccurredAt = occurrenceItem
         .getOccurrence()
-        .properties.occurredAt.getTime()
+        .occurredAt.getTime()
 
       // Insert based on sort direction
       if (this.sortOrder === "desc") {

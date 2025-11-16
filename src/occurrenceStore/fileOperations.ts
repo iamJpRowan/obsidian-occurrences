@@ -2,7 +2,6 @@ import { convertListToLinks, parseLink } from "@/linkUtils"
 import {
   OCCURRENCE_DATE_FORMAT,
   OccurrenceObject,
-  OccurrenceProperties,
 } from "@/types"
 import { App, TFile } from "obsidian"
 
@@ -37,11 +36,12 @@ export class FileOperations {
       occurrence_participants,
       occurrence_intents,
       tags,
-      ...otherProperties
     } = frontmatter
 
-    // Build properties object with all frontmatter data
-    const properties: OccurrenceProperties = {
+    const occurrence: OccurrenceObject = {
+      path: file.path,
+      file,
+      title: this.removeDatePrefix(file.basename, OCCURRENCE_DATE_FORMAT),
       occurredAt: new Date(occurrence_occurred_at),
       toProcess:
         !occurrence_occurred_at ||
@@ -53,16 +53,6 @@ export class FileOperations {
       intents: convertListToLinks(occurrence_intents),
       location: occurrence_location ? parseLink(occurrence_location) : null,
       tags: this.normalizeTags(tags),
-      // Include ALL other frontmatter properties in the properties object
-      ...otherProperties,
-    }
-
-    const occurrence: OccurrenceObject = {
-      path: file.path,
-      file,
-      title: this.removeDatePrefix(file.basename, OCCURRENCE_DATE_FORMAT),
-      class: "Occurrence",
-      properties,
     }
 
     return occurrence
@@ -108,36 +98,17 @@ export class FileOperations {
 
     // Check if core Occurrence properties changed
     if (
-      cachedItem.properties.occurredAt.getTime() !== newOccurredAt.getTime() ||
-      cachedItem.properties.toProcess !== newToProcess ||
+      cachedItem.occurredAt.getTime() !== newOccurredAt.getTime() ||
+      cachedItem.toProcess !== newToProcess ||
       !this.linksArrayEqual(
-        cachedItem.properties.participants,
+        cachedItem.participants,
         newParticipants
       ) ||
-      !this.linksArrayEqual(cachedItem.properties.intents, newIntents) ||
-      !this.linkEqual(cachedItem.properties.location, newLocation) ||
-      !this.arraysEqual(cachedItem.properties.tags, newTags)
+      !this.linksArrayEqual(cachedItem.intents, newIntents) ||
+      !this.linkEqual(cachedItem.location, newLocation) ||
+      !this.arraysEqual(cachedItem.tags, newTags)
     ) {
       return true
-    }
-
-    // Compare all other frontmatter properties stored in properties
-    for (const key of Object.keys(frontmatter)) {
-      // Skip the ones we already checked above
-      if (
-        ![
-          "occurrence_occurred_at",
-          "occurrence_to_process",
-          "occurrence_location",
-          "occurrence_participants",
-          "occurrence_intents",
-          "tags",
-        ].includes(key)
-      ) {
-        if (frontmatter[key] !== (cachedItem.properties as any)[key]) {
-          return true
-        }
-      }
     }
 
     return false

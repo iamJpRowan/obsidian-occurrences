@@ -111,7 +111,7 @@ export class OccurrenceSearch {
     const finalResults =
       options.toProcess !== undefined
         ? results.filter(
-            item => item.properties.toProcess === options.toProcess
+            item => item.toProcess === options.toProcess
           )
         : results
 
@@ -119,7 +119,7 @@ export class OccurrenceSearch {
     const sortOrder = options.sortOrder || "desc"
     finalResults.sort((a, b) => {
       const comparison =
-        a.properties.occurredAt.getTime() - b.properties.occurredAt.getTime()
+        a.occurredAt.getTime() - b.occurredAt.getTime()
       return sortOrder === "desc" ? -comparison : comparison
     })
 
@@ -178,13 +178,13 @@ export class OccurrenceSearch {
 
     for (const occurrence of occurrences) {
       // Collect unique participants
-      occurrence.properties.participants?.forEach(participant => {
+      occurrence.participants?.forEach(participant => {
         uniqueParticipants.add(participant.target)
       })
 
       // Collect unique locations
-      if (occurrence.properties.location?.target) {
-        uniqueLocations.add(occurrence.properties.location.target)
+      if (occurrence.location?.target) {
+        uniqueLocations.add(occurrence.location.target)
       }
     }
 
@@ -199,7 +199,7 @@ export class OccurrenceSearch {
     occurrence: OccurrenceObject,
     action: "add" | "remove"
   ): void {
-    occurrence.properties.tags?.forEach(tag => {
+    occurrence.tags?.forEach(tag => {
       if (!this.tagIndex.has(tag)) {
         this.tagIndex.set(tag, new Set())
       }
@@ -217,7 +217,7 @@ export class OccurrenceSearch {
     occurrence: OccurrenceObject,
     action: "add" | "remove"
   ): void {
-    const dateKey = this.formatDateKey(occurrence.properties.occurredAt)
+    const dateKey = this.formatDateKey(occurrence.occurredAt)
 
     if (!this.dateIndex.has(dateKey)) {
       this.dateIndex.set(dateKey, new Set())

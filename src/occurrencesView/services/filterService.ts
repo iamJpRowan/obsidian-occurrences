@@ -151,14 +151,14 @@ export class FilterService {
 
     // Apply inbox filter if active
     if (this.filters.inbox) {
-      if (!occurrence.properties.toProcess) {
+      if (!occurrence.toProcess) {
         return false
       }
     }
 
     // Apply tag filter if active
     if (this.filters.tags && this.filters.selectedTags.length > 0) {
-      const occurrenceTags = occurrence.properties.tags || []
+      const occurrenceTags = occurrence.tags || []
       // Remove # prefix from selected tags for comparison
       const normalizedSelectedTags = this.filters.selectedTags.map(tag =>
         tag.startsWith("#") ? tag.slice(1) : tag
