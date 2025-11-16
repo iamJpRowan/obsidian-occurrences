@@ -59,59 +59,34 @@ export class FileOperations {
   }
 
   /**
-   * Check if a file's frontmatter has changed in a way that affects our data model
-   * @param file The file to check
-   * @param cachedItem The currently cached item
-   * @returns true if the frontmatter has relevant changes
+   * Compare two occurrence objects for equality using JSON serialization
+   * @param a First occurrence object
+   * @param b Second occurrence object
+   * @returns true if the objects are equal
    */
-  public async hasRelevantChanges(
-    file: TFile,
-    cachedItem: OccurrenceObject
-  ): Promise<boolean> {
-    const fileCache = this.app.metadataCache.getFileCache(file)
-    if (!fileCache || !fileCache.frontmatter) return false
+  public occurrencesEqual(
+    a: OccurrenceObject,
+    b: OccurrenceObject
+  ): boolean {
+    // Quick reference check (though unlikely to be true since processFile creates new objects)
+    if (a === b) return true
 
-    const frontmatter = fileCache.frontmatter
-    const {
-      occurrence_occurred_at,
-      occurrence_to_process,
-      occurrence_location,
-      occurrence_participants,
-      occurrence_intents,
-      tags,
-    } = frontmatter
-
-    // Parse new values
-    const newOccurredAt = new Date(occurrence_occurred_at)
-    const newToProcess =
-      !occurrence_occurred_at ||
-      isNaN(newOccurredAt.getTime()) ||
-      occurrence_to_process
-        ? true
-        : false
-    const newParticipants = convertListToLinks(occurrence_participants)
-    const newIntents = convertListToLinks(occurrence_intents)
-    const newLocation = occurrence_location
-      ? parseLink(occurrence_location)
-      : null
-    const newTags = this.normalizeTags(tags)
-
-    // Check if core Occurrence properties changed
-    if (
-      cachedItem.occurredAt.getTime() !== newOccurredAt.getTime() ||
-      cachedItem.toProcess !== newToProcess ||
-      !this.linksArrayEqual(
-        cachedItem.participants,
-        newParticipants
-      ) ||
-      !this.linksArrayEqual(cachedItem.intents, newIntents) ||
-      !this.linkEqual(cachedItem.location, newLocation) ||
-      !this.arraysEqual(cachedItem.tags, newTags)
-    ) {
-      return true
+    // Normalize both objects for comparison (handle Date and TFile)
+    const normalize = (obj: OccurrenceObject) => {
+      return {
+        path: obj.path,
+        file: obj.file.path, // Compare file path instead of TFile object
+        title: obj.title,
+        tags: obj.tags,
+        occurredAt: obj.occurredAt.toISOString(), // Convert Date to ISO string
+        toProcess: obj.toProcess,
+        participants: obj.participants,
+        intents: obj.intents,
+        location: obj.location,
+      }
     }
 
-    return false
+    return JSON.stringify(normalize(a)) === JSON.stringify(normalize(b))
   }
 
   /**
@@ -177,7 +152,7 @@ export class FileOperations {
 
   private removeDatePrefix(basename: string, format: string): string {
     // Convert the format string to a regular expression pattern
-    let regexPattern = format
+    const regexPattern = format
       .replace("YYYY", "\\d{4}")
       .replace("MM", "\\d{2}")
       .replace("DD", "\\d{2}")
@@ -204,45 +179,5 @@ export class FileOperations {
 
     // Return the title with the date prefix
     return `${formattedDate} ${title}`
-  }
-
-  private linksArrayEqual(
-    a:
-      | Array<{ type: string; target: string; displayText?: string }>
-      | undefined,
-    b: Array<{ type: string; target: string; displayText?: string }> | undefined
-  ): boolean {
-    if (!a && !b) return true
-    if (!a || !b) return false
-    if (a.length !== b.length) return false
-    return a.every(
-      (link, index) =>
-        link.type === b[index].type &&
-        link.target === b[index].target &&
-        link.displayText === b[index].displayText
-    )
-  }
-
-  private linkEqual(
-    a: { type: string; target: string; displayText?: string } | null,
-    b: { type: string; target: string; displayText?: string } | null
-  ): boolean {
-    if (!a && !b) return true
-    if (!a || !b) return false
-    return (
-      a.type === b.type &&
-      a.target === b.target &&
-      a.displayText === b.displayText
-    )
-  }
-
-  private arraysEqual(
-    a: string[] | undefined,
-    b: string[] | undefined
-  ): boolean {
-    if (!a && !b) return true
-    if (!a || !b) return false
-    if (a.length !== b.length) return false
-    return a.every((val, index) => val === b[index])
   }
 }

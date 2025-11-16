@@ -87,17 +87,18 @@ export class EventHandler extends Events {
       return // Rename will trigger its own events, so we're done
     }
 
-    // Check if content has relevant changes that require updating the item
+    // Get the cached item before processing
     const cachedItem = this.storeOps.getOccurrence(file.path)
     if (!cachedItem) return // New file, will be handled by create event
 
-    const hasChanges = await this.fileOps.hasRelevantChanges(file, cachedItem)
-    if (!hasChanges) return
+    // Always process the file to get the current state
+    const newItem = await this.fileOps.processFile(file)
+    if (!newItem) return
 
-    const item = await this.fileOps.processFile(file)
-    if (!item) return
-
-    this.storeOps.updateOccurrence(item)
+    // Compare old and new items - only update if they're different
+    if (!this.fileOps.occurrencesEqual(cachedItem, newItem)) {
+      this.storeOps.updateOccurrence(newItem)
+    }
   }
 
   /**
