@@ -53,6 +53,12 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
       // Prevent default to avoid any unwanted behavior
       event.preventDefault()
 
+      // Check if Option/Alt key is pressed for update modal
+      if (event.altKey) {
+        new OccurrenceModal(this.plugin, this.occurrence).open()
+        return
+      }
+
       // Check if cmd (Mac) or ctrl (Windows/Linux) is pressed for new tab
       const openInNewTab = event.metaKey || event.ctrlKey
 
