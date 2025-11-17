@@ -20,11 +20,11 @@ export class MultiFileSelector extends Component {
   private inputWrapper: HTMLElement
   private suggestionsContainer: HTMLElement
   private suggestionsList: HTMLElement
-  private onFilesChange: (filePaths: string[]) => void
+  private onFilesChange: (basenames: string[]) => void
   private debouncedSearchChange: (query: string) => void
   private options: MultiFileSelectorOptions
   private app: any
-  private selectedFiles: string[] = []
+  private selectedFiles: string[] = [] // Store basenames
   private suggestions: FileSuggestion[] = []
   private selectedSuggestionIndex: number = -1
   private visible: boolean = false
@@ -32,7 +32,7 @@ export class MultiFileSelector extends Component {
   constructor(
     container: HTMLElement,
     app: any,
-    onFilesChange: (filePaths: string[]) => void,
+    onFilesChange: (basenames: string[]) => void,
     options: MultiFileSelectorOptions = {}
   ) {
     super()
@@ -144,7 +144,7 @@ export class MultiFileSelector extends Component {
         const path = file.path.toLowerCase()
         return (
           (name.includes(queryLower) || path.includes(queryLower)) &&
-          !this.selectedFiles.includes(file.path)
+          !this.selectedFiles.includes(file.basename)
         )
       })
       .slice(0, 10)
@@ -157,14 +157,15 @@ export class MultiFileSelector extends Component {
 
     // Add "Create new" option if allowCreate is true and query doesn't match existing file
     if (this.options.allowCreate && query.trim()) {
+      const queryBasename = query.trim()
       const exactMatch = this.suggestions.some(
-        s => s.fullPath.toLowerCase() === query.trim().toLowerCase()
+        s => s.file?.basename.toLowerCase() === queryBasename.toLowerCase()
       )
-      if (!exactMatch && !this.selectedFiles.includes(query.trim())) {
+      if (!exactMatch && !this.selectedFiles.includes(queryBasename)) {
         this.suggestions.push({
           file: null,
-          displayName: `Create "${query.trim()}"`,
-          fullPath: query.trim(),
+          displayName: `Create "${queryBasename}"`,
+          fullPath: queryBasename, // Store basename for new files
           isNew: true,
         })
       }
@@ -179,7 +180,7 @@ export class MultiFileSelector extends Component {
   private showAllFiles(): void {
     const allFiles = this.app.vault
       .getMarkdownFiles()
-      .filter(file => !this.selectedFiles.includes(file.path))
+      .filter((file: TFile) => !this.selectedFiles.includes(file.basename))
       .slice(0, 10)
     this.suggestions = allFiles.map((file: TFile) => ({
       file,
@@ -218,7 +219,7 @@ export class MultiFileSelector extends Component {
         setIcon(icon, "plus")
       }
 
-      const fileName = suggestionEl.createEl("div", {
+      suggestionEl.createEl("div", {
         cls: "occurrence-modal-file-suggestion-name",
         text: suggestion.displayName,
       })
@@ -227,7 +228,7 @@ export class MultiFileSelector extends Component {
         const pathParts = suggestion.fullPath.split("/")
         pathParts.pop()
         const pathText = pathParts.join("/") + "/"
-        const filePath = suggestionEl.createEl("div", {
+        suggestionEl.createEl("div", {
           cls: "occurrence-modal-file-suggestion-path",
           text: pathText,
         })
@@ -245,10 +246,10 @@ export class MultiFileSelector extends Component {
     if (index < 0 || index >= this.suggestions.length) return
 
     const suggestion = this.suggestions[index]
-    const filePath = suggestion.isNew ? suggestion.fullPath : suggestion.file!.path
+    const basename = suggestion.isNew ? suggestion.fullPath : suggestion.file!.basename
 
-    if (!this.selectedFiles.includes(filePath)) {
-      this.selectedFiles.push(filePath)
+    if (!this.selectedFiles.includes(basename)) {
+      this.selectedFiles.push(basename)
       this.updateSelectedFilesDisplay()
       this.fileInput.value = ""
       this.showAllFiles()
@@ -260,8 +261,8 @@ export class MultiFileSelector extends Component {
   /**
    * Remove a file
    */
-  private removeFile(filePath: string): void {
-    this.selectedFiles = this.selectedFiles.filter(p => p !== filePath)
+  private removeFile(basename: string): void {
+    this.selectedFiles = this.selectedFiles.filter(b => b !== basename)
     this.updateSelectedFilesDisplay()
     this.onFilesChange([...this.selectedFiles])
   }
@@ -275,9 +276,11 @@ export class MultiFileSelector extends Component {
     existingPills.forEach(pill => pill.remove())
 
     // Create pills for selected files, before the input
-    this.selectedFiles.forEach(filePath => {
-      const file = this.app.vault.getAbstractFileByPath(filePath) as TFile | null
-      const displayName = file ? file.basename : filePath
+    this.selectedFiles.forEach(basename => {
+      // Find file by basename
+      const allFiles = this.app.vault.getMarkdownFiles()
+      const file = allFiles.find((f: TFile) => f.basename === basename)
+      const displayName = file ? file.basename : basename
 
       const pill = this.inputWrapper.createEl("div", {
         cls: "occurrence-modal-file-pill",
@@ -285,7 +288,7 @@ export class MultiFileSelector extends Component {
 
       this.inputWrapper.insertBefore(pill, this.fileInput)
 
-      const pillText = pill.createEl("span", {
+      pill.createEl("span", {
         cls: "occurrence-modal-file-pill-text",
         text: displayName,
       })
@@ -296,7 +299,7 @@ export class MultiFileSelector extends Component {
       removeButton.textContent = "×"
 
       this.registerDomEvent(removeButton, "click", () => {
-        this.removeFile(filePath)
+        this.removeFile(basename)
       })
     })
 
@@ -382,17 +385,17 @@ export class MultiFileSelector extends Component {
   }
 
   /**
-   * Get the current selected file paths
+   * Get the current selected file basenames
    */
   public getValue(): string[] {
     return [...this.selectedFiles]
   }
 
   /**
-   * Set the value programmatically
+   * Set the value programmatically (expects basenames)
    */
-  public setValue(filePaths: string[]): void {
-    this.selectedFiles = [...filePaths]
+  public setValue(basenames: string[]): void {
+    this.selectedFiles = [...basenames]
     this.updateSelectedFilesDisplay()
     this.onFilesChange([...this.selectedFiles])
   }

@@ -20,7 +20,7 @@ export class SingleFileSelector extends Component {
   private fileClear: HTMLElement
   private suggestionsContainer: HTMLElement
   private suggestionsList: HTMLElement
-  private onFileChange: (filePath: string | null) => void
+  private onFileChange: (basename: string | null) => void
   private debouncedSearchChange: (query: string) => void
   private options: SingleFileSelectorOptions
   private app: any
@@ -32,7 +32,7 @@ export class SingleFileSelector extends Component {
   constructor(
     container: HTMLElement,
     app: any,
-    onFileChange: (filePath: string | null) => void,
+    onFileChange: (basename: string | null) => void,
     options: SingleFileSelectorOptions = {}
   ) {
     super()
@@ -169,14 +169,15 @@ export class SingleFileSelector extends Component {
 
     // Add "Create new" option if allowCreate is true and query doesn't match existing file
     if (this.options.allowCreate && query.trim()) {
+      const queryBasename = query.trim()
       const exactMatch = this.suggestions.some(
-        s => s.fullPath.toLowerCase() === query.trim().toLowerCase()
+        s => s.file?.basename.toLowerCase() === queryBasename.toLowerCase()
       )
       if (!exactMatch) {
         this.suggestions.push({
           file: null,
-          displayName: `Create "${query.trim()}"`,
-          fullPath: query.trim(),
+          displayName: `Create "${queryBasename}"`,
+          fullPath: queryBasename, // Store basename for new files
           isNew: true,
         })
       }
@@ -227,7 +228,7 @@ export class SingleFileSelector extends Component {
         setIcon(icon, "plus")
       }
 
-      const fileName = suggestionEl.createEl("div", {
+      suggestionEl.createEl("div", {
         cls: "occurrence-modal-file-suggestion-name",
         text: suggestion.displayName,
       })
@@ -236,7 +237,7 @@ export class SingleFileSelector extends Component {
         const pathParts = suggestion.fullPath.split("/")
         pathParts.pop()
         const pathText = pathParts.join("/") + "/"
-        const filePath = suggestionEl.createEl("div", {
+        suggestionEl.createEl("div", {
           cls: "occurrence-modal-file-suggestion-path",
           text: pathText,
         })
@@ -256,19 +257,19 @@ export class SingleFileSelector extends Component {
     const suggestion = this.suggestions[index]
 
     if (suggestion.isNew) {
-      // Create new file
+      // Create new file - fullPath contains the basename
       this.selectedFile = null
       this.fileInput.value = suggestion.fullPath
       this.updateClearButton(this.fileInput.value)
       this.hideSuggestions()
-      this.onFileChange(suggestion.fullPath)
+      this.onFileChange(suggestion.fullPath) // Pass basename
     } else if (suggestion.file) {
       // Select existing file
       this.selectedFile = suggestion.file
-      this.fileInput.value = suggestion.displayName
+      this.fileInput.value = suggestion.displayName // Already basename
       this.updateClearButton(this.fileInput.value)
       this.hideSuggestions()
-      this.onFileChange(suggestion.file.path)
+      this.onFileChange(suggestion.file.basename) // Pass basename
     }
   }
 
@@ -357,13 +358,13 @@ export class SingleFileSelector extends Component {
   }
 
   /**
-   * Get the current selected file path
+   * Get the current selected file basename
    */
   public getValue(): string | null {
     if (this.selectedFile) {
-      return this.selectedFile.path
+      return this.selectedFile.basename
     }
-    // If input has a value but no file selected, it might be a new file path
+    // If input has a value but no file selected, it might be a new file basename
     if (this.fileInput.value.trim()) {
       return this.fileInput.value.trim()
     }
@@ -371,22 +372,24 @@ export class SingleFileSelector extends Component {
   }
 
   /**
-   * Set the value programmatically
+   * Set the value programmatically (expects a basename)
    */
-  public setValue(filePath: string | null): void {
-    if (!filePath) {
+  public setValue(basename: string | null): void {
+    if (!basename) {
       this.clearSelection()
       return
     }
 
-    // Try to find the file
-    const file = this.app.vault.getAbstractFileByPath(filePath) as TFile | null
+    // Try to find the file by basename
+    const allFiles = this.app.vault.getMarkdownFiles()
+    const file = allFiles.find((f: TFile) => f.basename === basename)
+    
     if (file) {
       this.selectedFile = file
       this.fileInput.value = file.basename
     } else {
       this.selectedFile = null
-      this.fileInput.value = filePath
+      this.fileInput.value = basename
     }
     this.updateClearButton(this.fileInput.value)
   }

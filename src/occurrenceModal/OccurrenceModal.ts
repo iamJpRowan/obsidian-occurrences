@@ -37,16 +37,16 @@ export class OccurrenceModal extends Modal {
     this.occurrence = occurrence
 
     // Initialize form data from occurrence or defaults
-    // Convert link targets to full file paths (add .md if needed)
+    // Extract basenames from link targets (assume targets are basenames)
     this.formData = {
       title: occurrence?.title || "",
       tags: occurrence?.tags || [],
       location: occurrence?.location?.target
-        ? this.ensureFullPath(occurrence.location.target)
+        ? this.extractBasename(occurrence.location.target)
         : null,
       participants:
-        occurrence?.participants.map(p => this.ensureFullPath(p.target)) || [],
-      topics: occurrence?.topics.map(t => this.ensureFullPath(t.target)) || [],
+        occurrence?.participants.map(p => this.extractBasename(p.target)) || [],
+      topics: occurrence?.topics.map(t => this.extractBasename(t.target)) || [],
     }
   }
 
@@ -116,8 +116,8 @@ export class OccurrenceModal extends Modal {
     this.locationSelector = new SingleFileSelector(
       locationContainer,
       this.app,
-      (filePath: string | null) => {
-        this.formData.location = filePath
+      (basename: string | null) => {
+        this.formData.location = basename
       },
       {
         placeholder: "Select location...",
@@ -138,8 +138,8 @@ export class OccurrenceModal extends Modal {
     this.participantsSelector = new MultiFileSelector(
       participantsContainer,
       this.app,
-      (filePaths: string[]) => {
-        this.formData.participants = filePaths
+      (basenames: string[]) => {
+        this.formData.participants = basenames
       },
       {
         placeholder: "Add participants...",
@@ -160,8 +160,8 @@ export class OccurrenceModal extends Modal {
     this.topicsSelector = new MultiFileSelector(
       topicsContainer,
       this.app,
-      (filePaths: string[]) => {
-        this.formData.topics = filePaths
+      (basenames: string[]) => {
+        this.formData.topics = basenames
       },
       {
         placeholder: "Add topics...",
@@ -283,31 +283,30 @@ export class OccurrenceModal extends Modal {
 
     // Add location
     if (formData.location) {
-      // Ensure location file exists if it's a new path
+      // Ensure location file exists (formData.location is a basename)
       await this.ensureFileExists(formData.location)
-      // Use just the filename for wikilink
-      const locationName = this.getFilenameForWikilink(formData.location)
-      frontmatter[locationField] = `[[${locationName}]]`
+      // Use basename directly for wikilink
+      frontmatter[locationField] = `[[${formData.location}]]`
     }
 
     // Add participants
     if (formData.participants.length > 0) {
-      // Ensure participant files exist
-      for (const participantPath of formData.participants) {
-        await this.ensureFileExists(participantPath)
+      // Ensure participant files exist (formData.participants contains basenames)
+      for (const participantBasename of formData.participants) {
+        await this.ensureFileExists(participantBasename)
       }
       frontmatter[participantsField] = formData.participants.map(
-        p => `[[${this.getFilenameForWikilink(p)}]]`
+        p => `[[${p}]]`
       )
     }
 
     // Add topics
     if (formData.topics.length > 0) {
-      // Ensure topic files exist
-      for (const topicPath of formData.topics) {
-        await this.ensureFileExists(topicPath)
+      // Ensure topic files exist (formData.topics contains basenames)
+      for (const topicBasename of formData.topics) {
+        await this.ensureFileExists(topicBasename)
       }
-      frontmatter[topicsField] = formData.topics.map(t => `[[${this.getFilenameForWikilink(t)}]]`)
+      frontmatter[topicsField] = formData.topics.map(t => `[[${t}]]`)
     }
 
     // Create file content with frontmatter
@@ -372,19 +371,19 @@ export class OccurrenceModal extends Modal {
     // Update location
     if (formData.location) {
       await this.ensureFileExists(formData.location)
-      const locationName = this.getFilenameForWikilink(formData.location)
-      updatedFrontmatter[locationField] = `[[${locationName}]]`
+      // Use basename directly for wikilink
+      updatedFrontmatter[locationField] = `[[${formData.location}]]`
     } else {
       delete updatedFrontmatter[locationField]
     }
 
     // Update participants
     if (formData.participants.length > 0) {
-      for (const participantPath of formData.participants) {
-        await this.ensureFileExists(participantPath)
+      for (const participantBasename of formData.participants) {
+        await this.ensureFileExists(participantBasename)
       }
       updatedFrontmatter[participantsField] = formData.participants.map(
-        p => `[[${this.getFilenameForWikilink(p)}]]`
+        p => `[[${p}]]`
       )
     } else {
       delete updatedFrontmatter[participantsField]
@@ -392,10 +391,10 @@ export class OccurrenceModal extends Modal {
 
     // Update topics
     if (formData.topics.length > 0) {
-      for (const topicPath of formData.topics) {
-        await this.ensureFileExists(topicPath)
+      for (const topicBasename of formData.topics) {
+        await this.ensureFileExists(topicBasename)
       }
-      updatedFrontmatter[topicsField] = formData.topics.map(t => `[[${this.getFilenameForWikilink(t)}]]`)
+      updatedFrontmatter[topicsField] = formData.topics.map(t => `[[${t}]]`)
     } else {
       delete updatedFrontmatter[topicsField]
     }
@@ -412,29 +411,40 @@ export class OccurrenceModal extends Modal {
     return file
   }
 
-  private async ensureFileExists(filePath: string): Promise<void> {
+  /**
+   * Ensure a file exists, creating it if necessary
+   * @param basename The basename of the file (without extension or path)
+   */
+  private async ensureFileExists(basename: string): Promise<void> {
     const { app } = this
-    // Ensure path has .md extension
-    const normalizedPath = filePath.endsWith(".md") ? filePath : `${filePath}.md`
-    const file = app.vault.getAbstractFileByPath(normalizedPath)
+    // basename is expected to be just the filename without extension
+    // Try to find the file by searching all markdown files
+    const allFiles = app.vault.getMarkdownFiles()
+    const file = allFiles.find(f => f.basename === basename)
 
     if (!file) {
-      // Create the file if it doesn't exist
-      // Ensure parent directory exists
-      const pathParts = normalizedPath.split("/")
-      pathParts.pop() // Remove filename
-      const folderPath = pathParts.join("/")
-
-      if (folderPath) {
-        const folder = app.vault.getAbstractFileByPath(folderPath)
-        if (!folder) {
-          await app.vault.createFolder(folderPath)
-        }
-      }
-
-      // Create empty markdown file
-      await app.vault.create(normalizedPath, "")
+      // File doesn't exist, create it in the root
+      // Create empty markdown file with basename
+      const filePath = `${basename}.md`
+      await app.vault.create(filePath, "")
     }
+  }
+
+  /**
+   * Extract basename from a link target (which may be a basename or path)
+   * If it's a path, extract the basename; otherwise return as-is
+   */
+  private extractBasename(target: string): string {
+    // If target contains a slash, it's a path - extract basename
+    if (target.includes("/")) {
+      const pathParts = target.split("/")
+      const lastPart = pathParts[pathParts.length - 1]
+      // Remove .md extension if present
+      return lastPart.endsWith(".md") ? lastPart.slice(0, -3) : lastPart
+    }
+    // Otherwise, assume it's already a basename
+    // Remove .md extension if present
+    return target.endsWith(".md") ? target.slice(0, -3) : target
   }
 
   private formatDatePrefix(date: Date, format: string): string {
@@ -483,33 +493,6 @@ export class OccurrenceModal extends Modal {
     return lines.join("\n") + "\n"
   }
 
-  private removeMdExtension(path: string): string {
-    return path.endsWith(".md") ? path.slice(0, -3) : path
-  }
-
-  /**
-   * Extract just the filename (without path and .md extension) for wikilinks
-   */
-  private getFilenameForWikilink(filePath: string): string {
-    // Remove .md extension if present
-    const withoutExt = this.removeMdExtension(filePath)
-    // Extract just the filename (basename) from the path
-    const pathParts = withoutExt.split("/")
-    return pathParts[pathParts.length - 1]
-  }
-
-  private ensureFullPath(path: string): string {
-    // If path doesn't have .md extension, try to find the file
-    if (!path.endsWith(".md")) {
-      const file = this.app.vault.getAbstractFileByPath(`${path}.md`)
-      if (file) {
-        return file.path
-      }
-      // If file doesn't exist, return path with .md
-      return `${path}.md`
-    }
-    return path
-  }
 
   private formatYamlValue(value: any): string {
     if (typeof value === "string") {
