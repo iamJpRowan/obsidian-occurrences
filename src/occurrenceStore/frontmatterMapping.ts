@@ -1,18 +1,34 @@
 import { OccurrenceObject } from "@/types"
+import { OccurrencesPluginSettings, getFrontmatterFieldName } from "@/settings"
 
 /**
- * Configuration for mapping interface properties to frontmatter field names
- * This eliminates the need for hardcoded exclusions and makes the mapping explicit
+ * Get the property mapping from settings
+ * This function converts the settings format to the format expected by applyFrontmatterUpdates
  */
-// TODO Settings: Allow user to customize the occurrence frontmatter mapping
-export const OCCURRENCE_FRONTMATTER_MAPPING = {
-  occurredAt: "occurrence_occurred_at",
-  toProcess: "occurrence_to_process",
-  participants: "occurrence_participants",
-  intents: "occurrence_intents",
-  location: "occurrence_location",
-  tags: "tags",
-} as const
+export function getPropertyMapping(
+  settings: OccurrencesPluginSettings
+): Record<string, string> {
+  const mapping: Record<string, string> = {}
+  
+  // Get all mappable properties (exclude tags which is hardcoded)
+  const mappableProperties: (keyof OccurrenceObject)[] = [
+    "occurredAt",
+    "toProcess",
+    "participants",
+    "intents",
+    "location",
+  ]
+
+  mappableProperties.forEach(property => {
+    const frontmatterField = getFrontmatterFieldName(property, settings)
+    mapping[property] = frontmatterField
+  })
+
+  // Tags is hardcoded to always use "tags"
+  mapping.tags = "tags"
+
+  return mapping
+}
 
 /**
  * Interface properties that should never be stored in frontmatter

@@ -4,13 +4,25 @@ import {
   OccurrenceObject,
 } from "@/types"
 import { App, TFile } from "obsidian"
+import { OccurrencesPluginSettings, getFrontmatterFieldName } from "@/settings"
 
 /**
  * File operations for OccurrenceStore
  * Handles file processing, validation, and filename generation
  */
 export class FileOperations {
-  constructor(private app: App) {}
+  private settings: OccurrencesPluginSettings
+
+  constructor(private app: App, settings: OccurrencesPluginSettings) {
+    this.settings = settings
+  }
+
+  /**
+   * Update settings
+   */
+  public updateSettings(settings: OccurrencesPluginSettings): void {
+    this.settings = settings
+  }
 
   /**
    * Check if a file is relevant to this store
@@ -29,14 +41,23 @@ export class FileOperations {
     const fileCache = this.app.metadataCache.getFileCache(file)
 
     const frontmatter = fileCache?.frontmatter ?? {}
-    const {
-      occurrence_occurred_at,
-      occurrence_to_process,
-      occurrence_location,
-      occurrence_participants,
-      occurrence_intents,
-      tags,
-    } = frontmatter
+
+    // Get frontmatter field names from settings
+    const occurredAtField = getFrontmatterFieldName("occurredAt", this.settings)
+    const toProcessField = getFrontmatterFieldName("toProcess", this.settings)
+    const locationField = getFrontmatterFieldName("location", this.settings)
+    const participantsField = getFrontmatterFieldName("participants", this.settings)
+    const intentsField = getFrontmatterFieldName("intents", this.settings)
+    // Tags is hardcoded to always use "tags"
+    const tagsField = "tags"
+
+    // Extract values from frontmatter using dynamic field names
+    const occurrence_occurred_at = frontmatter[occurredAtField]
+    const occurrence_to_process = frontmatter[toProcessField]
+    const occurrence_location = frontmatter[locationField]
+    const occurrence_participants = frontmatter[participantsField]
+    const occurrence_intents = frontmatter[intentsField]
+    const tags = frontmatter[tagsField]
 
     const occurrence: OccurrenceObject = {
       path: file.path,
@@ -98,11 +119,14 @@ export class FileOperations {
     const fileCache = this.app.metadataCache.getFileCache(file)
     const frontmatter = fileCache?.frontmatter ?? {}
 
-    if (frontmatter.occurrence_occurred_at) {
+    const occurredAtField = getFrontmatterFieldName("occurredAt", this.settings)
+    const occurrence_occurred_at = frontmatter[occurredAtField]
+
+    if (occurrence_occurred_at) {
       const title = this.removeDatePrefix(file.basename, OCCURRENCE_DATE_FORMAT)
       return this.applyDatePrefix(
         title,
-        new Date(frontmatter.occurrence_occurred_at),
+        new Date(occurrence_occurred_at),
         OCCURRENCE_DATE_FORMAT
       )
     }

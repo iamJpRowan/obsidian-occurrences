@@ -1,17 +1,19 @@
 import { Plugin, WorkspaceLeaf } from "obsidian"
 import { OccurrenceStore } from "./occurrenceStore"
 import { OCCURRENCES_VIEW, OccurrencesView } from "./occurrencesView"
+import { DEFAULT_SETTINGS, OccurrencesPluginSettings } from "./settings"
+import { OccurrencesSettingsTab } from "./settingsTab"
 
 export default class OccurrencesPlugin extends Plugin {
   occurrenceStore: OccurrenceStore
-  // settings: SettingsStore
+  settings: OccurrencesPluginSettings
 
   async onload() {
-    // this.settings = new SettingsStore(this)
-    // await this.settings.loadSettings()
-    // this.addSettingTab(new CortexSettingsTab(this.app, this))
+    await this.loadSettings()
 
-    this.occurrenceStore = new OccurrenceStore(this.app)
+    this.occurrenceStore = new OccurrenceStore(this.app, this.settings)
+
+    this.addSettingTab(new OccurrencesSettingsTab(this.app, this))
 
     this.app.workspace.onLayoutReady(() => {
       this.occurrenceStore.load()
@@ -92,6 +94,14 @@ export default class OccurrencesPlugin extends Plugin {
       // Brief timeout to allow UI to update
       await new Promise(resolve => setTimeout(resolve, 50))
     }
+  }
+
+  async loadSettings() {
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData())
+  }
+
+  async saveSettings() {
+    await this.saveData(this.settings)
   }
 
   onunload() {}

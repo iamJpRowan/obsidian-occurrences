@@ -1,5 +1,6 @@
 import { OccurrenceObject } from "@/types"
 import { App, TFile } from "obsidian"
+import { OccurrencesPluginSettings } from "@/settings"
 import { EventHandler } from "./eventHandler"
 import { FileOperations } from "./fileOperations"
 import { OccurrenceSearch, SearchOptions, SearchResult } from "./search"
@@ -16,14 +17,24 @@ export class OccurrenceStore {
   public fileOps: FileOperations
   private storeOps: StoreOperations
   private eventHandler: EventHandler
+  private settings: OccurrencesPluginSettings
 
-  constructor(protected app: App) {
+  constructor(protected app: App, settings: OccurrencesPluginSettings) {
+    this.settings = settings
     this.searchService = new OccurrenceSearch(app, this.items)
-    this.fileOps = new FileOperations(app)
+    this.fileOps = new FileOperations(app, settings)
     this.storeOps = new StoreOperations(this.items, this.searchService, null) // Will be set after eventHandler
     this.eventHandler = new EventHandler(app, this.fileOps, this.storeOps)
     this.storeOps.eventHandler = this.eventHandler // Fix the circular reference
     this.eventHandler.registerEvents()
+  }
+
+  /**
+   * Update settings and reload the store
+   */
+  public updateSettings(settings: OccurrencesPluginSettings): void {
+    this.settings = settings
+    this.fileOps.updateSettings(settings)
   }
 
   /**
