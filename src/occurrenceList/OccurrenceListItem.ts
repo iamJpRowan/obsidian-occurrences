@@ -3,6 +3,7 @@ import OccurrencesPlugin from "@/main"
 import { OccurrenceStore } from "@/occurrenceStore"
 import { OccurrenceObject } from "@/types"
 import { App, Menu, TFile, setTooltip } from "obsidian"
+import { OccurrenceModal } from "@/occurrenceModal/OccurrenceModal"
 
 export class OccurrenceListItem extends ListItem<OccurrenceObject> {
   private plugin: OccurrencesPlugin
@@ -76,10 +77,23 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
   }
 
   private configureMenu() {
+    // Update occurrence option
+    this.menu.addItem(item => {
+      item
+        .setTitle("Edit")
+        .setIcon("pencil")
+        .onClick(() => {
+          try {
+            new OccurrenceModal(this.plugin, this.occurrence).open()
+          } catch (error) {
+            console.error("Failed to update Occurrence:", error)
+          }
+        })
+    })
     // Open file option
     this.menu.addItem(item => {
       item
-        .setTitle("Open File")
+        .setTitle("Open")
         .setIcon("file-symlink")
         .onClick(() =>
           this.plugin.app.workspace.openLinkText(
@@ -92,7 +106,7 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
     // Open file in new tab option
     this.menu.addItem(item => {
       item
-        .setTitle("Open File in New Tab")
+        .setTitle("Open in New Tab")
         .setIcon("arrow-up-right")
         .onClick(() =>
           this.plugin.app.workspace.openLinkText(

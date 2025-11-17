@@ -1,0 +1,404 @@
+import { Component, debounce, setIcon, TFile } from "obsidian"
+
+export interface MultiFileSelectorOptions {
+  placeholder?: string
+  debounceMs?: number
+  allowCreate?: boolean
+}
+
+export interface FileSuggestion {
+  file: TFile | null
+  displayName: string
+  fullPath: string
+  isNew?: boolean
+}
+
+export class MultiFileSelector extends Component {
+  private fileContainer: HTMLElement
+  private fileInputContainer: HTMLElement
+  private fileInput: HTMLInputElement
+  private inputWrapper: HTMLElement
+  private suggestionsContainer: HTMLElement
+  private suggestionsList: HTMLElement
+  private onFilesChange: (filePaths: string[]) => void
+  private debouncedSearchChange: (query: string) => void
+  private options: MultiFileSelectorOptions
+  private app: any
+  private selectedFiles: string[] = []
+  private suggestions: FileSuggestion[] = []
+  private selectedSuggestionIndex: number = -1
+  private visible: boolean = false
+
+  constructor(
+    container: HTMLElement,
+    app: any,
+    onFilesChange: (filePaths: string[]) => void,
+    options: MultiFileSelectorOptions = {}
+  ) {
+    super()
+    this.app = app
+    this.options = {
+      placeholder: "Select files...",
+      debounceMs: 300,
+      allowCreate: true,
+      ...options,
+    }
+    this.onFilesChange = onFilesChange
+    this.debouncedSearchChange = debounce((query: string) => {
+      this.searchFiles(query)
+    }, this.options.debounceMs!)
+    this.render(container)
+  }
+
+  private render(container: HTMLElement): void {
+    // Create file container
+    this.fileContainer = container.createEl("div", {
+      cls: "occurrence-modal-file-container",
+    })
+
+    // Create file input container
+    this.fileInputContainer = this.fileContainer.createEl("div", {
+      cls: "occurrence-modal-file-input-container",
+    })
+
+    // Create link icon
+    const linkIcon = this.fileInputContainer.createEl("div", {
+      cls: "occurrence-modal-file-input-icon",
+    })
+    setIcon(linkIcon, "link")
+
+    // Create input wrapper (will contain pills and input)
+    this.inputWrapper = this.fileInputContainer.createEl("div", {
+      cls: "occurrence-modal-file-input-wrapper",
+    })
+
+    // Create file input
+    this.fileInput = this.inputWrapper.createEl("input", {
+      type: "text",
+      placeholder: this.options.placeholder!,
+      attr: {
+        spellcheck: "false",
+      },
+    }) as HTMLInputElement
+    this.fileInput.classList.add("occurrence-modal-file-input")
+
+    // Create suggestions container
+    this.suggestionsContainer = this.fileContainer.createEl("div", {
+      cls: "occurrence-modal-file-suggestions-container",
+    })
+    this.suggestionsContainer.style.display = "none"
+
+    this.suggestionsList = this.suggestionsContainer.createEl("div", {
+      cls: "occurrence-modal-file-suggestions-list",
+    })
+
+    // Add input event listeners
+    this.registerDomEvent(this.fileInput, "input", e => {
+      const target = e.target as HTMLInputElement
+      this.debouncedSearchChange(target.value)
+    })
+
+    this.registerDomEvent(this.fileInput, "focus", () => {
+      this.showSuggestions()
+      if (this.fileInput.value === "") {
+        this.showAllFiles()
+      }
+    })
+
+    this.registerDomEvent(this.fileInput, "blur", () => {
+      setTimeout(() => {
+        this.hideSuggestions()
+      }, 200)
+    })
+
+    this.registerDomEvent(this.fileInput, "keydown", e => {
+      this.handleKeydown(e)
+    })
+
+    // Add suggestions click listeners
+    this.registerDomEvent(this.suggestionsList, "click", e => {
+      const target = e.target as HTMLElement
+      const suggestionEl = target.closest(".occurrence-modal-file-suggestion")
+      if (suggestionEl) {
+        const index = parseInt(suggestionEl.getAttribute("data-index") || "0")
+        this.selectSuggestion(index)
+      }
+    })
+  }
+
+  /**
+   * Search for files matching the query
+   */
+  private searchFiles(query: string): void {
+    if (!query.trim()) {
+      this.showAllFiles()
+      return
+    }
+
+    const allFiles = this.app.vault.getMarkdownFiles()
+    const queryLower = query.toLowerCase()
+
+    this.suggestions = allFiles
+      .filter((file: TFile) => {
+        const name = file.name.toLowerCase()
+        const path = file.path.toLowerCase()
+        return (
+          (name.includes(queryLower) || path.includes(queryLower)) &&
+          !this.selectedFiles.includes(file.path)
+        )
+      })
+      .slice(0, 10)
+      .map((file: TFile) => ({
+        file,
+        displayName: file.basename,
+        fullPath: file.path,
+        isNew: false,
+      }))
+
+    // Add "Create new" option if allowCreate is true and query doesn't match existing file
+    if (this.options.allowCreate && query.trim()) {
+      const exactMatch = this.suggestions.some(
+        s => s.fullPath.toLowerCase() === query.trim().toLowerCase()
+      )
+      if (!exactMatch && !this.selectedFiles.includes(query.trim())) {
+        this.suggestions.push({
+          file: null,
+          displayName: `Create "${query.trim()}"`,
+          fullPath: query.trim(),
+          isNew: true,
+        })
+      }
+    }
+
+    this.renderSuggestions()
+  }
+
+  /**
+   * Show all files (excluding already selected ones)
+   */
+  private showAllFiles(): void {
+    const allFiles = this.app.vault
+      .getMarkdownFiles()
+      .filter(file => !this.selectedFiles.includes(file.path))
+      .slice(0, 10)
+    this.suggestions = allFiles.map((file: TFile) => ({
+      file,
+      displayName: file.basename,
+      fullPath: file.path,
+      isNew: false,
+    }))
+    this.renderSuggestions()
+  }
+
+  /**
+   * Render suggestions list
+   */
+  private renderSuggestions(): void {
+    this.suggestionsList.empty()
+    this.selectedSuggestionIndex = -1
+
+    if (this.suggestions.length === 0) {
+      this.hideSuggestions()
+      return
+    }
+
+    this.selectedSuggestionIndex = 0
+
+    this.suggestions.forEach((suggestion, index) => {
+      const suggestionEl = this.suggestionsList.createEl("div", {
+        cls: "occurrence-modal-file-suggestion",
+        attr: { "data-index": index.toString() },
+      })
+
+      if (suggestion.isNew) {
+        suggestionEl.addClass("is-new")
+        const icon = suggestionEl.createEl("span", {
+          cls: "occurrence-modal-file-suggestion-icon",
+        })
+        setIcon(icon, "plus")
+      }
+
+      const fileName = suggestionEl.createEl("div", {
+        cls: "occurrence-modal-file-suggestion-name",
+        text: suggestion.displayName,
+      })
+
+      if (!suggestion.isNew && suggestion.file) {
+        const pathParts = suggestion.fullPath.split("/")
+        pathParts.pop()
+        const pathText = pathParts.join("/") + "/"
+        const filePath = suggestionEl.createEl("div", {
+          cls: "occurrence-modal-file-suggestion-path",
+          text: pathText,
+        })
+      }
+    })
+
+    this.updateSuggestionHighlight()
+    this.showSuggestions()
+  }
+
+  /**
+   * Select a suggestion
+   */
+  private selectSuggestion(index: number): void {
+    if (index < 0 || index >= this.suggestions.length) return
+
+    const suggestion = this.suggestions[index]
+    const filePath = suggestion.isNew ? suggestion.fullPath : suggestion.file!.path
+
+    if (!this.selectedFiles.includes(filePath)) {
+      this.selectedFiles.push(filePath)
+      this.updateSelectedFilesDisplay()
+      this.fileInput.value = ""
+      this.showAllFiles()
+      this.showSuggestions()
+      this.onFilesChange([...this.selectedFiles])
+    }
+  }
+
+  /**
+   * Remove a file
+   */
+  private removeFile(filePath: string): void {
+    this.selectedFiles = this.selectedFiles.filter(p => p !== filePath)
+    this.updateSelectedFilesDisplay()
+    this.onFilesChange([...this.selectedFiles])
+  }
+
+  /**
+   * Update the display of selected files
+   */
+  private updateSelectedFilesDisplay(): void {
+    // Remove existing pills
+    const existingPills = this.inputWrapper.querySelectorAll(".occurrence-modal-file-pill")
+    existingPills.forEach(pill => pill.remove())
+
+    // Create pills for selected files, before the input
+    this.selectedFiles.forEach(filePath => {
+      const file = this.app.vault.getAbstractFileByPath(filePath) as TFile | null
+      const displayName = file ? file.basename : filePath
+
+      const pill = this.inputWrapper.createEl("div", {
+        cls: "occurrence-modal-file-pill",
+      })
+
+      this.inputWrapper.insertBefore(pill, this.fileInput)
+
+      const pillText = pill.createEl("span", {
+        cls: "occurrence-modal-file-pill-text",
+        text: displayName,
+      })
+
+      const removeButton = pill.createEl("div", {
+        cls: "occurrence-modal-file-pill-remove",
+      })
+      removeButton.textContent = "×"
+
+      this.registerDomEvent(removeButton, "click", () => {
+        this.removeFile(filePath)
+      })
+    })
+
+    // Update placeholder
+    this.updatePlaceholder()
+  }
+
+  /**
+   * Update placeholder based on selected files count
+   */
+  private updatePlaceholder(): void {
+    if (this.selectedFiles.length === 0) {
+      this.fileInput.placeholder = this.options.placeholder || ""
+    } else {
+      this.fileInput.placeholder = ""
+    }
+  }
+
+  /**
+   * Handle keyboard navigation
+   */
+  private handleKeydown(e: KeyboardEvent): void {
+    if (this.suggestionsContainer.style.display === "none") return
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault()
+        this.selectedSuggestionIndex = Math.min(
+          this.selectedSuggestionIndex + 1,
+          this.suggestions.length - 1
+        )
+        this.updateSuggestionHighlight()
+        break
+      case "ArrowUp":
+        e.preventDefault()
+        this.selectedSuggestionIndex = Math.max(
+          this.selectedSuggestionIndex - 1,
+          -1
+        )
+        this.updateSuggestionHighlight()
+        break
+      case "Enter":
+        e.preventDefault()
+        if (this.selectedSuggestionIndex >= 0) {
+          this.selectSuggestion(this.selectedSuggestionIndex)
+        }
+        break
+      case "Escape":
+        this.hideSuggestions()
+        break
+    }
+  }
+
+  /**
+   * Update suggestion highlight
+   */
+  private updateSuggestionHighlight(): void {
+    const suggestions =
+      this.suggestionsList.querySelectorAll(".occurrence-modal-file-suggestion")
+    suggestions.forEach((el, index) => {
+      if (index === this.selectedSuggestionIndex) {
+        el.addClass("is-selected")
+        el.scrollIntoView({ block: "nearest", behavior: "smooth" })
+      } else {
+        el.removeClass("is-selected")
+      }
+    })
+  }
+
+  /**
+   * Show suggestions container
+   */
+  private showSuggestions(): void {
+    this.suggestionsContainer.style.display = "block"
+  }
+
+  /**
+   * Hide suggestions container
+   */
+  private hideSuggestions(): void {
+    this.suggestionsContainer.style.display = "none"
+    this.selectedSuggestionIndex = -1
+  }
+
+  /**
+   * Get the current selected file paths
+   */
+  public getValue(): string[] {
+    return [...this.selectedFiles]
+  }
+
+  /**
+   * Set the value programmatically
+   */
+  public setValue(filePaths: string[]): void {
+    this.selectedFiles = [...filePaths]
+    this.updateSelectedFilesDisplay()
+    this.onFilesChange([...this.selectedFiles])
+  }
+
+  public getElement(): HTMLElement {
+    return this.fileContainer
+  }
+}
+

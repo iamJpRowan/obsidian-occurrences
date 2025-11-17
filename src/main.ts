@@ -3,6 +3,7 @@ import { OccurrenceStore } from "./occurrenceStore"
 import { OCCURRENCES_VIEW, OccurrencesView } from "./occurrencesView"
 import { DEFAULT_SETTINGS, OccurrencesPluginSettings } from "./settings"
 import { OccurrencesSettingsTab } from "./settingsTab"
+import { OccurrenceModal } from "./occurrenceModal/OccurrenceModal"
 
 export default class OccurrencesPlugin extends Plugin {
   occurrenceStore: OccurrenceStore
@@ -44,15 +45,7 @@ export default class OccurrencesPlugin extends Plugin {
       name: "Add Occurrence",
       callback: () => {
         try {
-          // TODO: Convert ObjectModal to be used here
-          // new ObjectModal({
-          //   plugin: this,
-          //   objectClass: "Entity",
-          //   onSubmit: (file: any) => {
-          //     // Once created open the entity in the active editor
-          //     this.app.workspace.openLinkText(file.path, "", false)
-          //   },
-          // }).open()
+          new OccurrenceModal(this).open()
         } catch (error) {
           console.error("Failed to create Occurrence:", error)
         }

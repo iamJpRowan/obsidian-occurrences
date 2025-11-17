@@ -1,0 +1,175 @@
+/* Occurrence Modal Styles */
+
+.occurrence-modal {
+  padding: 0;
+}
+
+.occurrence-modal-form {
+  padding: 1rem;
+}
+
+.occurrence-modal-field {
+  margin-bottom: 1.5rem;
+}
+
+.occurrence-modal-field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.occurrence-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.occurrence-modal-error {
+  padding: 0.75rem 1rem;
+  margin: 0;
+  background-color: var(--background-modifier-error);
+  color: var(--text-error);
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+/* File Selector Styles */
+
+.occurrence-modal-file-container {
+  position: relative;
+}
+
+.occurrence-modal-file-input-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  padding: 0.5rem;
+  background-color: var(--background-primary);
+}
+
+.occurrence-modal-file-input-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.occurrence-modal-file-input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  min-height: 32px;
+}
+
+.occurrence-modal-file-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  min-width: 100px;
+  font-size: 0.9rem;
+}
+
+.occurrence-modal-file-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background-color: var(--background-modifier-border);
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.occurrence-modal-file-pill-text {
+  color: var(--text-normal);
+}
+
+.occurrence-modal-file-pill-remove {
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0 0.25rem;
+}
+
+.occurrence-modal-file-pill-remove:hover {
+  color: var(--text-error);
+}
+
+.occurrence-modal-clear-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0.25rem;
+  border-radius: 4px;
+}
+
+.occurrence-modal-clear-button:hover {
+  background-color: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.occurrence-modal-file-suggestions-container {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
+  background-color: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.occurrence-modal-file-suggestions-list {
+  padding: 0.25rem;
+}
+
+.occurrence-modal-file-suggestion {
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.occurrence-modal-file-suggestion:hover,
+.occurrence-modal-file-suggestion.is-selected {
+  background-color: var(--background-modifier-hover);
+}
+
+.occurrence-modal-file-suggestion.is-new {
+  color: var(--text-accent);
+}
+
+.occurrence-modal-file-suggestion-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.occurrence-modal-file-suggestion-name {
+  font-weight: 500;
+  color: var(--text-normal);
+}
+
+.occurrence-modal-file-suggestion-path {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
