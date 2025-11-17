@@ -25,7 +25,7 @@ async function bundleCssFiles() {
       mainCssContent += "\n\n/* Auto-collected component and view styles */\n"
     } catch (error) {
       // No main styles.css, create a header
-      mainCssContent = "/* Cortex Intents Plugin - Auto-collected CSS */\n\n"
+      mainCssContent = "/* Cortex Topics Plugin - Auto-collected CSS */\n\n"
     }
 
     // Add each component/view CSS file content

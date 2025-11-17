@@ -154,13 +154,9 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
       }
     }
 
-    // Add intent icons
-    if (this.occurrence.intents.length) {
-      if (this.occurrence.intents.length === 1) {
-        this.addIconAfter("square-check")
-      } else {
-        this.addIconAfter("list-todo")
-      }
+    // Add topic icons
+    if (this.occurrence.topics.length) {
+      this.addIconAfter("lightbulb")
     }
 
     // Add date and time if enabled

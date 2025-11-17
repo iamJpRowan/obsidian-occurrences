@@ -232,7 +232,7 @@ interface OccurrenceObject {
   occurredAt: Date         // When the occurrence happened
   toProcess: boolean       // Whether occurrence needs processing
   participants: ObsidianLink[]  // Linked participants
-  intents: ObsidianLink[]       // Linked intents
+  topics: ObsidianLink[]        // Linked topics
   location: ObsidianLink | null // Linked location
 }
 ```
@@ -276,7 +276,7 @@ Frontmatter fields are configurable via settings:
 - `occurredAt` → `occurred_at`
 - `toProcess` → `to_process`
 - `participants` → `participants`
-- `intents` → `intents`
+- `topics` → `topics`
 - `location` → `location`
 - `tags` → `tags` (not configurable)
 

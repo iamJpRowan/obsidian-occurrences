@@ -78,7 +78,7 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
       occurredAt: "Occurred At",
       toProcess: "To Process",
       participants: "Participants",
-      intents: "Intents",
+      topics: "Topics",
       location: "Location",
       tags: "Tags",
     }
@@ -93,7 +93,7 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
       occurredAt: "The frontmatter field name for the occurrence date/time",
       toProcess: "The frontmatter field name for the to-process flag",
       participants: "The frontmatter field name for participants (array of links)",
-      intents: "The frontmatter field name for intents (array of links)",
+      topics: "The frontmatter field name for topics (array of links)",
       location: "The frontmatter field name for location (single link)",
       tags: "The frontmatter field name for tags (array of strings)",
     }

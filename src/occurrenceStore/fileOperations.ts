@@ -47,7 +47,7 @@ export class FileOperations {
     const toProcessField = getFrontmatterFieldName("toProcess", this.settings)
     const locationField = getFrontmatterFieldName("location", this.settings)
     const participantsField = getFrontmatterFieldName("participants", this.settings)
-    const intentsField = getFrontmatterFieldName("intents", this.settings)
+    const topicsField = getFrontmatterFieldName("topics", this.settings)
     // Tags is hardcoded to always use "tags"
     const tagsField = "tags"
 
@@ -56,7 +56,7 @@ export class FileOperations {
     const occurrence_to_process = frontmatter[toProcessField]
     const occurrence_location = frontmatter[locationField]
     const occurrence_participants = frontmatter[participantsField]
-    const occurrence_intents = frontmatter[intentsField]
+    const occurrence_topics = frontmatter[topicsField]
     const tags = frontmatter[tagsField]
 
     const occurrence: OccurrenceObject = {
@@ -71,7 +71,7 @@ export class FileOperations {
           ? true
           : false,
       participants: convertListToLinks(occurrence_participants),
-      intents: convertListToLinks(occurrence_intents),
+      topics: convertListToLinks(occurrence_topics),
       location: occurrence_location ? parseLink(occurrence_location) : null,
       tags: this.normalizeTags(tags),
     }
@@ -102,7 +102,7 @@ export class FileOperations {
         occurredAt: obj.occurredAt.toISOString(), // Convert Date to ISO string
         toProcess: obj.toProcess,
         participants: obj.participants,
-        intents: obj.intents,
+        topics: obj.topics,
         location: obj.location,
       }
     }

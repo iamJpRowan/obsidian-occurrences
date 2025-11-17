@@ -4,7 +4,7 @@ A plugin for managing and viewing occurrences (time-stamped events) in your Obsi
 
 ## Features
 
-- **Track occurrences** with participants, intents, locations, and tags
+- **Track occurrences** with participants, topics, locations, and tags
 - **Filter occurrences** by date range, file, tags, and search terms
 - **View occurrences** in a dedicated sidebar view
 - **Customizable frontmatter** field mappings to match your vault structure
@@ -35,8 +35,8 @@ A plugin for managing and viewing occurrences (time-stamped events) in your Obsi
    participants:
      - [[Person Name]]
      - [[Another Person]]
-   intents:
-     - [[Meeting Intent]]
+   topics:
+     - [[Meeting Topic]]
      - [[Discussion]]
    location: [[Location Name]]
    tags:
@@ -70,7 +70,7 @@ Customize which frontmatter fields map to occurrence properties:
 - `occurredAt` → Default: `occurred_at`
 - `toProcess` → Default: `to_process`
 - `participants` → Default: `participants`
-- `intents` → Default: `intents`
+- `topics` → Default: `topics`
 - `location` → Default: `location`
 - `tags` → Always uses `tags` (not configurable)
 

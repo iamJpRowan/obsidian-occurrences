@@ -9,7 +9,7 @@ export const MAPPABLE_PROPERTIES: (keyof OccurrenceObject)[] = [
   "occurredAt",
   "toProcess",
   "participants",
-  "intents",
+  "topics",
   "location",
 ]
 
@@ -28,7 +28,7 @@ export const DEFAULT_SETTINGS: OccurrencesPluginSettings = {
     occurredAt: "occurred_at",
     toProcess: "to_process",
     participants: "participants",
-    intents: "intents",
+    topics: "topics",
     location: "location",
   },
 }

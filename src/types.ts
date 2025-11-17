@@ -20,7 +20,7 @@ export interface OccurrenceObject {
   occurredAt: Date
   toProcess: boolean
   participants: ObsidianLink[]
-  intents: ObsidianLink[]
+  topics: ObsidianLink[]
   location: ObsidianLink | null
 }
 
