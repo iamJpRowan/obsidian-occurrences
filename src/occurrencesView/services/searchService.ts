@@ -26,12 +26,12 @@ export class SearchService {
     // Compare key properties that might affect display
     return (
       currentOccurrence.title !== occurrence.title ||
-      currentOccurrence.properties.occurredAt.getTime() !==
-        occurrence.properties.occurredAt.getTime() ||
-      currentOccurrence.properties.toProcess !==
-        occurrence.properties.toProcess ||
-      JSON.stringify(currentOccurrence.properties.tags) !==
-        JSON.stringify(occurrence.properties.tags)
+      currentOccurrence.occurredAt.getTime() !==
+        occurrence.occurredAt.getTime() ||
+      currentOccurrence.toProcess !==
+        occurrence.toProcess ||
+      JSON.stringify(currentOccurrence.tags) !==
+        JSON.stringify(occurrence.tags)
     )
   }
 

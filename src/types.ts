@@ -12,22 +12,16 @@ export interface ObsidianLink {
   vault?: string // For URI links
 }
 
-export interface OccurrenceProperties {
-  types?: string[]
+export interface OccurrenceObject {
+  path: string
+  file: TFile
+  title: string
   tags?: string[]
   occurredAt: Date
   toProcess: boolean
   participants: ObsidianLink[]
   intents: ObsidianLink[]
   location: ObsidianLink | null
-}
-
-export interface OccurrenceObject {
-  path: string
-  file: TFile
-  title: string
-  class: "Occurrence"
-  properties: OccurrenceProperties
 }
 
 // ======== SHARED CONSTANTS ========
@@ -39,8 +33,6 @@ export const OCCURRENCE_DATE_FORMAT = "YYYY-MM-DD HHmm" as const
 export function isOccurrenceObject(obj: any): obj is OccurrenceObject {
   return (
     obj &&
-    obj.class === "Occurrence" &&
-    obj.properties &&
-    obj.properties.occurredAt
+    obj.occurredAt instanceof Date
   )
 }

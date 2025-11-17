@@ -2,16 +2,27 @@ import { convertListToLinks, parseLink } from "@/linkUtils"
 import {
   OCCURRENCE_DATE_FORMAT,
   OccurrenceObject,
-  OccurrenceProperties,
 } from "@/types"
 import { App, TFile } from "obsidian"
+import { OccurrencesPluginSettings, getFrontmatterFieldName } from "@/settings"
 
 /**
  * File operations for OccurrenceStore
  * Handles file processing, validation, and filename generation
  */
 export class FileOperations {
-  constructor(private app: App) {}
+  private settings: OccurrencesPluginSettings
+
+  constructor(private app: App, settings: OccurrencesPluginSettings) {
+    this.settings = settings
+  }
+
+  /**
+   * Update settings
+   */
+  public updateSettings(settings: OccurrencesPluginSettings): void {
+    this.settings = settings
+  }
 
   /**
    * Check if a file is relevant to this store
@@ -30,18 +41,28 @@ export class FileOperations {
     const fileCache = this.app.metadataCache.getFileCache(file)
 
     const frontmatter = fileCache?.frontmatter ?? {}
-    const {
-      occurrence_occurred_at,
-      occurrence_to_process,
-      occurrence_location,
-      occurrence_participants,
-      occurrence_intents,
-      tags,
-      ...otherProperties
-    } = frontmatter
 
-    // Build properties object with all frontmatter data
-    const properties: OccurrenceProperties = {
+    // Get frontmatter field names from settings
+    const occurredAtField = getFrontmatterFieldName("occurredAt", this.settings)
+    const toProcessField = getFrontmatterFieldName("toProcess", this.settings)
+    const locationField = getFrontmatterFieldName("location", this.settings)
+    const participantsField = getFrontmatterFieldName("participants", this.settings)
+    const intentsField = getFrontmatterFieldName("intents", this.settings)
+    // Tags is hardcoded to always use "tags"
+    const tagsField = "tags"
+
+    // Extract values from frontmatter using dynamic field names
+    const occurrence_occurred_at = frontmatter[occurredAtField]
+    const occurrence_to_process = frontmatter[toProcessField]
+    const occurrence_location = frontmatter[locationField]
+    const occurrence_participants = frontmatter[participantsField]
+    const occurrence_intents = frontmatter[intentsField]
+    const tags = frontmatter[tagsField]
+
+    const occurrence: OccurrenceObject = {
+      path: file.path,
+      file,
+      title: this.removeDatePrefix(file.basename, OCCURRENCE_DATE_FORMAT),
       occurredAt: new Date(occurrence_occurred_at),
       toProcess:
         !occurrence_occurred_at ||
@@ -53,94 +74,40 @@ export class FileOperations {
       intents: convertListToLinks(occurrence_intents),
       location: occurrence_location ? parseLink(occurrence_location) : null,
       tags: this.normalizeTags(tags),
-      // Include ALL other frontmatter properties in the properties object
-      ...otherProperties,
-    }
-
-    const occurrence: OccurrenceObject = {
-      path: file.path,
-      file,
-      title: this.removeDatePrefix(file.basename, OCCURRENCE_DATE_FORMAT),
-      class: "Occurrence",
-      properties,
     }
 
     return occurrence
   }
 
   /**
-   * Check if a file's frontmatter has changed in a way that affects our data model
-   * @param file The file to check
-   * @param cachedItem The currently cached item
-   * @returns true if the frontmatter has relevant changes
+   * Compare two occurrence objects for equality using JSON serialization
+   * @param a First occurrence object
+   * @param b Second occurrence object
+   * @returns true if the objects are equal
    */
-  public async hasRelevantChanges(
-    file: TFile,
-    cachedItem: OccurrenceObject
-  ): Promise<boolean> {
-    const fileCache = this.app.metadataCache.getFileCache(file)
-    if (!fileCache || !fileCache.frontmatter) return false
+  public occurrencesEqual(
+    a: OccurrenceObject,
+    b: OccurrenceObject
+  ): boolean {
+    // Quick reference check (though unlikely to be true since processFile creates new objects)
+    if (a === b) return true
 
-    const frontmatter = fileCache.frontmatter
-    const {
-      occurrence_occurred_at,
-      occurrence_to_process,
-      occurrence_location,
-      occurrence_participants,
-      occurrence_intents,
-      tags,
-    } = frontmatter
-
-    // Parse new values
-    const newOccurredAt = new Date(occurrence_occurred_at)
-    const newToProcess =
-      !occurrence_occurred_at ||
-      isNaN(newOccurredAt.getTime()) ||
-      occurrence_to_process
-        ? true
-        : false
-    const newParticipants = convertListToLinks(occurrence_participants)
-    const newIntents = convertListToLinks(occurrence_intents)
-    const newLocation = occurrence_location
-      ? parseLink(occurrence_location)
-      : null
-    const newTags = this.normalizeTags(tags)
-
-    // Check if core Occurrence properties changed
-    if (
-      cachedItem.properties.occurredAt.getTime() !== newOccurredAt.getTime() ||
-      cachedItem.properties.toProcess !== newToProcess ||
-      !this.linksArrayEqual(
-        cachedItem.properties.participants,
-        newParticipants
-      ) ||
-      !this.linksArrayEqual(cachedItem.properties.intents, newIntents) ||
-      !this.linkEqual(cachedItem.properties.location, newLocation) ||
-      !this.arraysEqual(cachedItem.properties.tags, newTags)
-    ) {
-      return true
-    }
-
-    // Compare all other frontmatter properties stored in properties
-    for (const key of Object.keys(frontmatter)) {
-      // Skip the ones we already checked above
-      if (
-        ![
-          "occurrence_occurred_at",
-          "occurrence_to_process",
-          "occurrence_location",
-          "occurrence_participants",
-          "occurrence_intents",
-          "tags",
-        ].includes(key)
-      ) {
-        if (frontmatter[key] !== (cachedItem.properties as any)[key]) {
-          return true
-        }
+    // Normalize both objects for comparison (handle Date and TFile)
+    const normalize = (obj: OccurrenceObject) => {
+      return {
+        path: obj.path,
+        file: obj.file.path, // Compare file path instead of TFile object
+        title: obj.title,
+        tags: obj.tags,
+        occurredAt: obj.occurredAt.toISOString(), // Convert Date to ISO string
+        toProcess: obj.toProcess,
+        participants: obj.participants,
+        intents: obj.intents,
+        location: obj.location,
       }
     }
 
-    return false
+    return JSON.stringify(normalize(a)) === JSON.stringify(normalize(b))
   }
 
   /**
@@ -152,11 +119,14 @@ export class FileOperations {
     const fileCache = this.app.metadataCache.getFileCache(file)
     const frontmatter = fileCache?.frontmatter ?? {}
 
-    if (frontmatter.occurrence_occurred_at) {
+    const occurredAtField = getFrontmatterFieldName("occurredAt", this.settings)
+    const occurrence_occurred_at = frontmatter[occurredAtField]
+
+    if (occurrence_occurred_at) {
       const title = this.removeDatePrefix(file.basename, OCCURRENCE_DATE_FORMAT)
       return this.applyDatePrefix(
         title,
-        new Date(frontmatter.occurrence_occurred_at),
+        new Date(occurrence_occurred_at),
         OCCURRENCE_DATE_FORMAT
       )
     }
@@ -206,7 +176,7 @@ export class FileOperations {
 
   private removeDatePrefix(basename: string, format: string): string {
     // Convert the format string to a regular expression pattern
-    let regexPattern = format
+    const regexPattern = format
       .replace("YYYY", "\\d{4}")
       .replace("MM", "\\d{2}")
       .replace("DD", "\\d{2}")
@@ -233,45 +203,5 @@ export class FileOperations {
 
     // Return the title with the date prefix
     return `${formattedDate} ${title}`
-  }
-
-  private linksArrayEqual(
-    a:
-      | Array<{ type: string; target: string; displayText?: string }>
-      | undefined,
-    b: Array<{ type: string; target: string; displayText?: string }> | undefined
-  ): boolean {
-    if (!a && !b) return true
-    if (!a || !b) return false
-    if (a.length !== b.length) return false
-    return a.every(
-      (link, index) =>
-        link.type === b[index].type &&
-        link.target === b[index].target &&
-        link.displayText === b[index].displayText
-    )
-  }
-
-  private linkEqual(
-    a: { type: string; target: string; displayText?: string } | null,
-    b: { type: string; target: string; displayText?: string } | null
-  ): boolean {
-    if (!a && !b) return true
-    if (!a || !b) return false
-    return (
-      a.type === b.type &&
-      a.target === b.target &&
-      a.displayText === b.displayText
-    )
-  }
-
-  private arraysEqual(
-    a: string[] | undefined,
-    b: string[] | undefined
-  ): boolean {
-    if (!a && !b) return true
-    if (!a || !b) return false
-    if (a.length !== b.length) return false
-    return a.every((val, index) => val === b[index])
   }
 }
