@@ -1,5 +1,5 @@
 import { OccurrenceObject } from "@/types"
-import { OccurrencesPluginSettings, getFrontmatterFieldName } from "@/settings"
+import { MAPPABLE_PROPERTIES, OccurrencesPluginSettings, getFrontmatterFieldName } from "@/settings"
 
 /**
  * Get the property mapping from settings
@@ -11,15 +11,7 @@ export function getPropertyMapping(
   const mapping: Record<string, string> = {}
   
   // Get all mappable properties (exclude tags which is hardcoded)
-  const mappableProperties: (keyof OccurrenceObject)[] = [
-    "occurredAt",
-    "toProcess",
-    "participants",
-    "intents",
-    "location",
-  ]
-
-  mappableProperties.forEach(property => {
+  MAPPABLE_PROPERTIES.forEach(property => {
     const frontmatterField = getFrontmatterFieldName(property, settings)
     mapping[property] = frontmatterField
   })

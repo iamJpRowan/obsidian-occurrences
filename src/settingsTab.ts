@@ -1,6 +1,6 @@
 import { App, PluginSettingTab, Setting } from "obsidian"
 import OccurrencesPlugin from "./main"
-import { DEFAULT_SETTINGS, OccurrencesPluginSettings } from "./settings"
+import { DEFAULT_SETTINGS, MAPPABLE_PROPERTIES, OccurrencesPluginSettings } from "./settings"
 import { OccurrenceObject } from "./types"
 
 /**
@@ -33,17 +33,8 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
       cls: "setting-item-description",
     })
 
-    // Get the mappable properties (exclude interface-only properties and tags which is hardcoded)
-    const mappableProperties: (keyof OccurrenceObject)[] = [
-      "occurredAt",
-      "toProcess",
-      "participants",
-      "intents",
-      "location",
-    ]
-
     // Create a setting for each mappable property
-    mappableProperties.forEach(property => {
+    MAPPABLE_PROPERTIES.forEach(property => {
       new Setting(containerEl)
         .setName(this.getPropertyDisplayName(property))
         .setDesc(this.getPropertyDescription(property))

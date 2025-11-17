@@ -1,17 +1,17 @@
 import { OccurrenceObject } from "./types"
 
 /**
- * Default property mapping configuration
- * Maps OccurrenceObject interface properties to frontmatter field names
+ * Properties that can be mapped to frontmatter fields
  * Note: path, file, and title are interface-only properties and should not be mapped
+ * Tags is hardcoded to always use "tags" and is not configurable
  */
-export const DEFAULT_PROPERTY_MAPPING: Partial<Record<keyof OccurrenceObject, string>> = {
-  occurredAt: "occurred_at",
-  toProcess: "to_process",
-  participants: "participants",
-  intents: "intents",
-  location: "location",
-}
+export const MAPPABLE_PROPERTIES: (keyof OccurrenceObject)[] = [
+  "occurredAt",
+  "toProcess",
+  "participants",
+  "intents",
+  "location",
+]
 
 /**
  * Plugin settings interface
@@ -32,6 +32,14 @@ export const DEFAULT_SETTINGS: OccurrencesPluginSettings = {
     location: "location",
   },
 }
+
+/**
+ * Default property mapping configuration
+ * Derived from DEFAULT_SETTINGS for backward compatibility
+ * Maps OccurrenceObject interface properties to frontmatter field names
+ */
+export const DEFAULT_PROPERTY_MAPPING: Partial<Record<keyof OccurrenceObject, string>> =
+  DEFAULT_SETTINGS.propertyMapping as Partial<Record<keyof OccurrenceObject, string>>
 
 /**
  * Get the property mapping for a given property
@@ -66,13 +74,9 @@ export function getPropertyFromFrontmatterField(
     return "tags"
   }
 
-  // Check if it's a direct match first
-  const directMatch = Object.keys(DEFAULT_PROPERTY_MAPPING).find(
-    key => key === frontmatterField
-  ) as keyof OccurrenceObject | undefined
-
-  if (directMatch && (directMatch === "path" || directMatch === "file" || directMatch === "title")) {
-    return directMatch
+  // Check if it's a direct match first (interface-only properties)
+  if (frontmatterField === "path" || frontmatterField === "file" || frontmatterField === "title") {
+    return frontmatterField as keyof OccurrenceObject
   }
 
   // Reverse lookup in settings
@@ -84,9 +88,9 @@ export function getPropertyFromFrontmatterField(
     return property
   }
 
-  // Fallback to default mapping
-  const defaultProperty = Object.keys(DEFAULT_PROPERTY_MAPPING).find(
-    key => DEFAULT_PROPERTY_MAPPING[key as keyof OccurrenceObject] === frontmatterField
+  // Fallback to default settings mapping
+  const defaultProperty = Object.keys(DEFAULT_SETTINGS.propertyMapping).find(
+    key => DEFAULT_SETTINGS.propertyMapping[key] === frontmatterField
   ) as keyof OccurrenceObject | undefined
 
   return defaultProperty || null
