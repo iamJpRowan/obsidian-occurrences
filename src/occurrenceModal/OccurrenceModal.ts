@@ -271,7 +271,7 @@ export class OccurrenceModal extends Modal {
     const topicsField = getFrontmatterFieldName("topics", this.plugin.settings)
 
     // Create frontmatter
-    const frontmatter: Record<string, any> = {
+    const frontmatter: Record<string, string | string[] | boolean | number> = {
       [occurredAtField]: this.formatDateForFrontmatter(now),
       [toProcessField]: false,
     }
@@ -475,7 +475,7 @@ export class OccurrenceModal extends Modal {
     return localISOTime + offsetString
   }
 
-  private formatFrontmatter(frontmatter: Record<string, any>): string {
+  private formatFrontmatter(frontmatter: Record<string, string | string[] | boolean | number>): string {
     const lines: string[] = []
     for (const [key, value] of Object.entries(frontmatter)) {
       if (value === null || value === undefined) continue
@@ -494,7 +494,7 @@ export class OccurrenceModal extends Modal {
   }
 
 
-  private formatYamlValue(value: any): string {
+  private formatYamlValue(value: string | string[] | boolean | number): string {
     if (typeof value === "string") {
       // Escape special characters if needed
       if (value.includes(":") || value.includes("#") || value.startsWith("[")) {

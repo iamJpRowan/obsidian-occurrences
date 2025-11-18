@@ -1,4 +1,4 @@
-import { Component, debounce, setIcon, TFile } from "obsidian"
+import { App, Component, debounce, setIcon, TFile } from "obsidian"
 
 export interface SingleFileSelectorOptions {
   placeholder?: string
@@ -23,7 +23,7 @@ export class SingleFileSelector extends Component {
   private onFileChange: (basename: string | null) => void
   private debouncedSearchChange: (query: string) => void
   private options: SingleFileSelectorOptions
-  private app: any
+  private app: App
   private selectedFile: TFile | null = null
   private suggestions: FileSuggestion[] = []
   private selectedSuggestionIndex: number = -1
@@ -31,7 +31,7 @@ export class SingleFileSelector extends Component {
 
   constructor(
     container: HTMLElement,
-    app: any,
+    app: App,
     onFileChange: (basename: string | null) => void,
     options: SingleFileSelectorOptions = {}
   ) {
@@ -46,7 +46,7 @@ export class SingleFileSelector extends Component {
     this.onFileChange = onFileChange
     this.debouncedSearchChange = debounce((query: string) => {
       this.searchFiles(query)
-    }, this.options.debounceMs!)
+    }, this.options.debounceMs ?? 300)
     this.render(container)
   }
 
@@ -75,7 +75,7 @@ export class SingleFileSelector extends Component {
     // Create file input
     this.fileInput = inputWrapper.createEl("input", {
       type: "text",
-      placeholder: this.options.placeholder!,
+      placeholder: this.options.placeholder ?? "Select file...",
       attr: {
         spellcheck: "false",
       },

@@ -1,4 +1,4 @@
-import { Component, debounce, setIcon, TFile } from "obsidian"
+import { App, Component, debounce, setIcon, TFile } from "obsidian"
 
 export interface MultiFileSelectorOptions {
   placeholder?: string
@@ -23,7 +23,7 @@ export class MultiFileSelector extends Component {
   private onFilesChange: (basenames: string[]) => void
   private debouncedSearchChange: (query: string) => void
   private options: MultiFileSelectorOptions
-  private app: any
+  private app: App
   private selectedFiles: string[] = [] // Store basenames
   private suggestions: FileSuggestion[] = []
   private selectedSuggestionIndex: number = -1
@@ -31,7 +31,7 @@ export class MultiFileSelector extends Component {
 
   constructor(
     container: HTMLElement,
-    app: any,
+    app: App,
     onFilesChange: (basenames: string[]) => void,
     options: MultiFileSelectorOptions = {}
   ) {
@@ -46,7 +46,7 @@ export class MultiFileSelector extends Component {
     this.onFilesChange = onFilesChange
     this.debouncedSearchChange = debounce((query: string) => {
       this.searchFiles(query)
-    }, this.options.debounceMs!)
+    }, this.options.debounceMs ?? 300)
     this.render(container)
   }
 
@@ -75,7 +75,7 @@ export class MultiFileSelector extends Component {
     // Create file input
     this.fileInput = this.inputWrapper.createEl("input", {
       type: "text",
-      placeholder: this.options.placeholder!,
+      placeholder: this.options.placeholder ?? "Select files...",
       attr: {
         spellcheck: "false",
       },
@@ -246,7 +246,7 @@ export class MultiFileSelector extends Component {
     if (index < 0 || index >= this.suggestions.length) return
 
     const suggestion = this.suggestions[index]
-    const basename = suggestion.isNew ? suggestion.fullPath : suggestion.file!.basename
+    const basename = suggestion.isNew ? suggestion.fullPath : (suggestion.file?.basename ?? "")
 
     if (!this.selectedFiles.includes(basename)) {
       this.selectedFiles.push(basename)
