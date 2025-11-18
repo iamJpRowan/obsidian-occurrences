@@ -19,6 +19,49 @@
   font-size: 0.9rem;
 }
 
+/* Date/Time/Timezone Input Styles */
+
+.occurrence-modal-datetime-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.occurrence-modal-datetime-container input[type="date"],
+.occurrence-modal-datetime-container input[type="time"] {
+  flex: 0 0 auto;
+  min-width: 140px;
+  padding: 0.5rem;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  background-color: var(--background-modifier-form-field);
+  color: var(--text-normal);
+  font-size: 0.9rem;
+}
+
+.occurrence-modal-datetime-container input[type="date"]:focus,
+.occurrence-modal-datetime-container input[type="time"]:focus {
+  outline: 2px solid var(--background-modifier-border-focus);
+  outline-offset: 2px;
+}
+
+.occurrence-modal-datetime-container select {
+  flex: 0 0 auto;
+  min-width: 120px;
+  padding: 0.5rem;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  background-color: var(--background-modifier-form-field);
+  color: var(--text-normal);
+  font-size: 0.9rem;
+}
+
+.occurrence-modal-datetime-container select:focus {
+  outline: 2px solid var(--background-modifier-border-focus);
+  outline-offset: 2px;
+}
+
 .occurrence-modal-actions {
   display: flex;
   justify-content: flex-end;

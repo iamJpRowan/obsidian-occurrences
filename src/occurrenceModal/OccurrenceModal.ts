@@ -4,11 +4,13 @@ import { OccurrenceObject } from "@/types"
 import { TagSelector } from "@/occurrencesView/components/tagSelector"
 import { SingleFileSelector } from "./components/SingleFileSelector"
 import { MultiFileSelector } from "./components/MultiFileSelector"
+import { DateTimeSelector } from "./components/DateTimeSelector"
 import { OCCURRENCE_DATE_FORMAT } from "@/types"
 import { getFrontmatterFieldName } from "@/settings"
 
 export interface OccurrenceFormData {
   title: string
+  occurredAt: Date | null
   tags: string[]
   location: string | null
   participants: string[]
@@ -20,6 +22,7 @@ export class OccurrenceModal extends Modal {
   private occurrence: OccurrenceObject | null
   private formData: OccurrenceFormData
   private titleInput: HTMLInputElement
+  private dateTimeSelector: DateTimeSelector
   private tagSelector: TagSelector
   private locationSelector: SingleFileSelector
   private participantsSelector: MultiFileSelector
@@ -40,6 +43,7 @@ export class OccurrenceModal extends Modal {
     // Extract basenames from link targets (assume targets are basenames)
     this.formData = {
       title: occurrence?.title || "",
+      occurredAt: occurrence?.occurredAt || new Date(),
       tags: occurrence?.tags || [],
       location: occurrence?.location?.target
         ? this.extractBasename(occurrence.location.target)
@@ -82,6 +86,21 @@ export class OccurrenceModal extends Modal {
       },
     }) as HTMLInputElement
     this.titleInput.value = this.formData.title
+
+    // Occurred At field
+    const occurredAtContainer = formContainer.createEl("div")
+    this.dateTimeSelector = new DateTimeSelector(
+      occurredAtContainer,
+      (date: Date | null) => {
+        this.formData.occurredAt = date
+      },
+      {
+        label: "Occurred At",
+      }
+    )
+    if (this.formData.occurredAt) {
+      this.dateTimeSelector.setValue(this.formData.occurredAt)
+    }
 
     // Tags field
     const tagsContainer = formContainer.createEl("div", {
@@ -205,10 +224,16 @@ export class OccurrenceModal extends Modal {
 
     // Update form data from inputs
     this.formData.title = this.titleInput.value.trim()
+    this.formData.occurredAt = this.dateTimeSelector.getValue()
 
     // Validate
     if (!this.formData.title) {
       this.showError("Title is required")
+      return
+    }
+
+    if (!this.formData.occurredAt) {
+      this.showError("Occurred At date is required")
       return
     }
 
@@ -253,8 +278,8 @@ export class OccurrenceModal extends Modal {
     }
 
     // Generate filename with date prefix
-    const now = new Date()
-    const datePrefix = this.formatDatePrefix(now, OCCURRENCE_DATE_FORMAT)
+    const occurredAt = formData.occurredAt || new Date()
+    const datePrefix = this.formatDatePrefix(occurredAt, OCCURRENCE_DATE_FORMAT)
     const fileName = `${datePrefix} ${formData.title}.md`
     const filePath = `${occurrencesFolder}/${fileName}`
 
@@ -272,7 +297,7 @@ export class OccurrenceModal extends Modal {
 
     // Create frontmatter
     const frontmatter: Record<string, string | string[] | boolean | number> = {
-      [occurredAtField]: this.formatDateForFrontmatter(now),
+      [occurredAtField]: this.formatDateForFrontmatter(occurredAt),
       [toProcessField]: false,
     }
 
@@ -337,23 +362,22 @@ export class OccurrenceModal extends Modal {
     // Update frontmatter
     const updatedFrontmatter = { ...frontmatter }
 
-    // Update title (which affects filename if date prefix exists)
+    // Update occurredAt
     const occurredAtField = getFrontmatterFieldName("occurredAt", this.plugin.settings)
-    const occurredAt = updatedFrontmatter[occurredAtField]
-    
-    if (occurredAt) {
-      const date = new Date(occurredAt)
-      const datePrefix = this.formatDatePrefix(date, OCCURRENCE_DATE_FORMAT)
-      const newFileName = `${datePrefix} ${formData.title}.md`
-      const newFilePath = `Occurrences/${newFileName}`
+    const occurredAt = formData.occurredAt || new Date()
+    updatedFrontmatter[occurredAtField] = this.formatDateForFrontmatter(occurredAt)
 
-      // Rename file if title changed
-      if (newFilePath !== file.path) {
-        if (app.vault.getAbstractFileByPath(newFilePath)) {
-          throw new Error(`File "${newFileName}" already exists`)
-        }
-        await app.vault.rename(file, newFilePath)
+    // Update filename if date or title changed
+    const datePrefix = this.formatDatePrefix(occurredAt, OCCURRENCE_DATE_FORMAT)
+    const newFileName = `${datePrefix} ${formData.title}.md`
+    const newFilePath = `Occurrences/${newFileName}`
+
+    // Rename file if path changed
+    if (newFilePath !== file.path) {
+      if (app.vault.getAbstractFileByPath(newFilePath)) {
+        throw new Error(`File "${newFileName}" already exists`)
       }
+      await app.vault.rename(file, newFilePath)
     }
 
     // Update tags
