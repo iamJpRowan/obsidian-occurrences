@@ -35,6 +35,7 @@ export class OccurrenceModal extends Modal {
   private submitButton: HTMLButtonElement
   private errorMessage: HTMLElement
   private isSubmitting: boolean = false
+  private keyboardHandler: (e: KeyboardEvent) => void
 
   constructor(
     plugin: OccurrencesPlugin,
@@ -220,6 +221,19 @@ export class OccurrenceModal extends Modal {
     this.submitButton.addEventListener("click", () => {
       this.handleSubmit()
     })
+
+    // Add keyboard handler for Cmd+Enter / Ctrl+Enter
+    this.keyboardHandler = (e: KeyboardEvent) => {
+      if (
+        e.key === "Enter" &&
+        (e.metaKey || e.ctrlKey) &&
+        !this.isSubmitting
+      ) {
+        e.preventDefault()
+        this.handleSubmit()
+      }
+    }
+    document.addEventListener("keydown", this.keyboardHandler)
 
     // Focus title input on open
     setTimeout(() => {
@@ -581,6 +595,11 @@ export class OccurrenceModal extends Modal {
   onClose() {
     const { contentEl } = this
     contentEl.empty()
+    
+    // Remove keyboard event listener
+    if (this.keyboardHandler) {
+      document.removeEventListener("keydown", this.keyboardHandler)
+    }
   }
 }
 
