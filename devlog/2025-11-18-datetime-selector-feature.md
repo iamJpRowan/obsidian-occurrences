@@ -15,62 +15,89 @@ The feature needed to:
 - Match the visual style of other form fields (like TagSelector)
 - Work seamlessly with the existing frontmatter storage format
 
-## Considerations
+## Decisions
 
 ### UI/UX Approach
+
 - **Separate inputs**: Date, time, and timezone as distinct fields (initially implemented)
-- **Unified input**: Single field appearance with segmented editing (considered)
-- **Always-visible native inputs**: Three native inputs styled to look unified (chosen)
-- **Decision**: Always-visible native inputs - provides best accessibility, no custom date picker needed, matches user's preference for direct editing
+- **Unified input**: Single field appearance with segmented editing
+  - Cons: More complex implementation, less accessible
+- **Always-visible native inputs**: Three native inputs styled to look unified
+  - Pros: Best accessibility, no custom date picker needed, matches user's preference for direct editing
 
-### Timezone Handling
-- **Local timezone only**: Convert all times to user's local timezone (loses timezone information)
-- **Preserve selected timezone**: Store the exact timezone offset selected by user (chosen)
-- **Decision**: Preserve selected timezone - maintains accuracy for events in different timezones, allows proper timezone display when editing
-
-### Component Architecture
-- **Inline implementation**: Date/time logic directly in OccurrenceModal (harder to maintain)
-- **Standalone component**: Separate DateTimeSelector component (chosen)
-- **Decision**: Standalone component - better separation of concerns, reusable, easier to test and maintain
-
-### Styling Approach
-- **Field wrapper with label**: Traditional form field with label and border (initially implemented)
-- **Minimal styling**: No wrapper, no label, inputs sit directly on modal (chosen)
-- **Decision**: Minimal styling - matches user's preference for cleaner, more integrated appearance
-
-### Timezone Offset Storage
-- **ISO 8601 format**: Store as `YYYY-MM-DDTHH:mm:ss+/-HH:MM` (chosen)
-- **UTC only**: Convert to UTC and store offset separately (more complex)
-- **Decision**: ISO 8601 format - standard format, easy to parse, preserves timezone information
-
-## Decision Log
-
-### Decision: Create standalone DateTimeSelector component
-- **Rationale**: Better separation of concerns, reusable, easier to test and maintain. Follows the same pattern as TagSelector and other form components.
-- **Attribution**: User (jprowan) with AI (claude-3.5-sonnet)
-- **Date**: 2025-11-18
-
-### Decision: Use always-visible native HTML5 inputs
+**Decision**: Always-visible native HTML5 inputs
 - **Rationale**: Best accessibility, no need for custom date picker implementation, provides native browser date/time pickers. Users can directly edit any of the three values (date, time, timezone).
 - **Attribution**: User (jprowan) with AI (claude-3.5-sonnet)
 - **Date**: 2025-11-18
 
-### Decision: Preserve selected timezone offset in frontmatter
+### Timezone Handling
+
+- **Local timezone only**: Convert all times to user's local timezone
+  - Cons: Loses timezone information, inaccurate for events in different timezones
+- **Preserve selected timezone**: Store the exact timezone offset selected by user
+  - Pros: Maintains accuracy for events in different timezones, allows proper timezone display when editing
+
+**Decision**: Preserve selected timezone offset in frontmatter
 - **Rationale**: Maintains accuracy for events occurring in different timezones. When editing, the original timezone is displayed, not converted to local timezone. Critical for users who track events across timezones.
 - **Attribution**: User (jprowan) with AI (claude-3.5-sonnet)
 - **Date**: 2025-11-18
 
-### Decision: Minimal styling - no wrapper, no label, no separators
+### Component Architecture
+
+- **Inline implementation**: Date/time logic directly in OccurrenceModal
+  - Cons: Harder to maintain, less reusable
+- **Standalone component**: Separate DateTimeSelector component
+  - Pros: Better separation of concerns, reusable, easier to test and maintain
+
+**Decision**: Create standalone DateTimeSelector component
+- **Rationale**: Better separation of concerns, reusable, easier to test and maintain. Follows the same pattern as TagSelector and other form components.
+- **Attribution**: User (jprowan) with AI (claude-3.5-sonnet)
+- **Date**: 2025-11-18
+
+### Styling Approach
+
+- **Field wrapper with label**: Traditional form field with label and border (initially implemented)
+  - Cons: Takes more space, less integrated appearance
+- **Minimal styling**: No wrapper, no label, inputs sit directly on modal
+  - Pros: Cleaner, more integrated appearance, matches user's preference
+
+**Decision**: Minimal styling - no wrapper, no label, no separators
 - **Rationale**: Matches user's preference for cleaner, more integrated appearance. Text sits directly on the modal, creating a more seamless experience.
 - **Attribution**: User (jprowan) with AI (claude-3.5-sonnet)
 - **Date**: 2025-11-18
 
-### Decision: Extract timezone utilities to shared module
+### Timezone Offset Storage
+
+- **ISO 8601 format**: Store as `YYYY-MM-DDTHH:mm:ss+/-HH:MM`
+  - Pros: Standard format, easy to parse, preserves timezone information
+- **UTC only**: Convert to UTC and store offset separately
+  - Cons: More complex, requires separate storage
+
+**Decision**: ISO 8601 format
+- **Rationale**: Standard format, easy to parse, preserves timezone information. Widely supported and human-readable.
+- **Attribution**: User (jprowan) with AI (claude-3.5-sonnet)
+- **Date**: 2025-11-18
+
+### Code Organization
+
+- **Duplicate timezone logic**: Keep timezone conversion in both DateTimeSelector and OccurrenceModal
+  - Cons: Code duplication, harder to maintain
+- **Shared utilities**: Extract timezone utilities to shared module
+  - Pros: Eliminates duplication, centralizes logic, easier to test
+
+**Decision**: Extract timezone utilities to shared module
 - **Rationale**: Eliminates code duplication across DateTimeSelector and OccurrenceModal. Centralizes timezone conversion logic for easier maintenance and testing. Reduces ~100+ lines of duplicate code.
 - **Attribution**: User (jprowan) with AI (claude-3.5-sonnet)
 - **Date**: 2025-11-18
 
-### Decision: Store timezone offset separately from Date object
+### Timezone Offset Tracking
+
+- **Date object only**: Rely solely on JavaScript Date object
+  - Cons: Date objects always convert to local timezone, loses original timezone
+- **Separate offset storage**: Store timezone offset separately from Date object
+  - Pros: Preserves original timezone, allows proper display when editing
+
+**Decision**: Store timezone offset separately from Date object
 - **Rationale**: JavaScript Date objects always convert to local timezone. By storing the selected timezone offset separately, we can preserve and display the original timezone when editing. The Date object is still used for calculations, but the timezone offset is tracked independently.
 - **Attribution**: User (jprowan) with AI (claude-3.5-sonnet)
 - **Date**: 2025-11-18
