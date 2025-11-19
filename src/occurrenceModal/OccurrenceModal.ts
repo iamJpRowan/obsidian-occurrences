@@ -77,7 +77,7 @@ export class OccurrenceModal extends Modal {
       }
     }
 
-    // Occurred At field (at the very top of the modal, before everything)
+    // Occurred At field
     const occurredAtContainer = contentEl.createEl("div", {
       cls: "occurrence-modal-datetime-header",
     })
@@ -91,6 +91,20 @@ export class OccurrenceModal extends Modal {
       this.dateTimeSelector.setValue(this.formData.occurredAt, savedTimezoneOffset)
     }
 
+    // Title field (header-style)
+    const titleContainer = contentEl.createEl("div", {
+      cls: "occurrence-modal-title-header",
+    })
+    this.titleInput = titleContainer.createEl("input", {
+      type: "text",
+      attr: {
+        id: "occurrence-title",
+        "aria-label": "Title",
+        placeholder: "Enter occurrence title...",
+      },
+    }) as HTMLInputElement
+    this.titleInput.value = this.formData.title
+
     // Create error message container
     this.errorMessage = contentEl.createEl("div", {
       cls: "occurrence-modal-error",
@@ -101,46 +115,6 @@ export class OccurrenceModal extends Modal {
     const formContainer = contentEl.createEl("div", {
       cls: "occurrence-modal-form",
     })
-
-    // Title field
-    const titleContainer = formContainer.createEl("div", {
-      cls: "occurrence-modal-field",
-    })
-    titleContainer.createEl("label", {
-      text: "Title",
-      attr: { for: "occurrence-title" },
-    })
-    this.titleInput = titleContainer.createEl("input", {
-      type: "text",
-      attr: {
-        id: "occurrence-title",
-        placeholder: "Enter occurrence title...",
-      },
-    }) as HTMLInputElement
-    this.titleInput.value = this.formData.title
-
-    // Tags field
-    const tagsContainer = formContainer.createEl("div", {
-      cls: "occurrence-modal-field",
-    })
-    tagsContainer.createEl("label", {
-      text: "Tags",
-    })
-    const tagSelectorContainer = tagsContainer.createEl("div")
-    this.tagSelector = new TagSelector(
-      tagSelectorContainer,
-      this.plugin.occurrenceStore,
-      (tags: string[]) => {
-        this.formData.tags = tags
-      },
-      {
-        placeholder: "Add tags...",
-      }
-    )
-    this.tagSelector.show()
-    if (this.formData.tags.length > 0) {
-      this.tagSelector.setValue(this.formData.tags)
-    }
 
     // Location field
     const locationContainer = formContainer.createEl("div", {
@@ -209,6 +183,29 @@ export class OccurrenceModal extends Modal {
     )
     if (this.formData.topics.length > 0) {
       this.topicsSelector.setValue(this.formData.topics)
+    }
+
+    // Tags field
+    const tagsContainer = formContainer.createEl("div", {
+      cls: "occurrence-modal-field",
+    })
+    tagsContainer.createEl("label", {
+      text: "Tags",
+    })
+    const tagSelectorContainer = tagsContainer.createEl("div")
+    this.tagSelector = new TagSelector(
+      tagSelectorContainer,
+      this.plugin.occurrenceStore,
+      (tags: string[]) => {
+        this.formData.tags = tags
+      },
+      {
+        placeholder: "Add tags...",
+      }
+    )
+    this.tagSelector.show()
+    if (this.formData.tags.length > 0) {
+      this.tagSelector.setValue(this.formData.tags)
     }
 
     // Submit button

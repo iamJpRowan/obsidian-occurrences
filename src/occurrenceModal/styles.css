@@ -4,8 +4,37 @@
   padding: 0;
 }
 
+.occurrence-modal-title-header {
+  padding: 0.25rem 1rem 1rem 1rem;
+}
+
+.occurrence-modal-title-header input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+  font-size: var(--font-ui-large);
+  font-weight: 600;
+  color: var(--text-normal);
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+}
+
+.occurrence-modal-title-header input::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+.occurrence-modal-title-header input:focus {
+  outline: none;
+  box-shadow: none;
+  background: transparent;
+}
+
 .occurrence-modal-datetime-header {
-  padding: 0rem 0rem 0.5rem 0rem;
+  padding: 0.5rem 1rem 0.5rem 1rem;
 }
 
 .occurrence-modal-form {
