@@ -318,7 +318,7 @@ export class OccurrenceModal extends Modal {
     // Create frontmatter
     const frontmatter: Record<string, string | string[] | boolean | number> = {
       [occurredAtField]: this.formatDateForFrontmatter(occurredAt, timezoneOffset),
-      [toProcessField]: false,
+      [toProcessField]: true,
     }
 
     // Add tags
