@@ -1,9 +1,11 @@
 import { App, Component, debounce, setIcon, TFile } from "obsidian"
+import { FileSelectorFilterSettings } from "@/settings"
 
 export interface SingleFileSelectorOptions {
   placeholder?: string
   debounceMs?: number
   allowCreate?: boolean
+  filterSettings?: FileSelectorFilterSettings
 }
 
 export interface FileSuggestion {
@@ -24,6 +26,7 @@ export class SingleFileSelector extends Component {
   private debouncedSearchChange: (query: string) => void
   private options: SingleFileSelectorOptions
   private app: App
+  private filterSettings: FileSelectorFilterSettings | null = null
   private selectedFile: TFile | null = null
   private suggestions: FileSuggestion[] = []
   private selectedSuggestionIndex: number = -1
@@ -43,6 +46,7 @@ export class SingleFileSelector extends Component {
       allowCreate: true,
       ...options,
     }
+    this.filterSettings = options.filterSettings || null
     this.onFileChange = onFileChange
     this.debouncedSearchChange = debounce((query: string) => {
       this.searchFiles(query)
@@ -153,19 +157,22 @@ export class SingleFileSelector extends Component {
     const allFiles = this.app.vault.getMarkdownFiles()
     const queryLower = query.toLowerCase()
 
-    this.suggestions = allFiles
-      .filter((file: TFile) => {
-        const name = file.name.toLowerCase()
-        const path = file.path.toLowerCase()
-        return name.includes(queryLower) || path.includes(queryLower)
-      })
-      .slice(0, 10)
-      .map((file: TFile) => ({
-        file,
-        displayName: file.basename,
-        fullPath: file.path,
-        isNew: false,
-      }))
+    // Apply filters in optimized order: folders → tags → query
+    let filtered = this.applyFolderFilters(allFiles)
+    filtered = this.applyTagFilters(filtered)
+    
+    filtered = filtered.filter((file: TFile) => {
+      const name = file.name.toLowerCase()
+      const path = file.path.toLowerCase()
+      return name.includes(queryLower) || path.includes(queryLower)
+    })
+
+    this.suggestions = filtered.map((file: TFile) => ({
+      file,
+      displayName: file.basename,
+      fullPath: file.path,
+      isNew: false,
+    }))
 
     // Add "Create new" option if allowCreate is true and query doesn't match existing file
     if (this.options.allowCreate && query.trim()) {
@@ -190,8 +197,13 @@ export class SingleFileSelector extends Component {
    * Show all files
    */
   private showAllFiles(): void {
-    const allFiles = this.app.vault.getMarkdownFiles().slice(0, 10)
-    this.suggestions = allFiles.map((file: TFile) => ({
+    const allFiles = this.app.vault.getMarkdownFiles()
+    
+    // Apply filters
+    let filtered = this.applyFolderFilters(allFiles)
+    filtered = this.applyTagFilters(filtered)
+    
+    this.suggestions = filtered.map((file: TFile) => ({
       file,
       displayName: file.basename,
       fullPath: file.path,
@@ -392,6 +404,69 @@ export class SingleFileSelector extends Component {
       this.fileInput.value = basename
     }
     this.updateClearButton(this.fileInput.value)
+  }
+
+  /**
+   * Apply folder filters to file list
+   */
+  private applyFolderFilters(files: TFile[]): TFile[] {
+    if (!this.filterSettings?.enabled || !this.filterSettings.folders) {
+      return files
+    }
+    
+    return files.filter(file => {
+      // Include logic
+      if (this.filterSettings.folders.include?.length) {
+        const matches = this.filterSettings.folders.include.some(folder => {
+          const normalizedFolder = folder.endsWith('/') ? folder : folder + '/'
+          return file.path.startsWith(normalizedFolder) || file.path === folder
+        })
+        if (!matches) return false
+      }
+      
+      // Exclude logic
+      if (this.filterSettings.folders.exclude?.length) {
+        const matches = this.filterSettings.folders.exclude.some(folder => {
+          const normalizedFolder = folder.endsWith('/') ? folder : folder + '/'
+          return file.path.startsWith(normalizedFolder) || file.path === folder
+        })
+        if (matches) return false
+      }
+      
+      return true
+    })
+  }
+
+  /**
+   * Apply tag filters to file list
+   */
+  private applyTagFilters(files: TFile[]): TFile[] {
+    if (!this.filterSettings?.enabled || !this.filterSettings.tags) {
+      return files
+    }
+    
+    return files.filter(file => {
+      const fileCache = this.app.metadataCache.getFileCache(file)
+      const fileTags = fileCache?.frontmatter?.tags || []
+      
+      // Include: must have at least one tag
+      if (this.filterSettings.tags.include?.length) {
+        const hasInclude = this.filterSettings.tags.include.some(tag =>
+          fileTags.includes(tag)
+        )
+        if (!hasInclude) return false
+      }
+      
+      // Exclude: must not have any tag
+      if (this.filterSettings.tags.exclude?.length) {
+        const hasExclude = this.filterSettings.tags.exclude.some(tag =>
+          fileTags.includes(tag)
+        )
+        if (hasExclude) return false
+      }
+      
+      return true
+    })
   }
 
   public getElement(): HTMLElement {

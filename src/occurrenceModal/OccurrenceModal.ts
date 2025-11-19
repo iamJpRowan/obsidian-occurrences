@@ -158,6 +158,7 @@ export class OccurrenceModal extends Modal {
       {
         placeholder: "Select location...",
         allowCreate: true,
+        filterSettings: this.plugin.settings.fileSelectorFilters.location,
       }
     )
     if (this.formData.location) {
@@ -180,6 +181,7 @@ export class OccurrenceModal extends Modal {
       {
         placeholder: "Add participants...",
         allowCreate: true,
+        filterSettings: this.plugin.settings.fileSelectorFilters.participants,
       }
     )
     if (this.formData.participants.length > 0) {
@@ -202,6 +204,7 @@ export class OccurrenceModal extends Modal {
       {
         placeholder: "Add topics...",
         allowCreate: true,
+        filterSettings: this.plugin.settings.fileSelectorFilters.topics,
       }
     )
     if (this.formData.topics.length > 0) {
