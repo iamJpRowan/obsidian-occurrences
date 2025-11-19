@@ -4,8 +4,12 @@
   padding: 0;
 }
 
+.occurrence-modal-datetime-header {
+  padding: 0rem 0rem 0.5rem 0rem;
+}
+
 .occurrence-modal-form {
-  padding: 1rem;
+  padding: 0 1rem 1rem 1rem;
 }
 
 .occurrence-modal-field {
@@ -19,47 +23,124 @@
   font-size: 0.9rem;
 }
 
-/* Date/Time/Timezone Input Styles */
+/* Date/Time/Timezone Input Styles - Unified Input Pattern */
 
-.occurrence-modal-datetime-container {
+.datetime-input-container {
+  position: relative;
+  padding: 0;
   display: flex;
+  align-items: stretch;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-radius: var(--input-radius);
+  cursor: text;
+  transition: border-color var(--anim-duration-fast) ease-in-out;
+}
+
+.datetime-input-container:focus-within {
+  outline: 3px solid var(--background-modifier-border-focus);
+  outline-offset: -3px;
+}
+
+.datetime-input-wrapper {
+  position: relative;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
   align-items: center;
+  padding: 0px 8px;
+  min-height: var(--input-height);
   gap: 0.5rem;
-  flex-wrap: wrap;
 }
 
-.occurrence-modal-datetime-container input[type="date"],
-.occurrence-modal-datetime-container input[type="time"] {
-  flex: 0 0 auto;
+.datetime-input-native {
+  flex: 0 1 auto;
+  border: none;
+  background: transparent !important;
+  padding: 0.5rem 0.25rem;
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  font-family: inherit;
+  height: calc(var(--input-height) - 2px);
+  line-height: calc(var(--input-height) - 2px);
+  outline: none;
+  cursor: text;
+}
+
+/* More specific selector for inputs in wrapper to override any defaults */
+.datetime-input-wrapper .datetime-input-native {
+  border: none;
+  background: transparent;
+}
+
+.datetime-input-native:focus {
+  outline: none;
+  background-color: var(--background-modifier-hover);
+  border-radius: 3px;
+}
+
+.datetime-input-native[type="date"] {
   min-width: 140px;
-  padding: 0.5rem;
-  border: 1px solid var(--background-modifier-border);
-  border-radius: 4px;
-  background-color: var(--background-modifier-form-field);
-  color: var(--text-normal);
-  font-size: 0.9rem;
+  flex: 0 1 140px;
 }
 
-.occurrence-modal-datetime-container input[type="date"]:focus,
-.occurrence-modal-datetime-container input[type="time"]:focus {
-  outline: 2px solid var(--background-modifier-border-focus);
-  outline-offset: 2px;
+/* More specific selector to override Obsidian's date input background */
+.datetime-input-wrapper .datetime-input-native[type="date"] {
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
-.occurrence-modal-datetime-container select {
-  flex: 0 0 auto;
+.datetime-input-native[type="time"] {
+  min-width: 100px;
+  flex: 0 1 100px;
+}
+
+/* More specific selector using parent container for higher specificity */
+.datetime-input-wrapper select.datetime-input-native {
   min-width: 120px;
-  padding: 0.5rem;
-  border: 1px solid var(--background-modifier-border);
-  border-radius: 4px;
-  background-color: var(--background-modifier-form-field);
-  color: var(--text-normal);
-  font-size: 0.9rem;
+  flex: 0 1 120px;
+  cursor: pointer;
+  /* Fix line-height - use normal instead of matching full height */
+  line-height: normal;
+  /* Ensure padding matches other inputs */
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.25rem;
+  padding-right: 1.5rem;
+  box-sizing: border-box;
+  /* Remove all borders */
+  border: none;
+  border-width: 0;
+  /* Remove box-shadow that creates border-like appearance */
+  box-shadow: none;
 }
 
-.occurrence-modal-datetime-container select:focus {
-  outline: 2px solid var(--background-modifier-border-focus);
-  outline-offset: 2px;
+/* Remove default select styling to blend in */
+.datetime-input-wrapper select.datetime-input-native {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: none;
+}
+
+/* Remove borders from date input specifically - more specific selector */
+.datetime-input-wrapper .datetime-input-native[type="date"] {
+  border: none;
+  border-width: 0;
+}
+
+/* Style the native date/time input icons */
+.datetime-input-native[type="date"]::-webkit-calendar-picker-indicator,
+.datetime-input-native[type="time"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  margin-left: 0.25rem;
+}
+
+.datetime-input-native[type="date"]::-webkit-calendar-picker-indicator:hover,
+.datetime-input-native[type="time"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
 }
 
 .occurrence-modal-actions {

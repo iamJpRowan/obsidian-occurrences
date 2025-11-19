@@ -1,81 +1,88 @@
 import { Component } from "obsidian"
-
-export interface DateTimeSelectorOptions {
-  label?: string
-}
+import {
+  timezoneOffsetToISOString,
+  parseTimezoneOffset,
+  getLocalTimezoneOffset,
+} from "../utils/timezoneUtils"
 
 export class DateTimeSelector extends Component {
   private container: HTMLElement
+  private datetimeContainer: HTMLElement
+  private datetimeInputWrapper: HTMLElement
   private dateInput: HTMLInputElement
   private timeInput: HTMLInputElement
   private timezoneSelect: HTMLSelectElement
   private onDateChange: (date: Date | null) => void
-  private options: DateTimeSelectorOptions
+  private currentDate: Date | null = null
+  private selectedTimezoneOffset: string | null = null
 
   constructor(
     container: HTMLElement,
-    onDateChange: (date: Date | null) => void,
-    options: DateTimeSelectorOptions = {}
+    onDateChange: (date: Date | null) => void
   ) {
     super()
     this.container = container
-    this.options = {
-      label: "Occurred At",
-      ...options,
-    }
     this.onDateChange = onDateChange
     this.render()
   }
 
   private render(): void {
-    // Create field container
-    const fieldContainer = this.container.createEl("div", {
-      cls: "occurrence-modal-field",
+    // Create datetime container directly (no field wrapper or label)
+    this.datetimeContainer = this.container.createEl("div", {
+      cls: "datetime-input-container",
     })
 
-    if (this.options.label) {
-      fieldContainer.createEl("label", {
-        text: this.options.label,
-      })
-    }
-
-    const inputContainer = fieldContainer.createEl("div", {
-      cls: "occurrence-modal-datetime-container",
+    // Create input wrapper (similar to tag-input-wrapper)
+    this.datetimeInputWrapper = this.datetimeContainer.createEl("div", {
+      cls: "datetime-input-wrapper",
     })
 
-    // Date input
-    this.dateInput = inputContainer.createEl("input", {
+    // Create date input
+    this.dateInput = this.datetimeInputWrapper.createEl("input", {
       type: "date",
       attr: {
-        id: "occurrence-date",
         "aria-label": "Date",
       },
     }) as HTMLInputElement
+    this.dateInput.classList.add("datetime-input-native")
 
-    // Time input
-    this.timeInput = inputContainer.createEl("input", {
+    // Create time input (no separator)
+    this.timeInput = this.datetimeInputWrapper.createEl("input", {
       type: "time",
       attr: {
-        id: "occurrence-time",
         "aria-label": "Time",
       },
     }) as HTMLInputElement
+    this.timeInput.classList.add("datetime-input-native")
 
-    // Timezone select
-    this.timezoneSelect = inputContainer.createEl("select", {
+    // Create timezone select (no separator)
+    this.timezoneSelect = this.datetimeInputWrapper.createEl("select", {
       attr: {
-        id: "occurrence-timezone",
         "aria-label": "Timezone",
       },
     }) as HTMLSelectElement
+    this.timezoneSelect.classList.add("datetime-input-native")
 
     // Populate timezone options
     this.populateTimezoneOptions()
 
     // Add event listeners
-    this.registerDomEvent(this.dateInput, "change", () => this.updateDate())
-    this.registerDomEvent(this.timeInput, "change", () => this.updateDate())
-    this.registerDomEvent(this.timezoneSelect, "change", () => this.updateDate())
+    this.setupEventListeners()
+  }
+
+  private setupEventListeners(): void {
+    // Input change handlers
+    this.registerDomEvent(this.dateInput, "change", () => {
+      this.updateDate()
+    })
+
+    this.registerDomEvent(this.timeInput, "change", () => {
+      this.updateDate()
+    })
+
+    this.registerDomEvent(this.timezoneSelect, "change", () => {
+      this.updateDate()
+    })
   }
 
   /**
@@ -83,11 +90,7 @@ export class DateTimeSelector extends Component {
    */
   private populateTimezoneOptions(): void {
     // Get user's local timezone offset for default selection
-    const localOffset = -new Date().getTimezoneOffset() / 60
-    const localOffsetHours = Math.floor(Math.abs(localOffset))
-    const localOffsetMinutes = Math.abs((localOffset % 1) * 60)
-    const localSign = localOffset >= 0 ? "+" : "-"
-    const localOffsetString = `${localSign}${localOffsetHours.toString().padStart(2, "0")}:${localOffsetMinutes.toString().padStart(2, "0")}`
+    const localOffsetString = getLocalTimezoneOffset()
 
     // Generate timezone options from -12:00 to +14:00
     for (let hours = -12; hours <= 14; hours++) {
@@ -114,7 +117,6 @@ export class DateTimeSelector extends Component {
 
   /**
    * Parse a Date object into date, time, and timezone strings for inputs
-   * The date is displayed in the user's local timezone for editing
    */
   private parseDateToInputs(date: Date): { dateStr: string; timeStr: string; timezoneOffset: string } {
     // Get date in YYYY-MM-DD format (local date)
@@ -129,13 +131,7 @@ export class DateTimeSelector extends Component {
     const timeStr = `${hours}:${minutes}`
 
     // Get timezone offset in +/-HH:MM format
-    // Note: getTimezoneOffset() returns offset in minutes, positive for west of UTC
-    // We need to invert it for display (positive for east of UTC)
-    const offset = date.getTimezoneOffset()
-    const offsetHours = Math.floor(Math.abs(offset) / 60)
-    const offsetMinutes = Math.abs(offset) % 60
-    const offsetSign = offset <= 0 ? "+" : "-"
-    const timezoneOffset = `${offsetSign}${offsetHours.toString().padStart(2, "0")}:${offsetMinutes.toString().padStart(2, "0")}`
+    const timezoneOffset = timezoneOffsetToISOString(date.getTimezoneOffset())
 
     return { dateStr, timeStr, timezoneOffset }
   }
@@ -149,28 +145,36 @@ export class DateTimeSelector extends Component {
     const timezoneOffset = this.timezoneSelect.value
 
     if (!dateStr || !timeStr || !timezoneOffset) {
+      this.currentDate = null
+      this.selectedTimezoneOffset = null
       this.onDateChange(null)
       return
     }
 
-    // Parse timezone offset (e.g., "+05:00" or "-08:00")
-    const offsetMatch = timezoneOffset.match(/^([+-])(\d{2}):(\d{2})$/)
-    if (!offsetMatch) {
+    // Validate timezone offset format
+    if (parseTimezoneOffset(timezoneOffset) === null) {
+      this.currentDate = null
+      this.selectedTimezoneOffset = null
       this.onDateChange(null)
       return
     }
 
-    // Create ISO string with timezone: the date/time values are interpreted as being in the selected timezone
-    // JavaScript Date constructor can parse ISO strings with timezone offsets
+    // Store the selected timezone offset
+    this.selectedTimezoneOffset = timezoneOffset
+
+    // Create ISO string with timezone
     const isoString = `${dateStr}T${timeStr}:00${timezoneOffset}`
     const date = new Date(isoString)
 
     // Validate the date was parsed correctly
     if (isNaN(date.getTime())) {
+      this.currentDate = null
+      this.selectedTimezoneOffset = null
       this.onDateChange(null)
       return
     }
 
+    this.currentDate = date
     this.onDateChange(date)
   }
 
@@ -178,49 +182,89 @@ export class DateTimeSelector extends Component {
    * Get the current date value
    */
   public getValue(): Date | null {
-    const dateStr = this.dateInput.value
-    const timeStr = this.timeInput.value
-    const timezoneOffset = this.timezoneSelect.value
+    return this.currentDate
+  }
 
-    if (!dateStr || !timeStr || !timezoneOffset) {
-      return null
-    }
+  /**
+   * Convert a Date object to local date/time strings in a specific timezone
+   * @param date The date to convert
+   * @param timezoneOffset Timezone offset string (e.g., "+05:00")
+   * @returns Date and time strings, or null if timezone is invalid
+   */
+  private dateToLocalStrings(date: Date, timezoneOffset: string): { dateStr: string; timeStr: string } | null {
+    const offsetMinutes = parseTimezoneOffset(timezoneOffset)
+    if (offsetMinutes === null) return null
 
-    const offsetMatch = timezoneOffset.match(/^([+-])(\d{2}):(\d{2})$/)
-    if (!offsetMatch) {
-      return null
-    }
+    // Get UTC time and add offset to get local time in that timezone
+    const localTime = new Date(date.getTime() + offsetMinutes * 60000)
+    
+    const year = localTime.getUTCFullYear()
+    const month = String(localTime.getUTCMonth() + 1).padStart(2, "0")
+    const day = String(localTime.getUTCDate()).padStart(2, "0")
+    const dateStr = `${year}-${month}-${day}`
 
-    const isoString = `${dateStr}T${timeStr}:00${timezoneOffset}`
-    const date = new Date(isoString)
+    const hours = String(localTime.getUTCHours()).padStart(2, "0")
+    const minutes = String(localTime.getUTCMinutes()).padStart(2, "0")
+    const timeStr = `${hours}:${minutes}`
 
-    if (isNaN(date.getTime())) {
-      return null
-    }
-
-    return date
+    return { dateStr, timeStr }
   }
 
   /**
    * Set the date value programmatically
+   * @param date The date to set
+   * @param timezoneOffset Optional timezone offset (e.g., "+05:00" or "-08:00") to preserve from saved data
    */
-  public setValue(date: Date | null): void {
+  public setValue(date: Date | null, timezoneOffset?: string | null): void {
+    this.currentDate = date
+
     if (!date) {
       this.dateInput.value = ""
       this.timeInput.value = ""
-      this.onDateChange(null)
+      this.selectedTimezoneOffset = null
+      this.updateDate()
       return
     }
 
-    const { dateStr, timeStr, timezoneOffset } = this.parseDateToInputs(date)
+    // Determine which timezone offset to use
+    const offsetToUse = timezoneOffset || this.parseDateToInputs(date).timezoneOffset
+    this.selectedTimezoneOffset = offsetToUse
+
+    // Get date/time strings
+    let dateStr: string
+    let timeStr: string
+    
+    if (timezoneOffset) {
+      const localStrings = this.dateToLocalStrings(date, timezoneOffset)
+      if (localStrings) {
+        dateStr = localStrings.dateStr
+        timeStr = localStrings.timeStr
+      } else {
+        // Fallback if timezone parsing fails
+        const parsed = this.parseDateToInputs(date)
+        dateStr = parsed.dateStr
+        timeStr = parsed.timeStr
+      }
+    } else {
+      const parsed = this.parseDateToInputs(date)
+      dateStr = parsed.dateStr
+      timeStr = parsed.timeStr
+    }
+
     this.dateInput.value = dateStr
     this.timeInput.value = timeStr
-    this.timezoneSelect.value = timezoneOffset
-    this.onDateChange(date)
+    this.timezoneSelect.value = offsetToUse
+    this.updateDate()
+  }
+
+  /**
+   * Get the selected timezone offset (e.g., "+05:00" or "-08:00")
+   */
+  public getTimezoneOffset(): string | null {
+    return this.selectedTimezoneOffset || this.timezoneSelect.value || null
   }
 
   public getElement(): HTMLElement {
     return this.container
   }
 }
-

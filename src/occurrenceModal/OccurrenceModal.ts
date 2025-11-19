@@ -7,6 +7,11 @@ import { MultiFileSelector } from "./components/MultiFileSelector"
 import { DateTimeSelector } from "./components/DateTimeSelector"
 import { OCCURRENCE_DATE_FORMAT } from "@/types"
 import { getFrontmatterFieldName } from "@/settings"
+import {
+  timezoneOffsetToISOString,
+  parseTimezoneOffset,
+  extractTimezoneFromISOString,
+} from "./utils/timezoneUtils"
 
 export interface OccurrenceFormData {
   title: string
@@ -59,6 +64,33 @@ export class OccurrenceModal extends Modal {
     contentEl.empty()
     contentEl.addClass("occurrence-modal")
 
+    // Parse timezone offset from frontmatter if editing an existing occurrence
+    let savedTimezoneOffset: string | null = null
+    if (this.occurrence) {
+      const fileCache = this.plugin.app.metadataCache.getFileCache(this.occurrence.file)
+      const frontmatter = fileCache?.frontmatter ?? {}
+      const occurredAtField = getFrontmatterFieldName("occurredAt", this.plugin.settings)
+      const occurredAtValue = frontmatter[occurredAtField]
+      
+      if (occurredAtValue && typeof occurredAtValue === "string") {
+        savedTimezoneOffset = extractTimezoneFromISOString(occurredAtValue)
+      }
+    }
+
+    // Occurred At field (at the very top of the modal, before everything)
+    const occurredAtContainer = contentEl.createEl("div", {
+      cls: "occurrence-modal-datetime-header",
+    })
+    this.dateTimeSelector = new DateTimeSelector(
+      occurredAtContainer,
+      (date: Date | null) => {
+        this.formData.occurredAt = date
+      }
+    )
+    if (this.formData.occurredAt) {
+      this.dateTimeSelector.setValue(this.formData.occurredAt, savedTimezoneOffset)
+    }
+
     // Create error message container
     this.errorMessage = contentEl.createEl("div", {
       cls: "occurrence-modal-error",
@@ -86,21 +118,6 @@ export class OccurrenceModal extends Modal {
       },
     }) as HTMLInputElement
     this.titleInput.value = this.formData.title
-
-    // Occurred At field
-    const occurredAtContainer = formContainer.createEl("div")
-    this.dateTimeSelector = new DateTimeSelector(
-      occurredAtContainer,
-      (date: Date | null) => {
-        this.formData.occurredAt = date
-      },
-      {
-        label: "Occurred At",
-      }
-    )
-    if (this.formData.occurredAt) {
-      this.dateTimeSelector.setValue(this.formData.occurredAt)
-    }
 
     // Tags field
     const tagsContainer = formContainer.createEl("div", {
@@ -295,9 +312,12 @@ export class OccurrenceModal extends Modal {
     const participantsField = getFrontmatterFieldName("participants", this.plugin.settings)
     const topicsField = getFrontmatterFieldName("topics", this.plugin.settings)
 
+    // Get timezone offset from the selector
+    const timezoneOffset = this.dateTimeSelector.getTimezoneOffset()
+
     // Create frontmatter
     const frontmatter: Record<string, string | string[] | boolean | number> = {
-      [occurredAtField]: this.formatDateForFrontmatter(occurredAt),
+      [occurredAtField]: this.formatDateForFrontmatter(occurredAt, timezoneOffset),
       [toProcessField]: false,
     }
 
@@ -365,19 +385,21 @@ export class OccurrenceModal extends Modal {
     // Update occurredAt
     const occurredAtField = getFrontmatterFieldName("occurredAt", this.plugin.settings)
     const occurredAt = formData.occurredAt || new Date()
-    updatedFrontmatter[occurredAtField] = this.formatDateForFrontmatter(occurredAt)
-
+    // Get timezone offset from the selector
+    const timezoneOffset = this.dateTimeSelector.getTimezoneOffset()
+    updatedFrontmatter[occurredAtField] = this.formatDateForFrontmatter(occurredAt, timezoneOffset)
+    
     // Update filename if date or title changed
     const datePrefix = this.formatDatePrefix(occurredAt, OCCURRENCE_DATE_FORMAT)
-    const newFileName = `${datePrefix} ${formData.title}.md`
-    const newFilePath = `Occurrences/${newFileName}`
+      const newFileName = `${datePrefix} ${formData.title}.md`
+      const newFilePath = `Occurrences/${newFileName}`
 
     // Rename file if path changed
-    if (newFilePath !== file.path) {
-      if (app.vault.getAbstractFileByPath(newFilePath)) {
-        throw new Error(`File "${newFileName}" already exists`)
-      }
-      await app.vault.rename(file, newFilePath)
+      if (newFilePath !== file.path) {
+        if (app.vault.getAbstractFileByPath(newFilePath)) {
+          throw new Error(`File "${newFileName}" already exists`)
+        }
+        await app.vault.rename(file, newFilePath)
     }
 
     // Update tags
@@ -481,22 +503,34 @@ export class OccurrenceModal extends Modal {
       .replace("ss", String(date.getSeconds()).padStart(2, "0"))
   }
 
-  private formatDateForFrontmatter(date: Date): string {
-    const localISOTime = new Date(
-      date.getTime() - date.getTimezoneOffset() * 60000
-    )
-      .toISOString()
-      .slice(0, -1)
+  private formatDateForFrontmatter(date: Date, timezoneOffset?: string | null): string {
+    // Determine offset string to use
+    let offsetString = timezoneOffset || timezoneOffsetToISOString(date.getTimezoneOffset())
+    
+    // Validate offset format
+    let offsetMinutes = parseTimezoneOffset(offsetString)
+    if (offsetMinutes === null) {
+      // Fallback to date's timezone
+      offsetString = timezoneOffsetToISOString(date.getTimezoneOffset())
+      offsetMinutes = parseTimezoneOffset(offsetString)
+      if (offsetMinutes === null) {
+        // Last resort: use ISO string without timezone
+        return date.toISOString().slice(0, -1) + "Z"
+      }
+    }
 
-    const offset = date.getTimezoneOffset()
-    const offsetHours = Math.floor(Math.abs(offset) / 60)
-    const offsetMinutes = Math.abs(offset) % 60
-    const offsetSign = offset <= 0 ? "+" : "-"
-    const offsetString = `${offsetSign}${offsetHours
-      .toString()
-      .padStart(2, "0")}:${offsetMinutes.toString().padStart(2, "0")}`
-
-    return localISOTime + offsetString
+    // Calculate local time in the specified timezone
+    const localTime = new Date(date.getTime() + offsetMinutes * 60000)
+    
+    // Format as ISO string
+    const year = localTime.getUTCFullYear()
+    const month = String(localTime.getUTCMonth() + 1).padStart(2, "0")
+    const day = String(localTime.getUTCDate()).padStart(2, "0")
+    const hours = String(localTime.getUTCHours()).padStart(2, "0")
+    const minutes = String(localTime.getUTCMinutes()).padStart(2, "0")
+    const seconds = String(localTime.getUTCSeconds()).padStart(2, "0")
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetString}`
   }
 
   private formatFrontmatter(frontmatter: Record<string, string | string[] | boolean | number>): string {

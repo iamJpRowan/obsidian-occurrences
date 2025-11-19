@@ -46,3 +46,4 @@ Example:
 ## Entries
 
 - [2025-11-16: Current Architecture and State](2025-11-16-current-architecture.md) - Current state of the plugin architecture and design decisions
+- [2025-11-18: DateTime Selector Feature](2025-11-18-datetime-selector-feature.md) - Implementation of date, time, and timezone selection for occurrences
