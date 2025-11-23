@@ -33,9 +33,6 @@
   background: transparent;
 }
 
-.occurrence-modal-datetime-header {
-  padding: 0.5rem 1rem 0.5rem 1rem;
-}
 
 .occurrence-modal-form {
   padding: 0 1rem 1rem 1rem;
@@ -100,6 +97,8 @@
   border-radius: var(--input-radius);
   cursor: text;
   transition: border-color var(--anim-duration-fast) ease-in-out;
+  flex: 1;
+  min-width: 0;
 }
 
 .datetime-input-container:focus-within {
@@ -113,7 +112,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 0px 8px;
+  padding: 0px 8px 0px 0px;
   min-height: var(--input-height);
   gap: 0.5rem;
 }
@@ -144,20 +143,18 @@
   border-radius: 3px;
 }
 
-.datetime-input-native[type="date"] {
-  min-width: 140px;
-  flex: 0 1 140px;
+.datetime-input-native[type="datetime-local"] {
+  min-width: 230px;
+  flex: 0 1 230px;
+  padding-right: 0.5rem;
 }
 
-/* More specific selector to override Obsidian's date input background */
-.datetime-input-wrapper .datetime-input-native[type="date"] {
+/* More specific selector to override Obsidian's datetime-local input background */
+.datetime-input-wrapper .datetime-input-native[type="datetime-local"] {
   background: transparent !important;
   background-color: transparent !important;
-}
-
-.datetime-input-native[type="time"] {
-  min-width: 100px;
-  flex: 0 1 100px;
+  border: none;
+  border-width: 0;
 }
 
 /* More specific selector using parent container for higher specificity */
@@ -188,22 +185,14 @@
   background-image: none;
 }
 
-/* Remove borders from date input specifically - more specific selector */
-.datetime-input-wrapper .datetime-input-native[type="date"] {
-  border: none;
-  border-width: 0;
-}
-
-/* Style the native date/time input icons */
-.datetime-input-native[type="date"]::-webkit-calendar-picker-indicator,
-.datetime-input-native[type="time"]::-webkit-calendar-picker-indicator {
+/* Style the native datetime-local input icon */
+.datetime-input-native[type="datetime-local"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
   opacity: 0.6;
   margin-left: 0.25rem;
 }
 
-.datetime-input-native[type="date"]::-webkit-calendar-picker-indicator:hover,
-.datetime-input-native[type="time"]::-webkit-calendar-picker-indicator:hover {
+.datetime-input-native[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
 }
 

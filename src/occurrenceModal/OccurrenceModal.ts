@@ -88,20 +88,6 @@ export class OccurrenceModal extends Modal {
       }
     }
 
-    // Occurred At field
-    const occurredAtContainer = contentEl.createEl("div", {
-      cls: "occurrence-modal-datetime-header",
-    })
-    this.dateTimeSelector = new DateTimeSelector(
-      occurredAtContainer,
-      (date: Date | null) => {
-        this.formData.occurredAt = date
-      }
-    )
-    if (this.formData.occurredAt) {
-      this.dateTimeSelector.setValue(this.formData.occurredAt, savedTimezoneOffset)
-    }
-
     // Title field (header-style)
     const titleContainer = contentEl.createEl("div", {
       cls: "occurrence-modal-title-header",
@@ -126,6 +112,28 @@ export class OccurrenceModal extends Modal {
     const formContainer = contentEl.createEl("div", {
       cls: "occurrence-modal-form",
     })
+
+    // Occurred At field - restructured to match other fields
+    const occurredAtContainer = formContainer.createEl("div", {
+      cls: "occurrence-modal-field",
+    })
+    const occurredAtIcon = occurredAtContainer.createEl("span", {
+      cls: "occurrence-modal-field-icon",
+    })
+    setIcon(occurredAtIcon, "calendar")
+    occurredAtContainer.createEl("label", {
+      text: "Occurred At",
+      cls: "occurrence-modal-field-label",
+    })
+    this.dateTimeSelector = new DateTimeSelector(
+      occurredAtContainer,
+      (date: Date | null) => {
+        this.formData.occurredAt = date
+      }
+    )
+    if (this.formData.occurredAt) {
+      this.dateTimeSelector.setValue(this.formData.occurredAt, savedTimezoneOffset)
+    }
 
     // Location field
     const locationContainer = formContainer.createEl("div", {
