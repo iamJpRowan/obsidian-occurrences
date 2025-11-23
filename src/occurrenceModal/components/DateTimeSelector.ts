@@ -181,13 +181,13 @@ export class DateTimeSelector extends Component {
 
   /**
    * Update the date from inputs and notify callback
-   * datetime-local always works in the browser's local timezone, so we need to:
-   * 1. Parse the datetime-local value (which is in browser's local timezone)
-   * 2. Convert browser local time to UTC
-   * 3. Adjust for the selected timezone to get the correct UTC representation
+   * datetime-local always works in the browser's local timezone.
+   * We treat the entered value as if it were in the selected timezone.
    * 
-   * The Date object stores UTC internally. We want to represent the time
-   * as if it were in the selected timezone, so we need to reverse the conversion.
+   * Approach:
+   * 1. Parse the datetime-local string to get date/time components (YYYY-MM-DDTHH:mm)
+   * 2. Create an ISO string treating those components as if they're in the selected timezone
+   * 3. Parse that ISO string to create the Date object (which stores UTC internally)
    */
   private updateDate(): void {
     const datetimeLocalStr = this.datetimeInput.value
@@ -212,40 +212,10 @@ export class DateTimeSelector extends Component {
     // Store the selected timezone offset
     this.selectedTimezoneOffset = timezoneOffset
 
-    // Get browser's local timezone offset
-    const browserOffsetMinutes = new Date().getTimezoneOffset()
-    const browserOffsetString = timezoneOffsetToISOString(browserOffsetMinutes)
-    const browserOffsetParsed = parseTimezoneOffset(browserOffsetString)
-    if (browserOffsetParsed === null) {
-      this.currentDate = null
-      this.selectedTimezoneOffset = null
-      this.onDateChange(null)
-      return
-    }
-
-    // Step 1: Parse datetime-local value (which is in browser's local timezone)
-    // Create a date from the datetime-local string
-    const browserLocalDate = new Date(datetimeLocalStr)
-    if (isNaN(browserLocalDate.getTime())) {
-      this.currentDate = null
-      this.selectedTimezoneOffset = null
-      this.onDateChange(null)
-      return
-    }
-
-    // Step 2: Convert browser local time to UTC
-    // browserLocalDate.getTime() gives us UTC milliseconds, but the Date constructor
-    // interprets the string as local time. We need to adjust for browser timezone.
-    const browserLocalMs = browserLocalDate.getTime()
-    const utcMs = browserLocalMs + browserOffsetParsed * 60000
-
-    // Step 3: Reverse the timezone conversion
-    // We displayed the time as if it were in the selected timezone, but converted to browser timezone
-    // Now we need to reverse that: browser local -> selected timezone local -> UTC
-    // The difference: selectedOffset - browserOffset
-    const timezoneDiff = selectedOffsetMinutes - browserOffsetParsed
-    const finalUtcMs = utcMs - timezoneDiff * 60000
-    const date = new Date(finalUtcMs)
+    // Parse the datetime-local string and treat it as if it's in the selected timezone
+    // Format: YYYY-MM-DDTHH:mm -> convert to YYYY-MM-DDTHH:mm:00+/-HH:MM
+    const isoString = `${datetimeLocalStr}:00${timezoneOffset}`
+    const date = new Date(isoString)
 
     // Validate the date was parsed correctly
     if (isNaN(date.getTime())) {
@@ -268,13 +238,12 @@ export class DateTimeSelector extends Component {
 
   /**
    * Convert a Date object to datetime-local format string for display
-   * datetime-local always works in the browser's local timezone, so we need to:
-   * 1. The Date object represents a moment in UTC
-   * 2. We want to show what the local time would be in the selected timezone
-   * 3. But datetime-local only works in browser's local timezone
-   * 4. So we convert: UTC -> selected timezone local time -> browser local time
+   * The Date object stores UTC internally. We want to show the local time in the selected timezone.
+   * datetime-local always works in the browser's local timezone, so we need to convert:
+   * UTC -> selected timezone local time -> browser local time
+   * 
    * @param date The date to convert (UTC internally)
-   * @param timezoneOffset Timezone offset string (e.g., "+05:00")
+   * @param timezoneOffset Timezone offset string (e.g., "+05:00" or "-08:00")
    * @returns Datetime-local format string in user's browser timezone, or null if timezone is invalid
    */
   private dateToLocalString(date: Date, timezoneOffset: string): string | null {
@@ -287,14 +256,16 @@ export class DateTimeSelector extends Component {
     const browserOffsetParsed = parseTimezoneOffset(browserOffsetString)
     if (browserOffsetParsed === null) return null
 
-    // Step 1: Convert UTC date to selected timezone's local time
-    // date.getTime() is UTC milliseconds, selectedOffsetMinutes is offset from UTC
-    // To get local time in selected timezone: UTC - offset (note: offset is reversed in JS)
+    // Step 1: Convert UTC to selected timezone's local time
+    // date.getTime() is UTC milliseconds
+    // To get local time in selected timezone: subtract the offset (offset is negative for timezones behind UTC)
+    // Example: UTC 22:56, UTC-8 -> 14:56 (22:56 - 8 hours)
     const selectedTimezoneLocalMs = date.getTime() - selectedOffsetMinutes * 60000
     const selectedTimezoneLocalDate = new Date(selectedTimezoneLocalMs)
     
-    // Step 2: Convert selected timezone local time to browser's local timezone
-    // The difference between timezones: selectedOffset - browserOffset
+    // Step 2: Convert selected timezone local time to browser's local timezone for display
+    // Calculate the difference: if selected is UTC-8 and browser is UTC-8, no change
+    // If selected is UTC-8 and browser is UTC+5, we need to add 13 hours
     const timezoneDiff = selectedOffsetMinutes - browserOffsetParsed
     const browserLocalMs = selectedTimezoneLocalMs - timezoneDiff * 60000
     const browserLocalDate = new Date(browserLocalMs)
