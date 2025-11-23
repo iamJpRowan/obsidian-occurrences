@@ -1,7 +1,7 @@
 import { Modal, TFile, setIcon } from "obsidian"
 import OccurrencesPlugin from "@/main"
 import { OccurrenceObject } from "@/types"
-import { TagSelector } from "@/occurrencesView/components/tagSelector"
+import { TagSelector } from "./components/TagSelector"
 import { SingleFileSelector } from "./components/SingleFileSelector"
 import { MultiFileSelector } from "./components/MultiFileSelector"
 import { DateTimeSelector } from "./components/DateTimeSelector"
@@ -135,7 +135,7 @@ export class OccurrenceModal extends Modal {
       cls: "occurrence-modal-field-icon",
     })
     setIcon(locationIcon, "map-pin")
-    const locationLabel = locationContainer.createEl("label", {
+    locationContainer.createEl("label", {
       text: "Location",
       cls: "occurrence-modal-field-label",
     })
@@ -163,7 +163,7 @@ export class OccurrenceModal extends Modal {
       cls: "occurrence-modal-field-icon",
     })
     setIcon(participantsIcon, "users")
-    const participantsLabel = participantsContainer.createEl("label", {
+    participantsContainer.createEl("label", {
       text: "Participants",
       cls: "occurrence-modal-field-label",
     })
@@ -191,7 +191,7 @@ export class OccurrenceModal extends Modal {
       cls: "occurrence-modal-field-icon",
     })
     setIcon(topicsIcon, "lightbulb")
-    const topicsLabel = topicsContainer.createEl("label", {
+    topicsContainer.createEl("label", {
       text: "Topics",
       cls: "occurrence-modal-field-label",
     })
@@ -215,12 +215,16 @@ export class OccurrenceModal extends Modal {
     const tagsContainer = formContainer.createEl("div", {
       cls: "occurrence-modal-field",
     })
+    const tagsIcon = tagsContainer.createEl("span", {
+      cls: "occurrence-modal-field-icon",
+    })
+    setIcon(tagsIcon, "tags")
     tagsContainer.createEl("label", {
       text: "Tags",
+      cls: "occurrence-modal-field-label",
     })
-    const tagSelectorContainer = tagsContainer.createEl("div")
     this.tagSelector = new TagSelector(
-      tagSelectorContainer,
+      tagsContainer,
       this.plugin.occurrenceStore,
       (tags: string[]) => {
         this.formData.tags = tags
@@ -229,7 +233,6 @@ export class OccurrenceModal extends Modal {
         placeholder: "Add tags...",
       }
     )
-    this.tagSelector.show()
     if (this.formData.tags.length > 0) {
       this.tagSelector.setValue(this.formData.tags)
     }

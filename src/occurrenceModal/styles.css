@@ -377,3 +377,62 @@
   margin-left: auto;
 }
 
+/* Tag Selector Styles - Override file selector styles for tags */
+
+/* Tag pill styling - matches occurrences view */
+.occurrence-modal-tag-pill {
+  display: flex;
+  align-items: center;
+  background-color: var(--tag-background);
+  color: var(--tag-color);
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: var(--font-ui-smaller);
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.occurrence-modal-tag-pill-text {
+  color: var(--tag-color);
+}
+
+.occurrence-modal-tag-pill-remove {
+  cursor: pointer;
+  color: var(--tag-color);
+  font-weight: lighter;
+  font-size: 18px;
+  margin-top: -2px;
+  line-height: 1;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  padding: 0 0.25rem;
+}
+
+.occurrence-modal-tag-pill-remove:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Keyboard-selected tag highlighting */
+.occurrence-modal-tag-pill.is-keyboard-selected {
+  outline: 2px solid var(--background-modifier-border-focus);
+  outline-offset: 2px;
+}
+
+/* Clear button positioning for tags - positioned within input wrapper */
+.occurrence-modal-tag-container .occurrence-modal-file-input-wrapper {
+  position: relative;
+}
+
+.occurrence-modal-tag-container .occurrence-modal-clear-button {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+/* Tag suggestions container - use fixed positioning for modal */
+.occurrence-modal-tag-container .occurrence-modal-file-suggestions-container {
+  position: fixed;
+}
+
