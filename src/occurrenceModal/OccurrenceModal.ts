@@ -102,12 +102,6 @@ export class OccurrenceModal extends Modal {
     }) as HTMLInputElement
     this.titleInput.value = this.formData.title
 
-    // Create error message container
-    this.errorMessage = contentEl.createEl("div", {
-      cls: "occurrence-modal-error",
-    })
-    this.errorMessage.style.display = "none"
-
     // Create form container
     const formContainer = contentEl.createEl("div", {
       cls: "occurrence-modal-form",
@@ -279,6 +273,23 @@ export class OccurrenceModal extends Modal {
 
     this.submitButton.addEventListener("click", () => {
       this.handleSubmit()
+    })
+
+    // Create error message container (at bottom of form)
+    this.errorMessage = formContainer.createEl("div", {
+      cls: "occurrence-modal-error",
+    })
+    this.errorMessage.style.display = "none"
+    
+    // Create icon container for error
+    const errorIcon = this.errorMessage.createEl("span", {
+      cls: "occurrence-modal-error-icon",
+    })
+    setIcon(errorIcon, "circle-alert")
+    
+    // Create text container for error message
+    const errorText = this.errorMessage.createEl("span", {
+      cls: "occurrence-modal-error-text",
     })
 
     // Add keyboard handler for Cmd+Enter / Ctrl+Enter
@@ -648,8 +659,11 @@ export class OccurrenceModal extends Modal {
   }
 
   private showError(message: string): void {
-    this.errorMessage.textContent = message
-    this.errorMessage.style.display = "block"
+    const errorText = this.errorMessage.querySelector(".occurrence-modal-error-text")
+    if (errorText) {
+      errorText.textContent = message
+    }
+    this.errorMessage.style.display = "flex"
   }
 
   private hideError(): void {

@@ -225,12 +225,28 @@
 }
 
 .occurrence-modal-error {
-  padding: 0.75rem 1rem;
-  margin: 0;
-  background-color: var(--background-modifier-error);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  margin: 0.5rem 0 0 0;
   color: var(--text-error);
-  border-radius: 4px;
-  margin-bottom: 1rem;
+}
+
+.occurrence-modal-error-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--text-error);
+}
+
+.occurrence-modal-error-icon svg {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+}
+
+.occurrence-modal-error-text {
+  color: var(--text-error);
 }
 
 /* File Selector Styles */
