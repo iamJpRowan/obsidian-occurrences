@@ -20,6 +20,7 @@ export interface OccurrenceFormData {
   location: string | null
   participants: string[]
   topics: string[]
+  toProcess: boolean
 }
 
 export class OccurrenceModal extends Modal {
@@ -33,6 +34,7 @@ export class OccurrenceModal extends Modal {
   private participantsSelector: MultiFileSelector
   private topicsSelector: MultiFileSelector
   private submitButton: HTMLButtonElement
+  private toProcessCheckbox: HTMLInputElement
   private errorMessage: HTMLElement
   private isSubmitting: boolean = false
   private keyboardHandler: (e: KeyboardEvent) => void
@@ -57,6 +59,7 @@ export class OccurrenceModal extends Modal {
       participants:
         occurrence?.participants.map(p => this.extractBasename(p.target)) || [],
       topics: occurrence?.topics.map(t => this.extractBasename(t.target)) || [],
+      toProcess: occurrence?.toProcess ?? true,
     }
   }
 
@@ -65,7 +68,7 @@ export class OccurrenceModal extends Modal {
     contentEl.empty()
     contentEl.addClass("occurrence-modal")
 
-    // Parse timezone offset from frontmatter if editing an existing occurrence
+    // Parse timezone offset and toProcess from frontmatter if editing an existing occurrence
     let savedTimezoneOffset: string | null = null
     if (this.occurrence) {
       const fileCache = this.plugin.app.metadataCache.getFileCache(this.occurrence.file)
@@ -75,6 +78,13 @@ export class OccurrenceModal extends Modal {
       
       if (occurredAtValue && typeof occurredAtValue === "string") {
         savedTimezoneOffset = extractTimezoneFromISOString(occurredAtValue)
+      }
+
+      // Read toProcess from frontmatter
+      const toProcessField = getFrontmatterFieldName("toProcess", this.plugin.settings)
+      const toProcessValue = frontmatter[toProcessField]
+      if (typeof toProcessValue === "boolean") {
+        this.formData.toProcess = toProcessValue
       }
     }
 
@@ -209,10 +219,33 @@ export class OccurrenceModal extends Modal {
       this.tagSelector.setValue(this.formData.tags)
     }
 
-    // Submit button
+    // Submit button and To Process checkbox
     const buttonContainer = formContainer.createEl("div", {
       cls: "occurrence-modal-actions",
     })
+    
+    // To Process checkbox
+    const checkboxContainer = buttonContainer.createEl("div", {
+      cls: "occurrence-modal-to-process",
+    })
+    this.toProcessCheckbox = checkboxContainer.createEl("input", {
+      type: "checkbox",
+      attr: {
+        id: "occurrence-to-process",
+        "aria-label": "To Process",
+      },
+    }) as HTMLInputElement
+    this.toProcessCheckbox.checked = this.formData.toProcess
+    this.toProcessCheckbox.addEventListener("change", () => {
+      this.formData.toProcess = this.toProcessCheckbox.checked
+    })
+    checkboxContainer.createEl("label", {
+      text: "To Process",
+      attr: {
+        for: "occurrence-to-process",
+      },
+    })
+
     this.submitButton = buttonContainer.createEl("button", {
       text: this.occurrence ? "Update" : "Create",
       cls: "mod-cta",
@@ -256,6 +289,7 @@ export class OccurrenceModal extends Modal {
     // Update form data from inputs
     this.formData.title = this.titleInput.value.trim()
     this.formData.occurredAt = this.dateTimeSelector.getValue()
+    this.formData.toProcess = this.toProcessCheckbox.checked
 
     // Validate
     if (!this.formData.title) {
@@ -332,7 +366,7 @@ export class OccurrenceModal extends Modal {
     // Create frontmatter
     const frontmatter: Record<string, string | string[] | boolean | number> = {
       [occurredAtField]: this.formatDateForFrontmatter(occurredAt, timezoneOffset),
-      [toProcessField]: true,
+      [toProcessField]: formData.toProcess,
     }
 
     // Add tags
@@ -424,9 +458,13 @@ export class OccurrenceModal extends Modal {
     }
 
     // Get frontmatter field names from settings
+    const toProcessField = getFrontmatterFieldName("toProcess", this.plugin.settings)
     const locationField = getFrontmatterFieldName("location", this.plugin.settings)
     const participantsField = getFrontmatterFieldName("participants", this.plugin.settings)
     const topicsField = getFrontmatterFieldName("topics", this.plugin.settings)
+
+    // Update toProcess
+    updatedFrontmatter[toProcessField] = formData.toProcess
 
     // Update location
     if (formData.location) {

@@ -174,11 +174,30 @@
 
 .occurrence-modal-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   gap: 0.5rem;
   margin-top: 1.5rem;
   padding-top: 1rem;
   border-top: 1px solid var(--background-modifier-border);
+}
+
+.occurrence-modal-to-process {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.occurrence-modal-to-process input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+}
+
+.occurrence-modal-to-process label {
+  margin: 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-normal);
 }
 
 .occurrence-modal-error {
