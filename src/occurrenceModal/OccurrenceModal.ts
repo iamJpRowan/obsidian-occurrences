@@ -1,4 +1,4 @@
-import { Modal, TFile } from "obsidian"
+import { Modal, TFile, setIcon } from "obsidian"
 import OccurrencesPlugin from "@/main"
 import { OccurrenceObject } from "@/types"
 import { TagSelector } from "@/occurrencesView/components/tagSelector"
@@ -131,8 +131,13 @@ export class OccurrenceModal extends Modal {
     const locationContainer = formContainer.createEl("div", {
       cls: "occurrence-modal-field",
     })
-    locationContainer.createEl("label", {
+    const locationIcon = locationContainer.createEl("span", {
+      cls: "occurrence-modal-field-icon",
+    })
+    setIcon(locationIcon, "map-pin")
+    const locationLabel = locationContainer.createEl("label", {
       text: "Location",
+      cls: "occurrence-modal-field-label",
     })
     this.locationSelector = new SingleFileSelector(
       locationContainer,
@@ -154,8 +159,13 @@ export class OccurrenceModal extends Modal {
     const participantsContainer = formContainer.createEl("div", {
       cls: "occurrence-modal-field",
     })
-    participantsContainer.createEl("label", {
+    const participantsIcon = participantsContainer.createEl("span", {
+      cls: "occurrence-modal-field-icon",
+    })
+    setIcon(participantsIcon, "users")
+    const participantsLabel = participantsContainer.createEl("label", {
       text: "Participants",
+      cls: "occurrence-modal-field-label",
     })
     this.participantsSelector = new MultiFileSelector(
       participantsContainer,
@@ -177,8 +187,13 @@ export class OccurrenceModal extends Modal {
     const topicsContainer = formContainer.createEl("div", {
       cls: "occurrence-modal-field",
     })
-    topicsContainer.createEl("label", {
+    const topicsIcon = topicsContainer.createEl("span", {
+      cls: "occurrence-modal-field-icon",
+    })
+    setIcon(topicsIcon, "lightbulb")
+    const topicsLabel = topicsContainer.createEl("label", {
       text: "Topics",
+      cls: "occurrence-modal-field-label",
     })
     this.topicsSelector = new MultiFileSelector(
       topicsContainer,

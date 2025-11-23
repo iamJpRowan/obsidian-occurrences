@@ -42,14 +42,49 @@
 }
 
 .occurrence-modal-field {
-  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: var(--size-2-1);
+  padding: var(--size-2-1);
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: border-color var(--anim-duration-fast) ease-in-out;
 }
 
-.occurrence-modal-field label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
+.occurrence-modal-field:hover {
+  border-color: var(--background-modifier-border);
+}
+
+.occurrence-modal-field-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  padding-top: calc((var(--input-height) - var(--icon-xs)) / 2);
+}
+
+.occurrence-modal-field-icon svg {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+}
+
+.occurrence-modal-field-label {
+  display: inline-block;
+  font-weight: var(--font-normal);
+  font-size: var(--font-ui-smaller);
+  width: 100px;
+  flex-shrink: 0;
+  margin: 0;
+  color: var(--text-normal);
+  line-height: var(--input-height);
+}
+
+.occurrence-modal-field > .occurrence-modal-file-container {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
 }
 
 /* Date/Time/Timezone Input Styles - Unified Input Pattern */
@@ -219,17 +254,14 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border: 1px solid var(--background-modifier-border);
-  border-radius: 4px;
-  padding: 0.5rem;
-  background-color: var(--background-primary);
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background-color: transparent;
 }
 
 .occurrence-modal-file-input-icon {
-  display: flex;
-  align-items: center;
-  color: var(--text-muted);
-  flex-shrink: 0;
+  display: none;
 }
 
 .occurrence-modal-file-input-wrapper {
@@ -238,7 +270,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 0.25rem;
-  min-height: 32px;
+  min-height: var(--input-height);
 }
 
 .occurrence-modal-file-input {
