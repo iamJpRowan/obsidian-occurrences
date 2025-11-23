@@ -1,6 +1,6 @@
 import { App, PluginSettingTab, Setting, setIcon } from "obsidian"
 import OccurrencesPlugin from "./main"
-import { DEFAULT_SETTINGS, MAPPABLE_PROPERTIES } from "./settings"
+import { MAPPABLE_PROPERTIES } from "./settings"
 import { OccurrenceObject } from "./types"
 import { FilterMultiSelect } from "@/settingsTab/components/FilterMultiSelect"
 
@@ -218,23 +218,6 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
         )
       }
     })
-
-    // Reset to defaults button
-    new Setting(containerEl)
-      .setName("Reset to Defaults")
-      .setDesc("Reset all property mappings to their default values")
-      .addButton(button => {
-        button.setButtonText("Reset").onClick(async () => {
-          this.plugin.settings.propertyMapping = {
-            ...DEFAULT_SETTINGS.propertyMapping,
-          }
-          await this.plugin.saveSettings()
-          // Update store settings and reload to apply new mappings
-          this.plugin.occurrenceStore.updateSettings(this.plugin.settings)
-          await this.plugin.occurrenceStore.load()
-          this.display() // Refresh the UI
-        })
-      })
   }
 
   /**
