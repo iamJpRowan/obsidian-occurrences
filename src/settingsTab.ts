@@ -39,7 +39,14 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
       const setting = new Setting(containerEl)
         .setName(this.getPropertyDisplayName(property))
         .setDesc(this.getPropertyDescription(property))
-        .addText(text => {
+      
+      // Add icon to the name element (prepend so it appears before the text)
+      const iconEl = document.createElement('span')
+      iconEl.className = 'setting-item-icon'
+      setting.nameEl.prepend(iconEl)
+      setIcon(iconEl, this.getPropertyIcon(property))
+      
+      setting.addText(text => {
           text
             .setPlaceholder("Enter frontmatter field name")
             .setValue(this.plugin.settings.propertyMapping[property] || "")
@@ -299,6 +306,21 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
       tags: "The frontmatter field name for tags (array of strings)",
     }
     return descriptions[property] || `The frontmatter field name for ${property}`
+  }
+
+  /**
+   * Get an icon name for a property
+   */
+  private getPropertyIcon(property: keyof OccurrenceObject): string {
+    const icons: Record<string, string> = {
+      occurredAt: "calendar-clock",
+      toProcess: "square-check-big",
+      participants: "users",
+      topics: "lightbulb",
+      location: "map-pin",
+      tags: "tags",
+    }
+    return icons[property] || "file"
   }
 
   /**
