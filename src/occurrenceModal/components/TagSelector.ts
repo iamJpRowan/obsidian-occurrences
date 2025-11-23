@@ -10,7 +10,6 @@ export class TagSelector extends Component {
   private tagContainer: HTMLElement
   private tagInputContainer: HTMLElement
   private tagInput: HTMLInputElement
-  private tagClear: HTMLElement
   private suggestionsContainer: HTMLElement
   private suggestionsList: HTMLElement
   private inputWrapper: HTMLElement
@@ -77,15 +76,6 @@ export class TagSelector extends Component {
     }) as HTMLInputElement
     this.tagInput.classList.add("occurrence-modal-file-input")
 
-    // Create clear button
-    this.tagClear = this.inputWrapper.createEl("div", {
-      cls: "occurrence-modal-clear-button",
-      attr: {
-        "aria-label": "Clear all tags",
-      },
-    })
-    this.tagClear.style.display = "none"
-
     // Create suggestions container (matches occurrence-modal-file-suggestions-container)
     this.suggestionsContainer = this.tagContainer.createEl("div", {
       cls: "occurrence-modal-file-suggestions-container",
@@ -99,7 +89,6 @@ export class TagSelector extends Component {
     // Add event listeners
     this.registerDomEvent(this.tagInput, "input", e => {
       const target = e.target as HTMLInputElement
-      this.updateClearButton()
       this.debouncedSearchChange(target.value)
 
       // Clear tag selection when user starts typing
@@ -137,11 +126,6 @@ export class TagSelector extends Component {
 
     this.registerDomEvent(this.tagInput, "keydown", e => {
       this.handleKeydown(e)
-    })
-
-    // Add clear button event listener
-    this.registerDomEvent(this.tagClear, "click", () => {
-      this.clearAllTags()
     })
 
     // Reposition suggestions on window resize
@@ -276,7 +260,6 @@ export class TagSelector extends Component {
     if (!this.selectedTags.includes(tag)) {
       this.selectedTags.push(tag)
       this.updateSelectedTagsDisplay()
-      this.updateClearButton()
       this.tagInput.value = ""
       this.showAllTags()
       this.showSuggestions()
@@ -290,7 +273,6 @@ export class TagSelector extends Component {
   private removeTag(tag: string): void {
     this.selectedTags = this.selectedTags.filter(t => t !== tag)
     this.updateSelectedTagsDisplay()
-    this.updateClearButton()
     this.onTagsChange([...this.selectedTags])
   }
 
@@ -567,25 +549,6 @@ export class TagSelector extends Component {
   }
 
   /**
-   * Update clear button visibility
-   */
-  private updateClearButton(): void {
-    this.tagClear.style.display = this.selectedTags.length > 0 ? "flex" : "none"
-  }
-
-  /**
-   * Clear all selected tags
-   */
-  private clearAllTags(): void {
-    this.selectedTags = []
-    this.selectedTagIndex = -1
-    this.updateSelectedTagsDisplay()
-    this.updateClearButton()
-    this.hideSuggestions()
-    this.onTagsChange([])
-  }
-
-  /**
    * Show suggestions container
    */
   private showSuggestions(): void {
@@ -688,7 +651,6 @@ export class TagSelector extends Component {
     this.selectedTags = [...tags]
     this.selectedTagIndex = -1
     this.updateSelectedTagsDisplay()
-    this.updateClearButton()
     this.onTagsChange([...this.selectedTags])
   }
 
