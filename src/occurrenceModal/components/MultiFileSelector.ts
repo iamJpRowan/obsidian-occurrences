@@ -30,7 +30,9 @@ export class MultiFileSelector extends Component {
   private selectedFiles: string[] = [] // Store basenames
   private suggestions: FileSuggestion[] = []
   private selectedSuggestionIndex: number = -1
+  private selectedFileIndex: number = -1
   private visible: boolean = false
+  private suggestionsVisible: boolean = false
 
   constructor(
     container: HTMLElement,
@@ -100,12 +102,17 @@ export class MultiFileSelector extends Component {
     this.registerDomEvent(this.fileInput, "input", e => {
       const target = e.target as HTMLInputElement
       this.debouncedSearchChange(target.value)
+      
+      // Clear file selection when user starts typing
+      if (target.value.trim().length > 0) {
+        this.clearFileSelection()
+      }
     })
 
     this.registerDomEvent(this.fileInput, "focus", () => {
-      this.showSuggestions()
-      if (this.fileInput.value === "") {
-        this.showAllFiles()
+      // Only show suggestions if user has started typing
+      if (this.fileInput.value.trim().length > 0) {
+        this.showSuggestions()
       }
     })
 
@@ -263,8 +270,8 @@ export class MultiFileSelector extends Component {
       this.selectedFiles.push(basename)
       this.updateSelectedFilesDisplay()
       this.fileInput.value = ""
-      this.showAllFiles()
-      this.showSuggestions()
+      this.clearFileSelection()
+      this.hideSuggestions()
       this.onFilesChange([...this.selectedFiles])
     }
   }
@@ -316,6 +323,9 @@ export class MultiFileSelector extends Component {
 
     // Update placeholder
     this.updatePlaceholder()
+
+    // Update file highlight for keyboard navigation
+    this.updateFileHighlight()
   }
 
   /**
@@ -333,34 +343,88 @@ export class MultiFileSelector extends Component {
    * Handle keyboard navigation
    */
   private handleKeydown(e: KeyboardEvent): void {
-    if (this.suggestionsContainer.style.display === "none") return
+    const hasText = this.fileInput.value.trim().length > 0
 
-    switch (e.key) {
-      case "ArrowDown":
-        e.preventDefault()
-        this.selectedSuggestionIndex = Math.min(
-          this.selectedSuggestionIndex + 1,
-          this.suggestions.length - 1
-        )
-        this.updateSuggestionHighlight()
-        break
-      case "ArrowUp":
-        e.preventDefault()
-        this.selectedSuggestionIndex = Math.max(
-          this.selectedSuggestionIndex - 1,
-          -1
-        )
-        this.updateSuggestionHighlight()
-        break
-      case "Enter":
-        e.preventDefault()
-        if (this.selectedSuggestionIndex >= 0) {
-          this.selectSuggestion(this.selectedSuggestionIndex)
-        }
-        break
-      case "Escape":
-        this.hideSuggestions()
-        break
+    // Handle file navigation when suggestions are hidden, we have selected files, and input is empty
+    if (!this.suggestionsVisible && this.selectedFiles.length > 0 && !hasText) {
+      switch (e.key) {
+        case "ArrowLeft":
+          e.preventDefault()
+          this.navigateToPreviousFile()
+          break
+        case "ArrowRight":
+          e.preventDefault()
+          this.navigateToNextFile()
+          break
+        case "Backspace":
+          e.preventDefault()
+          this.handleFileRemoval()
+          break
+        case "Delete":
+          e.preventDefault()
+          this.handleFileRemoval()
+          break
+        case "Escape":
+          this.clearFileSelection()
+          break
+      }
+      return
+    }
+
+    // Handle suggestion navigation when suggestions are visible
+    if (this.suggestionsVisible) {
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault()
+          this.selectedSuggestionIndex = Math.min(
+            this.selectedSuggestionIndex + 1,
+            this.suggestions.length - 1
+          )
+          this.updateSuggestionHighlight()
+          break
+        case "ArrowUp":
+          e.preventDefault()
+          this.selectedSuggestionIndex = Math.max(
+            this.selectedSuggestionIndex - 1,
+            -1
+          )
+          this.updateSuggestionHighlight()
+          break
+        case "Enter":
+          e.preventDefault()
+          if (this.selectedSuggestionIndex >= 0) {
+            this.selectSuggestion(this.selectedSuggestionIndex)
+          }
+          break
+        case "Escape":
+          this.hideSuggestions()
+          break
+        // Only handle file navigation when input is empty
+        case "ArrowLeft":
+          if (!hasText) {
+            e.preventDefault()
+            this.navigateToPreviousFile()
+          }
+          break
+        case "ArrowRight":
+          if (!hasText) {
+            e.preventDefault()
+            this.navigateToNextFile()
+          }
+          break
+        case "Backspace":
+          if (!hasText) {
+            e.preventDefault()
+            this.handleFileRemoval()
+          }
+          break
+        case "Delete":
+          if (!hasText) {
+            e.preventDefault()
+            this.handleFileRemoval()
+          }
+          break
+      }
     }
   }
 
@@ -381,10 +445,97 @@ export class MultiFileSelector extends Component {
   }
 
   /**
+   * Navigate to the previous file
+   */
+  private navigateToPreviousFile(): void {
+    if (this.selectedFiles.length === 0) return
+
+    if (this.selectedFileIndex === -1) {
+      // Start from the last file
+      this.selectedFileIndex = this.selectedFiles.length - 1
+    } else {
+      // Move to previous file
+      this.selectedFileIndex = Math.max(0, this.selectedFileIndex - 1)
+    }
+
+    this.updateFileHighlight()
+  }
+
+  /**
+   * Navigate to the next file
+   */
+  private navigateToNextFile(): void {
+    if (this.selectedFiles.length === 0) return
+
+    if (this.selectedFileIndex === -1) {
+      // Start from the first file
+      this.selectedFileIndex = 0
+    } else {
+      // Move to next file
+      this.selectedFileIndex = Math.min(
+        this.selectedFiles.length - 1,
+        this.selectedFileIndex + 1
+      )
+    }
+
+    this.updateFileHighlight()
+  }
+
+  /**
+   * Handle file removal via keyboard
+   */
+  private handleFileRemoval(): void {
+    if (this.selectedFiles.length === 0) return
+
+    // If no file is selected, select the last one
+    if (this.selectedFileIndex === -1) {
+      this.selectedFileIndex = this.selectedFiles.length - 1
+      this.updateFileHighlight()
+      return
+    }
+
+    // Remove the currently selected file
+    const fileToRemove = this.selectedFiles[this.selectedFileIndex]
+    this.removeFile(fileToRemove)
+
+    // Adjust the selected index
+    if (this.selectedFiles.length === 0) {
+      this.selectedFileIndex = -1
+    } else if (this.selectedFileIndex >= this.selectedFiles.length) {
+      this.selectedFileIndex = this.selectedFiles.length - 1
+    }
+
+    this.updateFileHighlight()
+  }
+
+  /**
+   * Clear file selection
+   */
+  private clearFileSelection(): void {
+    this.selectedFileIndex = -1
+    this.updateFileHighlight()
+  }
+
+  /**
+   * Update file highlight for keyboard navigation
+   */
+  private updateFileHighlight(): void {
+    const filePills = this.inputWrapper.querySelectorAll(".occurrence-modal-file-pill")
+    filePills.forEach((pill, index) => {
+      if (index === this.selectedFileIndex) {
+        pill.addClass("is-keyboard-selected")
+      } else {
+        pill.removeClass("is-keyboard-selected")
+      }
+    })
+  }
+
+  /**
    * Show suggestions container
    */
   private showSuggestions(): void {
     this.suggestionsContainer.style.display = "block"
+    this.suggestionsVisible = true
   }
 
   /**
@@ -392,6 +543,7 @@ export class MultiFileSelector extends Component {
    */
   private hideSuggestions(): void {
     this.suggestionsContainer.style.display = "none"
+    this.suggestionsVisible = false
     this.selectedSuggestionIndex = -1
   }
 
@@ -407,6 +559,7 @@ export class MultiFileSelector extends Component {
    */
   public setValue(basenames: string[]): void {
     this.selectedFiles = [...basenames]
+    this.selectedFileIndex = -1
     this.updateSelectedFilesDisplay()
     this.onFilesChange([...this.selectedFiles])
   }
