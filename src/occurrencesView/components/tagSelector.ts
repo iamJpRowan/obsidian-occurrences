@@ -702,6 +702,11 @@ export class TagSelector extends Component {
     // Calculate optimal width (match input container width)
     const width = inputRect.width
 
+    // Get the actual height of the suggestions list (not the max height)
+    const actualHeight = this.suggestionsList.scrollHeight
+    const maxHeight = 300 // matches max-height in CSS
+    const containerHeight = Math.min(actualHeight, maxHeight)
+
     // Calculate top position (directly below input, no offset)
     let top = inputRect.bottom + 4
 
@@ -719,10 +724,9 @@ export class TagSelector extends Component {
     }
 
     // Check if suggestions would overflow bottom of viewport
-    const maxHeight = 300 // matches max-height in CSS
-    if (top + maxHeight > viewportHeight) {
-      // Position above the input instead
-      top = inputRect.top - maxHeight - 4
+    if (top + containerHeight > viewportHeight) {
+      // Position above the input instead, anchoring bottom of container to top of input
+      top = inputRect.top - containerHeight - 4
 
       // If still not enough room, position at top of viewport
       if (top < 8) {
