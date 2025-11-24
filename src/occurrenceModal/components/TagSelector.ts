@@ -110,9 +110,9 @@ export class TagSelector extends Component {
     })
 
     this.registerDomEvent(this.tagInput, "focus", () => {
-      this.showSuggestions()
-      if (this.tagInput.value === "") {
-        this.showAllTags()
+      // Only show suggestions if user has started typing
+      if (this.tagInput.value.trim().length > 0) {
+        this.showSuggestions()
       }
     })
 
@@ -163,7 +163,7 @@ export class TagSelector extends Component {
    */
   private filterTags(query: string): void {
     if (!query.trim()) {
-      this.showAllTags()
+      this.hideSuggestions()
       return
     }
 
@@ -254,8 +254,7 @@ export class TagSelector extends Component {
       this.selectedTags.push(tag)
       this.updateSelectedTagsDisplay()
       this.tagInput.value = ""
-      this.showAllTags()
-      this.showSuggestions()
+      this.hideSuggestions()
       this.onTagsChange([...this.selectedTags])
     }
   }

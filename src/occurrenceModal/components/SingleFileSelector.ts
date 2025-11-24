@@ -113,9 +113,9 @@ export class SingleFileSelector extends Component {
     })
 
     this.registerDomEvent(this.fileInput, "focus", () => {
-      this.showSuggestions()
-      if (this.fileInput.value === "") {
-        this.showAllFiles()
+      // Only show suggestions if user has started typing
+      if (this.fileInput.value.trim().length > 0) {
+        this.showSuggestions()
       }
     })
 
@@ -150,7 +150,7 @@ export class SingleFileSelector extends Component {
    */
   private searchFiles(query: string): void {
     if (!query.trim()) {
-      this.showAllFiles()
+      this.hideSuggestions()
       return
     }
 
