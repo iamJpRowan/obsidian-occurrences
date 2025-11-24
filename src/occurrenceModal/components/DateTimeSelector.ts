@@ -239,42 +239,33 @@ export class DateTimeSelector extends Component {
   /**
    * Convert a Date object to datetime-local format string for display
    * The Date object stores UTC internally. We want to show the local time in the selected timezone.
-   * datetime-local always works in the browser's local timezone, so we need to convert:
-   * UTC -> selected timezone local time -> browser local time
+   * The datetime-local input will interpret the value as being in the browser's local timezone,
+   * but updateDate() treats it as if it's in the selected timezone, so we just need to extract
+   * the local time components from the selected timezone.
    * 
    * @param date The date to convert (UTC internally)
    * @param timezoneOffset Timezone offset string (e.g., "+05:00" or "-08:00")
-   * @returns Datetime-local format string in user's browser timezone, or null if timezone is invalid
+   * @returns Datetime-local format string with local time components from selected timezone, or null if timezone is invalid
    */
   private dateToLocalString(date: Date, timezoneOffset: string): string | null {
     const selectedOffsetMinutes = parseTimezoneOffset(timezoneOffset)
     if (selectedOffsetMinutes === null) return null
 
-    // Get the user's browser local timezone offset
-    const browserOffsetMinutes = new Date().getTimezoneOffset()
-    const browserOffsetString = timezoneOffsetToISOString(browserOffsetMinutes)
-    const browserOffsetParsed = parseTimezoneOffset(browserOffsetString)
-    if (browserOffsetParsed === null) return null
-
-    // Step 1: Convert UTC to selected timezone's local time
+    // Convert UTC to selected timezone's local time
     // date.getTime() is UTC milliseconds
-    // To get local time in selected timezone: subtract the offset (offset is negative for timezones behind UTC)
-    // Example: UTC 22:56, UTC-8 -> 14:56 (22:56 - 8 hours)
-    const selectedTimezoneLocalMs = date.getTime() - selectedOffsetMinutes * 60000
+    // To get local time in selected timezone: add the offset
+    // Example: UTC 09:00, UTC+5 -> 14:00 (09:00 + 5 hours)
+    // selectedOffsetMinutes is positive for timezones ahead of UTC (e.g., +300 for UTC+5)
+    const selectedTimezoneLocalMs = date.getTime() + selectedOffsetMinutes * 60000
     const selectedTimezoneLocalDate = new Date(selectedTimezoneLocalMs)
     
-    // Step 2: Convert selected timezone local time to browser's local timezone for display
-    // Calculate the difference: if selected is UTC-8 and browser is UTC-8, no change
-    // If selected is UTC-8 and browser is UTC+5, we need to add 13 hours
-    const timezoneDiff = selectedOffsetMinutes - browserOffsetParsed
-    const browserLocalMs = selectedTimezoneLocalMs - timezoneDiff * 60000
-    const browserLocalDate = new Date(browserLocalMs)
-    
-    const year = browserLocalDate.getFullYear()
-    const month = String(browserLocalDate.getMonth() + 1).padStart(2, "0")
-    const day = String(browserLocalDate.getDate()).padStart(2, "0")
-    const hours = String(browserLocalDate.getHours()).padStart(2, "0")
-    const minutes = String(browserLocalDate.getMinutes()).padStart(2, "0")
+    // Extract the local time components from the selected timezone
+    // Use UTC methods because we've already adjusted for the timezone offset
+    const year = selectedTimezoneLocalDate.getUTCFullYear()
+    const month = String(selectedTimezoneLocalDate.getUTCMonth() + 1).padStart(2, "0")
+    const day = String(selectedTimezoneLocalDate.getUTCDate()).padStart(2, "0")
+    const hours = String(selectedTimezoneLocalDate.getUTCHours()).padStart(2, "0")
+    const minutes = String(selectedTimezoneLocalDate.getUTCMinutes()).padStart(2, "0")
     
     return `${year}-${month}-${day}T${hours}:${minutes}`
   }
