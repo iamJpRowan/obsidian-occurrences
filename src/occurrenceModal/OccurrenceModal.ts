@@ -235,40 +235,30 @@ export class OccurrenceModal extends Modal {
       this.tagSelector.setValue(this.formData.tags)
     }
 
-    // Submit button and To Process checkbox
-    const buttonContainer = formContainer.createEl("div", {
-      cls: "occurrence-modal-actions",
+    // To Process field
+    const toProcessContainer = formContainer.createEl("div", {
+      cls: "occurrence-modal-field",
     })
-    
-    // To Process checkbox
-    const checkboxContainer = buttonContainer.createEl("div", {
+    const toProcessIcon = toProcessContainer.createEl("span", {
+      cls: "occurrence-modal-field-icon",
+    })
+    setIcon(toProcessIcon, "square-check-big")
+    toProcessContainer.createEl("label", {
+      text: "To Process",
+      cls: "occurrence-modal-field-label",
+    })
+    const toProcessCheckboxContainer = toProcessContainer.createEl("div", {
       cls: "occurrence-modal-to-process",
     })
-    this.toProcessCheckbox = checkboxContainer.createEl("input", {
+    this.toProcessCheckbox = toProcessCheckboxContainer.createEl("input", {
       type: "checkbox",
       attr: {
         id: "occurrence-to-process",
-        "aria-label": "To Process",
       },
     }) as HTMLInputElement
     this.toProcessCheckbox.checked = this.formData.toProcess
     this.toProcessCheckbox.addEventListener("change", () => {
       this.formData.toProcess = this.toProcessCheckbox.checked
-    })
-    checkboxContainer.createEl("label", {
-      text: "To Process",
-      attr: {
-        for: "occurrence-to-process",
-      },
-    })
-
-    this.submitButton = buttonContainer.createEl("button", {
-      text: this.occurrence ? "Update Occurrence" : "Create Occurrence",
-      cls: "mod-cta",
-    }) as HTMLButtonElement
-
-    this.submitButton.addEventListener("click", () => {
-      this.handleSubmit()
     })
 
     // Create error message container (at bottom of form)
@@ -286,6 +276,19 @@ export class OccurrenceModal extends Modal {
     // Create text container for error message
     this.errorMessage.createEl("span", {
       cls: "occurrence-modal-error-text",
+    })
+
+    // Submit button
+    const buttonContainer = formContainer.createEl("div", {
+      cls: "occurrence-modal-actions",
+    })
+    this.submitButton = buttonContainer.createEl("button", {
+      text: this.occurrence ? "Update Occurrence" : "Create Occurrence",
+      cls: "mod-cta",
+    }) as HTMLButtonElement
+
+    this.submitButton.addEventListener("click", () => {
+      this.handleSubmit()
     })
 
     // Add keyboard handler for Cmd+Enter / Ctrl+Enter
