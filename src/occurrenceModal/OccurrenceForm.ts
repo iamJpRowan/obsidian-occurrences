@@ -1,6 +1,7 @@
-import { Modal, TFile, setIcon } from "obsidian"
+import { ItemView, TFile, WorkspaceLeaf, setIcon } from "obsidian"
 import OccurrencesPlugin from "@/main"
 import { OccurrenceObject } from "@/types"
+import { OccurrenceFormData } from "./OccurrenceModal"
 import { TagSelector } from "./components/TagSelector"
 import { SingleFileSelector } from "./components/SingleFileSelector"
 import { MultiFileSelector } from "./components/MultiFileSelector"
@@ -9,17 +10,13 @@ import { getFrontmatterFieldName } from "@/settings"
 import { extractTimezoneFromISOString } from "./utils/timezoneUtils"
 import { OccurrenceFileOperations } from "./utils/occurrenceFileOperations"
 
-export interface OccurrenceFormData {
-  title: string
-  occurredAt: Date | null
-  tags: string[]
-  location: string | null
-  participants: string[]
-  topics: string[]
-  toProcess: boolean
-}
+export const OCCURRENCE_FORM_VIEW = "occurrence-form-view"
 
-export class OccurrenceModal extends Modal {
+/**
+ * Full-screen view for creating/editing occurrences on mobile
+ * Uses ItemView pattern that works well with mobile keyboard
+ */
+export class OccurrenceForm extends ItemView {
   private plugin: OccurrencesPlugin
   private occurrence: OccurrenceObject | null
   private formData: OccurrenceFormData
@@ -33,18 +30,17 @@ export class OccurrenceModal extends Modal {
   private toProcessCheckbox: HTMLInputElement
   private errorMessage: HTMLElement
   private isSubmitting: boolean = false
-  private keyboardHandler: (e: KeyboardEvent) => void
 
   constructor(
+    leaf: WorkspaceLeaf,
     plugin: OccurrencesPlugin,
     occurrence: OccurrenceObject | null = null
   ) {
-    super(plugin.app)
+    super(leaf)
     this.plugin = plugin
     this.occurrence = occurrence
 
     // Initialize form data from occurrence or defaults
-    // Extract basenames from link targets (assume targets are basenames)
     this.formData = {
       title: occurrence?.title || "",
       occurredAt: occurrence?.occurredAt || new Date(),
@@ -59,10 +55,24 @@ export class OccurrenceModal extends Modal {
     }
   }
 
-  onOpen() {
-    const { contentEl } = this
-    contentEl.empty()
-    contentEl.addClass("occurrence-modal")
+  getViewType(): string {
+    return OCCURRENCE_FORM_VIEW
+  }
+
+  getDisplayText(): string {
+    return this.occurrence ? "Edit Occurrence" : "Create Occurrence"
+  }
+
+  getIcon(): string {
+    return "calendar-range"
+  }
+
+  async onOpen(): Promise<void> {
+    const container = this.containerEl.children[1] as HTMLElement
+    if (!container) return
+
+    container.empty()
+    container.addClass("occurrence-form-view")
 
     // Parse timezone offset and toProcess from frontmatter if editing an existing occurrence
     let savedTimezoneOffset: string | null = null
@@ -71,7 +81,7 @@ export class OccurrenceModal extends Modal {
       const frontmatter = fileCache?.frontmatter ?? {}
       const occurredAtField = getFrontmatterFieldName("occurredAt", this.plugin.settings)
       const occurredAtValue = frontmatter[occurredAtField]
-      
+
       if (occurredAtValue && typeof occurredAtValue === "string") {
         savedTimezoneOffset = extractTimezoneFromISOString(occurredAtValue)
       }
@@ -84,9 +94,14 @@ export class OccurrenceModal extends Modal {
       }
     }
 
-    // Title field (header-style)
-    const titleContainer = contentEl.createEl("div", {
-      cls: "occurrence-modal-title-header",
+    // Header with title field and close button
+    const header = container.createEl("div", {
+      cls: "occurrence-form-view-header",
+    })
+
+    // Title field (main header)
+    const titleContainer = header.createEl("div", {
+      cls: "occurrence-form-view-title-header",
     })
     this.titleInput = titleContainer.createEl("input", {
       type: "text",
@@ -98,12 +113,27 @@ export class OccurrenceModal extends Modal {
     }) as HTMLInputElement
     this.titleInput.value = this.formData.title
 
-    // Create form container
-    const formContainer = contentEl.createEl("div", {
-      cls: "occurrence-modal-form",
+    // Focus the title field when form opens (use requestAnimationFrame to ensure DOM is ready)
+    requestAnimationFrame(() => {
+      this.titleInput.focus()
     })
 
-    // Occurred At field - restructured to match other fields
+    // Close button (X)
+    const closeButton = header.createEl("button", {
+      cls: "clickable-icon",
+      attr: { "aria-label": "Close" },
+    })
+    setIcon(closeButton, "x")
+    closeButton.addEventListener("click", () => {
+      this.leaf.detach()
+    })
+
+    // Form container (scrollable)
+    const formContainer = container.createEl("div", {
+      cls: "occurrence-form-view-form",
+    })
+
+    // Occurred At field
     const occurredAtContainer = formContainer.createEl("div", {
       cls: "occurrence-modal-field",
     })
@@ -139,7 +169,7 @@ export class OccurrenceModal extends Modal {
     })
     this.locationSelector = new SingleFileSelector(
       locationContainer,
-      this.app,
+      this.plugin.app,
       (basename: string | null) => {
         this.formData.location = basename
       },
@@ -167,7 +197,7 @@ export class OccurrenceModal extends Modal {
     })
     this.participantsSelector = new MultiFileSelector(
       participantsContainer,
-      this.app,
+      this.plugin.app,
       (basenames: string[]) => {
         this.formData.participants = basenames
       },
@@ -195,7 +225,7 @@ export class OccurrenceModal extends Modal {
     })
     this.topicsSelector = new MultiFileSelector(
       topicsContainer,
-      this.app,
+      this.plugin.app,
       (basenames: string[]) => {
         this.formData.topics = basenames
       },
@@ -226,94 +256,64 @@ export class OccurrenceModal extends Modal {
       this.plugin.occurrenceStore,
       (tags: string[]) => {
         this.formData.tags = tags
-      },
-      {
-        placeholder: "Add tags...",
       }
     )
     if (this.formData.tags.length > 0) {
       this.tagSelector.setValue(this.formData.tags)
     }
 
-    // Submit button and To Process checkbox
-    const buttonContainer = formContainer.createEl("div", {
-      cls: "occurrence-modal-actions",
+    // To Process field
+    const toProcessContainer = formContainer.createEl("div", {
+      cls: "occurrence-modal-field",
     })
-    
-    // To Process checkbox
-    const checkboxContainer = buttonContainer.createEl("div", {
+    const toProcessIcon = toProcessContainer.createEl("span", {
+      cls: "occurrence-modal-field-icon",
+    })
+    setIcon(toProcessIcon, "square-check-big")
+    toProcessContainer.createEl("label", {
+      text: "To Process",
+      cls: "occurrence-modal-field-label",
+    })
+    const toProcessCheckboxContainer = toProcessContainer.createEl("div", {
       cls: "occurrence-modal-to-process",
     })
-    this.toProcessCheckbox = checkboxContainer.createEl("input", {
+    this.toProcessCheckbox = toProcessCheckboxContainer.createEl("input", {
       type: "checkbox",
       attr: {
         id: "occurrence-to-process",
-        "aria-label": "To Process",
       },
     }) as HTMLInputElement
     this.toProcessCheckbox.checked = this.formData.toProcess
     this.toProcessCheckbox.addEventListener("change", () => {
       this.formData.toProcess = this.toProcessCheckbox.checked
     })
-    checkboxContainer.createEl("label", {
-      text: "To Process",
-      attr: {
-        for: "occurrence-to-process",
-      },
-    })
 
-    this.submitButton = buttonContainer.createEl("button", {
-      text: this.occurrence ? "Update Occurrence" : "Create Occurrence",
-      cls: "mod-cta",
-    }) as HTMLButtonElement
-
-    this.submitButton.addEventListener("click", () => {
-      this.handleSubmit()
-    })
-
-    // Create error message container (at bottom of form)
+    // Error message container (at bottom, above submit button)
     this.errorMessage = formContainer.createEl("div", {
       cls: "occurrence-modal-error",
     })
-    this.errorMessage.style.display = "none"
-    
-    // Create icon container for error
+    // Start hidden but reserve space
+    this.hideError()
+
     const errorIcon = this.errorMessage.createEl("span", {
       cls: "occurrence-modal-error-icon",
     })
     setIcon(errorIcon, "circle-alert")
-    
-    // Create text container for error message
+
     this.errorMessage.createEl("span", {
       cls: "occurrence-modal-error-text",
     })
 
-    // Add keyboard handler for Cmd+Enter / Ctrl+Enter
-    this.keyboardHandler = (e: KeyboardEvent) => {
-      if (
-        e.key === "Enter" &&
-        (e.metaKey || e.ctrlKey) &&
-        !this.isSubmitting
-      ) {
-        e.preventDefault()
-        this.handleSubmit()
-      }
-    }
-    document.addEventListener("keydown", this.keyboardHandler)
-
-    // Focus title input on open
-    setTimeout(() => {
-      this.titleInput.focus()
-      // If creating new occurrence and title is empty, submit on Enter
-      if (!this.occurrence && this.titleInput.value === "") {
-        this.titleInput.addEventListener("keydown", (e: KeyboardEvent) => {
-          if (e.key === "Enter" && !this.isSubmitting) {
-            e.preventDefault()
-            this.handleSubmit()
-          }
-        })
-      }
-    }, 100)
+    // Submit button (inside scrollable form)
+    this.submitButton = formContainer.createEl("button", {
+      cls: "mod-cta",
+      text: this.occurrence ? "Update Occurrence" : "Create Occurrence",
+    })
+    this.submitButton.style.marginTop = "2rem"
+    this.submitButton.style.width = "100%"
+    this.submitButton.addEventListener("click", () => {
+      this.handleSubmit()
+    })
   }
 
   private async handleSubmit(): Promise<void> {
@@ -335,19 +335,18 @@ export class OccurrenceModal extends Modal {
       return
     }
 
+    this.hideError()
     this.isSubmitting = true
     this.submitButton.disabled = true
     this.submitButton.textContent = this.occurrence ? "Updating..." : "Creating..."
-    this.hideError()
 
     try {
       const timezoneOffset = this.dateTimeSelector.getTimezoneOffset()
       let file: TFile
-
       if (this.occurrence) {
         // Update existing occurrence
         file = await OccurrenceFileOperations.updateOccurrence(
-          this.app,
+          this.plugin.app,
           this.plugin,
           this.occurrence,
           this.formData,
@@ -356,22 +355,24 @@ export class OccurrenceModal extends Modal {
       } else {
         // Create new occurrence
         file = await OccurrenceFileOperations.createOccurrence(
-          this.app,
+          this.plugin.app,
           this.plugin,
           this.formData,
           timezoneOffset
         )
         // Open the newly created file in the editor
-        await this.app.workspace.openLinkText(file.path, "", false)
+        await this.plugin.app.workspace.openLinkText(file.path, "", false)
       }
 
-      // Close modal on success
-      this.close()
+      // Close the view
+      this.leaf.detach()
     } catch (error) {
-      this.showError(error instanceof Error ? error.message : "An error occurred")
-      this.isSubmitting = false
+      console.error("Failed to save occurrence:", error)
+      this.showError(error instanceof Error ? error.message : "Failed to save occurrence")
       this.submitButton.disabled = false
       this.submitButton.textContent = this.occurrence ? "Update Occurrence" : "Create Occurrence"
+    } finally {
+      this.isSubmitting = false
     }
   }
 
@@ -380,20 +381,27 @@ export class OccurrenceModal extends Modal {
     if (errorText) {
       errorText.textContent = message
     }
-    this.errorMessage.style.display = "flex"
+    // Show error by making it visible
+    this.errorMessage.style.visibility = "visible"
+    this.errorMessage.style.opacity = "1"
+    this.errorMessage.style.minHeight = "auto"
   }
 
   private hideError(): void {
-    this.errorMessage.style.display = "none"
+    // Hide error but reserve space
+    this.errorMessage.style.visibility = "hidden"
+    this.errorMessage.style.opacity = "0"
+    this.errorMessage.style.minHeight = "1.5rem" // Reserve space for error message
+    const errorText = this.errorMessage.querySelector(".occurrence-modal-error-text")
+    if (errorText) {
+      errorText.textContent = ""
+    }
   }
 
-  onClose() {
-    const { contentEl } = this
-    contentEl.empty()
-    
-    // Remove keyboard event listener
-    if (this.keyboardHandler) {
-      document.removeEventListener("keydown", this.keyboardHandler)
+  async onClose(): Promise<void> {
+    const container = this.containerEl.children[1] as HTMLElement
+    if (container) {
+      container.empty()
     }
   }
 }

@@ -53,9 +53,9 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
       // Prevent default to avoid any unwanted behavior
       event.preventDefault()
 
-      // Check if Option/Alt key is pressed for update modal
+      // Check if Option/Alt key is pressed for update form
       if (event.altKey) {
-        new OccurrenceModal(this.plugin, this.occurrence).open()
+        this.plugin.openOccurrenceForm(this.occurrence)
         return
       }
 
@@ -89,11 +89,7 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
         .setTitle("Edit")
         .setIcon("pencil")
         .onClick(() => {
-          try {
-            new OccurrenceModal(this.plugin, this.occurrence).open()
-          } catch (error) {
-            console.error("Failed to update Occurrence:", error)
-          }
+          this.plugin.openOccurrenceForm(this.occurrence)
         })
     })
     // Open file option

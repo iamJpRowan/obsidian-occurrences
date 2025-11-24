@@ -24,7 +24,6 @@ export class TagSelector extends Component {
   private selectedTagIndex: number = -1
   private visible: boolean = false
   private suggestionsVisible: boolean = false
-  private scrollListener: ((e: Event) => void) | null = null
   private cachedSingleLineHeight: number | null = null
 
   constructor(
@@ -128,12 +127,6 @@ export class TagSelector extends Component {
       this.handleKeydown(e)
     })
 
-    // Reposition suggestions on window resize
-    this.registerDomEvent(window, "resize", () => {
-      if (this.suggestionsVisible) {
-        this.updateSuggestionsPosition()
-      }
-    })
 
     // Add delegated click handler for all suggestions
     this.registerDomEvent(this.suggestionsList, "click", e => {
@@ -315,11 +308,6 @@ export class TagSelector extends Component {
 
     // Update tag highlight for keyboard navigation
     this.updateTagHighlight()
-
-    // Update suggestions position if they're visible
-    if (this.suggestionsVisible) {
-      this.updateSuggestionsPosition()
-    }
   }
 
   /**
@@ -552,74 +540,8 @@ export class TagSelector extends Component {
    * Show suggestions container
    */
   private showSuggestions(): void {
-    this.updateSuggestionsPosition()
     this.suggestionsContainer.style.display = "block"
     this.suggestionsVisible = true
-
-    // Add scroll listener only when suggestions are visible
-    if (!this.scrollListener) {
-      this.scrollListener = (e: Event) => {
-        // Don't hide if scrolling within the suggestions container
-        if (this.suggestionsContainer.contains(e.target as Node)) {
-          return
-        }
-        this.hideSuggestions()
-      }
-      window.addEventListener("scroll", this.scrollListener, true)
-    }
-  }
-
-  /**
-   * Update suggestions container position
-   */
-  private updateSuggestionsPosition(): void {
-    // Get the input container's position
-    const inputRect = this.tagInputContainer.getBoundingClientRect()
-
-    // Get viewport dimensions
-    const viewportWidth = window.innerWidth
-    const viewportHeight = window.innerHeight
-
-    // Calculate optimal width (match input container width)
-    const width = inputRect.width
-
-    // Get the actual height of the suggestions list (not the max height)
-    const actualHeight = this.suggestionsList.scrollHeight
-    const maxHeight = 300 // matches max-height in CSS
-    const containerHeight = Math.min(actualHeight, maxHeight)
-
-    // Calculate top position (directly below input, no offset)
-    let top = inputRect.bottom + 4
-
-    // Calculate left position (align with input container, no offset)
-    let left = inputRect.left
-
-    // Prevent overflow on the right
-    if (left + width > viewportWidth) {
-      left = viewportWidth - width - 8 // 8px margin from edge
-    }
-
-    // Prevent overflow on the left
-    if (left < 8) {
-      left = 8
-    }
-
-    // Check if suggestions would overflow bottom of viewport
-    if (top + containerHeight > viewportHeight) {
-      // Position above the input instead, anchoring bottom of container to top of input
-      top = inputRect.top - containerHeight - 4
-
-      // If still not enough room, position at top of viewport
-      if (top < 8) {
-        top = 8
-      }
-    }
-
-    // Apply positioning
-    this.suggestionsContainer.style.top = `${top}px`
-    this.suggestionsContainer.style.left = `${left}px`
-    this.suggestionsContainer.style.width = `${width}px`
-    this.suggestionsContainer.style.position = "fixed"
   }
 
   /**
@@ -629,12 +551,6 @@ export class TagSelector extends Component {
     this.suggestionsContainer.style.display = "none"
     this.suggestionsVisible = false
     this.selectedSuggestionIndex = -1
-
-    // Remove scroll listener when suggestions are hidden
-    if (this.scrollListener) {
-      window.removeEventListener("scroll", this.scrollListener, true)
-      this.scrollListener = null
-    }
   }
 
   /**
@@ -676,11 +592,7 @@ export class TagSelector extends Component {
    * Clean up when component is destroyed
    */
   onunload(): void {
-    // Remove scroll listener
-    if (this.scrollListener) {
-      window.removeEventListener("scroll", this.scrollListener, true)
-      this.scrollListener = null
-    }
+    // Cleanup handled by Component base class
   }
 }
 

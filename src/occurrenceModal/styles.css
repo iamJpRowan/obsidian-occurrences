@@ -8,7 +8,9 @@
   padding: 0.25rem 1rem 1rem 1rem;
 }
 
-.occurrence-modal-title-header input {
+/* Shared title input styles for modal and form */
+.occurrence-modal-title-header input,
+.occurrence-form-view-title-header input {
   width: 100%;
   border: none;
   background: transparent;
@@ -22,12 +24,14 @@
   font-family: inherit;
 }
 
-.occurrence-modal-title-header input::placeholder {
+.occurrence-modal-title-header input::placeholder,
+.occurrence-form-view-title-header input::placeholder {
   color: var(--text-muted);
   opacity: 1;
 }
 
-.occurrence-modal-title-header input:focus {
+.occurrence-modal-title-header input:focus,
+.occurrence-form-view-title-header input:focus {
   outline: none;
   box-shadow: none;
   background: transparent;
@@ -36,6 +40,46 @@
 
 .occurrence-modal-form {
   padding: 0 1rem 1rem 1rem;
+}
+
+/* Occurrence Form View Styles (Mobile ItemView) */
+.occurrence-form-view {
+  position: relative;
+  /* Make entire container scrollable like settings tab */
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  -webkit-overflow-scrolling: touch;
+}
+
+.occurrence-form-view-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  flex-shrink: 0;
+  background: var(--background-primary);
+  /* Sticky header when scrolling */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.occurrence-form-view-title-header {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.occurrence-form-view-form {
+  /* Remove overflow - let parent container handle scrolling */
+  padding: 1rem;
+  padding-bottom: 2rem; /* Extra space for keyboard */
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  /* Let content determine height naturally */
 }
 
 .occurrence-modal-field {
@@ -67,14 +111,15 @@
 }
 
 .occurrence-modal-field-label {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   font-weight: var(--font-normal);
   font-size: var(--font-ui-smaller);
   width: 100px;
   flex-shrink: 0;
   margin: 0;
   color: var(--text-normal);
-  line-height: var(--input-height);
+  min-height: var(--input-height);
 }
 
 .occurrence-modal-field > .occurrence-modal-file-container {
@@ -210,6 +255,9 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+  min-height: var(--input-height);
 }
 
 .occurrence-modal-to-process input[type="checkbox"] {
@@ -231,6 +279,8 @@
   padding: 0.25rem 0;
   margin: 0.5rem 0 0 0;
   color: var(--text-error);
+  min-height: 1.5rem; /* Reserve space to prevent layout shift */
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
 }
 
 .occurrence-modal-error-icon {
@@ -462,7 +512,4 @@
 }
 
 /* Tag suggestions container - use fixed positioning for modal */
-.occurrence-modal-tag-container .occurrence-modal-file-suggestions-container {
-  position: fixed;
-}
 
