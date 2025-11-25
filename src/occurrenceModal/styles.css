@@ -251,6 +251,12 @@
   border-top: 1px solid var(--background-modifier-border);
 }
 
+/* Submit button styles for form view */
+.occurrence-form-view-form button.mod-cta {
+  margin-top: 2rem;
+  width: 100%;
+}
+
 .occurrence-modal-to-process {
   display: flex;
   align-items: center;

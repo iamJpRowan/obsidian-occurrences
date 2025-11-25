@@ -1,11 +1,6 @@
 import { OccurrenceStore } from "@/occurrenceStore"
 import { Component, debounce } from "obsidian"
 
-export interface TagSelectorOptions {
-  placeholder?: string
-  debounceMs?: number
-}
-
 export class TagSelector extends Component {
   private tagContainer: HTMLElement
   private tagInputContainer: HTMLElement
@@ -15,7 +10,6 @@ export class TagSelector extends Component {
   private inputWrapper: HTMLElement
   private onTagsChange: (tags: string[]) => void
   private debouncedSearchChange: (query: string) => void
-  private options: TagSelectorOptions
   private occurrenceStore: OccurrenceStore
   private selectedTags: string[] = []
   private availableTags: Map<string, number> = new Map()
@@ -25,24 +19,20 @@ export class TagSelector extends Component {
   private visible: boolean = false
   private suggestionsVisible: boolean = false
   private cachedSingleLineHeight: number | null = null
+  private readonly placeholder: string = "Add tags..."
+  private readonly debounceMs: number = 300
 
   constructor(
     container: HTMLElement,
     occurrenceStore: OccurrenceStore,
-    onTagsChange: (tags: string[]) => void,
-    options: TagSelectorOptions = {}
+    onTagsChange: (tags: string[]) => void
   ) {
     super()
     this.occurrenceStore = occurrenceStore
-    this.options = {
-      placeholder: "Add tags...",
-      debounceMs: 300,
-      ...options,
-    }
     this.onTagsChange = onTagsChange
     this.debouncedSearchChange = debounce((query: string) => {
       this.filterTags(query)
-    }, this.options.debounceMs!)
+    }, this.debounceMs)
     this.render(container)
     this.loadAvailableTags()
     this.updatePlaceholder()
@@ -67,7 +57,7 @@ export class TagSelector extends Component {
     // Create tag input
     this.tagInput = this.inputWrapper.createEl("input", {
       type: "text",
-      placeholder: this.options.placeholder || "",
+      placeholder: this.placeholder,
       attr: {
         id: "modal-tag-input",
         spellcheck: "false",
@@ -235,7 +225,7 @@ export class TagSelector extends Component {
       }
 
       // Create a container for the count
-      const countEl = suggestionEl.createEl("div", {
+      suggestionEl.createEl("div", {
         cls: "occurrence-modal-file-suggestion-path",
         text: count.toString(),
       })
@@ -287,7 +277,7 @@ export class TagSelector extends Component {
 
       // Remove # symbol for display
       const displayTag = tag.startsWith("#") ? tag.slice(1) : tag
-      const tagText = tagPill.createEl("span", {
+      tagPill.createEl("span", {
         cls: "occurrence-modal-tag-pill-text",
         text: displayTag,
       })
@@ -329,7 +319,7 @@ export class TagSelector extends Component {
    */
   private updatePlaceholder(): void {
     if (this.selectedTags.length === 0) {
-      this.tagInput.placeholder = this.options.placeholder || ""
+      this.tagInput.placeholder = this.placeholder
     } else {
       this.tagInput.placeholder = ""
     }

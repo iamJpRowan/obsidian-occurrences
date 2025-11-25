@@ -226,9 +226,6 @@ export class OccurrenceModal extends Modal {
       this.plugin.occurrenceStore,
       (tags: string[]) => {
         this.formData.tags = tags
-      },
-      {
-        placeholder: "Add tags...",
       }
     )
     if (this.formData.tags.length > 0) {
@@ -265,7 +262,8 @@ export class OccurrenceModal extends Modal {
     this.errorMessage = formContainer.createEl("div", {
       cls: "occurrence-modal-error",
     })
-    this.errorMessage.style.display = "none"
+    // Start hidden but reserve space
+    this.hideError()
     
     // Create icon container for error
     const errorIcon = this.errorMessage.createEl("span", {
@@ -305,18 +303,9 @@ export class OccurrenceModal extends Modal {
     document.addEventListener("keydown", this.keyboardHandler)
 
     // Focus title input on open
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       this.titleInput.focus()
-      // If creating new occurrence and title is empty, submit on Enter
-      if (!this.occurrence && this.titleInput.value === "") {
-        this.titleInput.addEventListener("keydown", (e: KeyboardEvent) => {
-          if (e.key === "Enter" && !this.isSubmitting) {
-            e.preventDefault()
-            this.handleSubmit()
-          }
-        })
-      }
-    }, 100)
+    })
   }
 
   private async handleSubmit(): Promise<void> {
@@ -383,11 +372,21 @@ export class OccurrenceModal extends Modal {
     if (errorText) {
       errorText.textContent = message
     }
-    this.errorMessage.style.display = "flex"
+    // Show error by making it visible
+    this.errorMessage.style.visibility = "visible"
+    this.errorMessage.style.opacity = "1"
+    this.errorMessage.style.minHeight = "auto"
   }
 
   private hideError(): void {
-    this.errorMessage.style.display = "none"
+    // Hide error but reserve space
+    this.errorMessage.style.visibility = "hidden"
+    this.errorMessage.style.opacity = "0"
+    this.errorMessage.style.minHeight = "1.5rem" // Reserve space for error message
+    const errorText = this.errorMessage.querySelector(".occurrence-modal-error-text")
+    if (errorText) {
+      errorText.textContent = ""
+    }
   }
 
   onClose() {

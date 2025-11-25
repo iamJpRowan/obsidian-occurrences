@@ -30,6 +30,7 @@ export class OccurrenceForm extends ItemView {
   private toProcessCheckbox: HTMLInputElement
   private errorMessage: HTMLElement
   private isSubmitting: boolean = false
+  private keyboardHandler: (e: KeyboardEvent) => void
 
   constructor(
     leaf: WorkspaceLeaf,
@@ -309,11 +310,22 @@ export class OccurrenceForm extends ItemView {
       cls: "mod-cta",
       text: this.occurrence ? "Update Occurrence" : "Create Occurrence",
     })
-    this.submitButton.style.marginTop = "2rem"
-    this.submitButton.style.width = "100%"
     this.submitButton.addEventListener("click", () => {
       this.handleSubmit()
     })
+
+    // Add keyboard handler for Cmd+Enter / Ctrl+Enter
+    this.keyboardHandler = (e: KeyboardEvent) => {
+      if (
+        e.key === "Enter" &&
+        (e.metaKey || e.ctrlKey) &&
+        !this.isSubmitting
+      ) {
+        e.preventDefault()
+        this.handleSubmit()
+      }
+    }
+    document.addEventListener("keydown", this.keyboardHandler)
   }
 
   private async handleSubmit(): Promise<void> {
@@ -402,6 +414,11 @@ export class OccurrenceForm extends ItemView {
     const container = this.containerEl.children[1] as HTMLElement
     if (container) {
       container.empty()
+    }
+    
+    // Remove keyboard event listener
+    if (this.keyboardHandler) {
+      document.removeEventListener("keydown", this.keyboardHandler)
     }
   }
 }
