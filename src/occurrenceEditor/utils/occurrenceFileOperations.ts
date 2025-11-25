@@ -1,7 +1,7 @@
 import { App, TFile } from "obsidian"
 import OccurrencesPlugin from "@/main"
 import { OccurrenceObject, OCCURRENCE_DATE_FORMAT } from "@/types"
-import { OccurrenceFormData } from "../OccurrenceModal"
+import { OccurrenceFormData } from "../core/OccurrenceFormBase"
 import { getFrontmatterFieldName } from "@/settings"
 import {
   timezoneOffsetToISOString,

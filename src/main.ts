@@ -3,8 +3,7 @@ import { OccurrenceStore } from "./occurrenceStore"
 import { OCCURRENCES_VIEW, OccurrencesView } from "./occurrencesView"
 import { DEFAULT_SETTINGS, OccurrencesPluginSettings } from "./settings"
 import { OccurrencesSettingsTab } from "./settingsTab"
-import { OccurrenceModal } from "./occurrenceModal/OccurrenceModal"
-import { OccurrenceForm, OCCURRENCE_FORM_VIEW } from "./occurrenceModal/OccurrenceForm"
+import { OccurrenceModal, OccurrenceForm, OCCURRENCE_FORM_VIEW } from "./occurrenceEditor"
 
 export default class OccurrencesPlugin extends Plugin {
   occurrenceStore: OccurrenceStore

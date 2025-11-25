@@ -16,10 +16,11 @@ export class FileFilterUtils {
       return files
     }
 
+    const folders = filterSettings.folders
     return files.filter(file => {
       // Include logic
-      if (filterSettings.folders.include?.length) {
-        const matches = filterSettings.folders.include.some(folder => {
+      if (folders.include?.length) {
+        const matches = folders.include.some(folder => {
           const normalizedFolder = folder.endsWith("/") ? folder : folder + "/"
           return file.path.startsWith(normalizedFolder) || file.path === folder
         })
@@ -27,8 +28,8 @@ export class FileFilterUtils {
       }
 
       // Exclude logic
-      if (filterSettings.folders.exclude?.length) {
-        const matches = filterSettings.folders.exclude.some(folder => {
+      if (folders.exclude?.length) {
+        const matches = folders.exclude.some(folder => {
           const normalizedFolder = folder.endsWith("/") ? folder : folder + "/"
           return file.path.startsWith(normalizedFolder) || file.path === folder
         })
@@ -51,21 +52,22 @@ export class FileFilterUtils {
       return files
     }
 
+    const tags = filterSettings.tags
     return files.filter(file => {
       const fileCache = app.metadataCache.getFileCache(file)
       const fileTags = fileCache?.frontmatter?.tags || []
 
       // Include: must have at least one tag
-      if (filterSettings.tags.include?.length) {
-        const hasInclude = filterSettings.tags.include.some(tag =>
+      if (tags.include?.length) {
+        const hasInclude = tags.include.some(tag =>
           fileTags.includes(tag)
         )
         if (!hasInclude) return false
       }
 
       // Exclude: must not have any tag
-      if (filterSettings.tags.exclude?.length) {
-        const hasExclude = filterSettings.tags.exclude.some(tag =>
+      if (tags.exclude?.length) {
+        const hasExclude = tags.exclude.some(tag =>
           fileTags.includes(tag)
         )
         if (hasExclude) return false

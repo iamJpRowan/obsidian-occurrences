@@ -3,7 +3,7 @@ import OccurrencesPlugin from "@/main"
 import { OccurrenceStore } from "@/occurrenceStore"
 import { OccurrenceObject } from "@/types"
 import { App, Menu, TFile, setTooltip } from "obsidian"
-import { OccurrenceModal } from "@/occurrenceModal/OccurrenceModal"
+import { OccurrenceModal } from "@/occurrenceEditor"
 
 export class OccurrenceListItem extends ListItem<OccurrenceObject> {
   private plugin: OccurrencesPlugin
