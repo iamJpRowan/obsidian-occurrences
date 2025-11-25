@@ -22,6 +22,7 @@ export class TagSelector extends Component {
   private cachedSingleLineHeight: number | null = null
   private readonly placeholder: string = "Add tags..."
   private readonly debounceMs: number = 300
+  private blurTimeout: number | null = null
 
   constructor(
     container: HTMLElement,
@@ -109,8 +110,12 @@ export class TagSelector extends Component {
 
     this.registerDomEvent(this.tagInput, "blur", () => {
       // Delay hiding to allow clicking on suggestions
-      setTimeout(() => {
+      if (this.blurTimeout !== null) {
+        clearTimeout(this.blurTimeout)
+      }
+      this.blurTimeout = window.setTimeout(() => {
         this.hideSuggestions()
+        this.blurTimeout = null
       }, 200)
     })
 
@@ -577,7 +582,14 @@ export class TagSelector extends Component {
    * Clean up when component is destroyed
    */
   onunload(): void {
-    // Cleanup handled by Component base class
+    // Clear any pending timeouts
+    if (this.blurTimeout !== null) {
+      clearTimeout(this.blurTimeout)
+      this.blurTimeout = null
+    }
+    // Cancel any pending debounced calls
+    // Note: Obsidian's debounce doesn't expose a cancel method, but it's safe
+    // as the component will be destroyed and callbacks won't execute
   }
 }
 

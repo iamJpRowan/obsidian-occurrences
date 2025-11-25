@@ -32,6 +32,10 @@ export class OccurrenceForm extends ItemView {
   private errorMessage: HTMLElement
   private isSubmitting: boolean = false
   private keyboardHandler: (e: KeyboardEvent) => void
+  private closeButton: HTMLButtonElement | null = null
+  private closeButtonHandler: (() => void) | null = null
+  private toProcessCheckboxHandler: (() => void) | null = null
+  private submitButtonHandler: (() => void) | null = null
 
   constructor(
     leaf: WorkspaceLeaf,
@@ -121,14 +125,15 @@ export class OccurrenceForm extends ItemView {
     })
 
     // Close button (X)
-    const closeButton = header.createEl("button", {
+    this.closeButton = header.createEl("button", {
       cls: "clickable-icon",
       attr: { "aria-label": "Close" },
-    })
-    setIcon(closeButton, "x")
-    closeButton.addEventListener("click", () => {
+    }) as HTMLButtonElement
+    setIcon(this.closeButton, "x")
+    this.closeButtonHandler = () => {
       this.leaf.detach()
-    })
+    }
+    this.closeButton.addEventListener("click", this.closeButtonHandler)
 
     // Form container (scrollable)
     const formContainer = container.createEl("div", {
@@ -244,9 +249,10 @@ export class OccurrenceForm extends ItemView {
       },
     }) as HTMLInputElement
     this.toProcessCheckbox.checked = this.formData.toProcess
-    this.toProcessCheckbox.addEventListener("change", () => {
+    this.toProcessCheckboxHandler = () => {
       this.formData.toProcess = this.toProcessCheckbox.checked
-    })
+    }
+    this.toProcessCheckbox.addEventListener("change", this.toProcessCheckboxHandler)
 
     // Error message container (at bottom, above submit button)
     this.errorMessage = formContainer.createEl("div", {
@@ -269,9 +275,10 @@ export class OccurrenceForm extends ItemView {
       cls: "mod-cta",
       text: this.occurrence ? "Update Occurrence" : "Create Occurrence",
     })
-    this.submitButton.addEventListener("click", () => {
+    this.submitButtonHandler = () => {
       this.handleSubmit()
-    })
+    }
+    this.submitButton.addEventListener("click", this.submitButtonHandler)
 
     // Add keyboard handler for Cmd+Enter / Ctrl+Enter
     this.keyboardHandler = (e: KeyboardEvent) => {
@@ -370,14 +377,42 @@ export class OccurrenceForm extends ItemView {
   }
 
   async onClose(): Promise<void> {
-    const container = this.containerEl.children[1] as HTMLElement
-    if (container) {
-      container.empty()
+    // Unload all child components
+    if (this.dateTimeSelector) {
+      this.dateTimeSelector.unload()
+    }
+    if (this.tagSelector) {
+      this.tagSelector.unload()
+    }
+    if (this.locationSelector) {
+      this.locationSelector.unload()
+    }
+    if (this.participantsSelector) {
+      this.participantsSelector.unload()
+    }
+    if (this.topicsSelector) {
+      this.topicsSelector.unload()
+    }
+    
+    // Remove event listeners
+    if (this.closeButton && this.closeButtonHandler) {
+      this.closeButton.removeEventListener("click", this.closeButtonHandler)
+    }
+    if (this.toProcessCheckboxHandler && this.toProcessCheckbox) {
+      this.toProcessCheckbox.removeEventListener("change", this.toProcessCheckboxHandler)
+    }
+    if (this.submitButtonHandler && this.submitButton) {
+      this.submitButton.removeEventListener("click", this.submitButtonHandler)
     }
     
     // Remove keyboard event listener
     if (this.keyboardHandler) {
       document.removeEventListener("keydown", this.keyboardHandler)
+    }
+    
+    const container = this.containerEl.children[1] as HTMLElement
+    if (container) {
+      container.empty()
     }
   }
 }

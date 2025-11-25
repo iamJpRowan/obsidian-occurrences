@@ -33,6 +33,7 @@ export class SingleFileSelector extends Component {
   private suggestions: FileSuggestion[] = []
   private selectedSuggestionIndex: number = -1
   private visible: boolean = false
+  private blurTimeout: number | null = null
 
   constructor(
     container: HTMLElement,
@@ -122,8 +123,12 @@ export class SingleFileSelector extends Component {
     })
 
     this.registerDomEvent(this.fileInput, "blur", () => {
-      setTimeout(() => {
+      if (this.blurTimeout !== null) {
+        clearTimeout(this.blurTimeout)
+      }
+      this.blurTimeout = window.setTimeout(() => {
         this.hideSuggestions()
+        this.blurTimeout = null
       }, 200)
     })
 
@@ -202,8 +207,8 @@ export class SingleFileSelector extends Component {
     const allFiles = this.app.vault.getMarkdownFiles()
     
     // Apply filters
-    let filtered = this.applyFolderFilters(allFiles)
-    filtered = this.applyTagFilters(filtered)
+    let filtered = FileFilterUtils.applyFolderFilters(allFiles, this.filterSettings)
+    filtered = FileFilterUtils.applyTagFilters(filtered, this.filterSettings, this.app)
     
     this.suggestions = filtered.map((file: TFile) => ({
       file,
@@ -405,6 +410,20 @@ export class SingleFileSelector extends Component {
 
   public getElement(): HTMLElement {
     return this.fileContainer
+  }
+
+  /**
+   * Clean up when component is destroyed
+   */
+  onunload(): void {
+    // Clear any pending timeouts
+    if (this.blurTimeout !== null) {
+      clearTimeout(this.blurTimeout)
+      this.blurTimeout = null
+    }
+    // Cancel any pending debounced calls
+    // Note: Obsidian's debounce doesn't expose a cancel method, but it's safe
+    // as the component will be destroyed and callbacks won't execute
   }
 }
 

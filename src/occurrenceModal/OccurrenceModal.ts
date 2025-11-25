@@ -35,6 +35,8 @@ export class OccurrenceModal extends Modal {
   private errorMessage: HTMLElement
   private isSubmitting: boolean = false
   private keyboardHandler: (e: KeyboardEvent) => void
+  private toProcessCheckboxHandler: (() => void) | null = null
+  private submitButtonHandler: (() => void) | null = null
 
   constructor(
     plugin: OccurrencesPlugin,
@@ -213,9 +215,10 @@ export class OccurrenceModal extends Modal {
       },
     }) as HTMLInputElement
     this.toProcessCheckbox.checked = this.formData.toProcess
-    this.toProcessCheckbox.addEventListener("change", () => {
+    this.toProcessCheckboxHandler = () => {
       this.formData.toProcess = this.toProcessCheckbox.checked
-    })
+    }
+    this.toProcessCheckbox.addEventListener("change", this.toProcessCheckboxHandler)
 
     // Create error message container (at bottom of form)
     this.errorMessage = formContainer.createEl("div", {
@@ -244,9 +247,10 @@ export class OccurrenceModal extends Modal {
       cls: "mod-cta",
     }) as HTMLButtonElement
 
-    this.submitButton.addEventListener("click", () => {
+    this.submitButtonHandler = () => {
       this.handleSubmit()
-    })
+    }
+    this.submitButton.addEventListener("click", this.submitButtonHandler)
 
     // Add keyboard handler for Cmd+Enter / Ctrl+Enter
     this.keyboardHandler = (e: KeyboardEvent) => {
@@ -350,12 +354,38 @@ export class OccurrenceModal extends Modal {
 
   onClose() {
     const { contentEl } = this
-    contentEl.empty()
+    
+    // Unload all child components
+    if (this.dateTimeSelector) {
+      this.dateTimeSelector.unload()
+    }
+    if (this.tagSelector) {
+      this.tagSelector.unload()
+    }
+    if (this.locationSelector) {
+      this.locationSelector.unload()
+    }
+    if (this.participantsSelector) {
+      this.participantsSelector.unload()
+    }
+    if (this.topicsSelector) {
+      this.topicsSelector.unload()
+    }
+    
+    // Remove event listeners
+    if (this.toProcessCheckboxHandler && this.toProcessCheckbox) {
+      this.toProcessCheckbox.removeEventListener("change", this.toProcessCheckboxHandler)
+    }
+    if (this.submitButtonHandler && this.submitButton) {
+      this.submitButton.removeEventListener("click", this.submitButtonHandler)
+    }
     
     // Remove keyboard event listener
     if (this.keyboardHandler) {
       document.removeEventListener("keydown", this.keyboardHandler)
     }
+    
+    contentEl.empty()
   }
 }
 
