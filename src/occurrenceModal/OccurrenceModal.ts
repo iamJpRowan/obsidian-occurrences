@@ -8,6 +8,7 @@ import { DateTimeSelector } from "./components/DateTimeSelector"
 import { getFrontmatterFieldName } from "@/settings"
 import { extractTimezoneFromISOString } from "./utils/timezoneUtils"
 import { OccurrenceFileOperations } from "./utils/occurrenceFileOperations"
+import { createFieldContainer } from "./utils/fieldHelpers"
 
 export interface OccurrenceFormData {
   title: string
@@ -104,16 +105,9 @@ export class OccurrenceModal extends Modal {
     })
 
     // Occurred At field - restructured to match other fields
-    const occurredAtContainer = formContainer.createEl("div", {
-      cls: "occurrence-modal-field",
-    })
-    const occurredAtIcon = occurredAtContainer.createEl("span", {
-      cls: "occurrence-modal-field-icon",
-    })
-    setIcon(occurredAtIcon, "calendar")
-    occurredAtContainer.createEl("label", {
-      text: "Occurred At",
-      cls: "occurrence-modal-field-label",
+    const occurredAtContainer = createFieldContainer(formContainer, {
+      icon: "calendar",
+      label: "Occurred At",
     })
     this.dateTimeSelector = new DateTimeSelector(
       occurredAtContainer,
@@ -126,16 +120,9 @@ export class OccurrenceModal extends Modal {
     }
 
     // Location field
-    const locationContainer = formContainer.createEl("div", {
-      cls: "occurrence-modal-field",
-    })
-    const locationIcon = locationContainer.createEl("span", {
-      cls: "occurrence-modal-field-icon",
-    })
-    setIcon(locationIcon, "map-pin")
-    locationContainer.createEl("label", {
-      text: "Location",
-      cls: "occurrence-modal-field-label",
+    const locationContainer = createFieldContainer(formContainer, {
+      icon: "map-pin",
+      label: "Location",
     })
     this.locationSelector = new SingleFileSelector(
       locationContainer,
@@ -154,16 +141,9 @@ export class OccurrenceModal extends Modal {
     }
 
     // Participants field
-    const participantsContainer = formContainer.createEl("div", {
-      cls: "occurrence-modal-field",
-    })
-    const participantsIcon = participantsContainer.createEl("span", {
-      cls: "occurrence-modal-field-icon",
-    })
-    setIcon(participantsIcon, "users")
-    participantsContainer.createEl("label", {
-      text: "Participants",
-      cls: "occurrence-modal-field-label",
+    const participantsContainer = createFieldContainer(formContainer, {
+      icon: "users",
+      label: "Participants",
     })
     this.participantsSelector = new MultiFileSelector(
       participantsContainer,
@@ -182,16 +162,9 @@ export class OccurrenceModal extends Modal {
     }
 
     // Topics field
-    const topicsContainer = formContainer.createEl("div", {
-      cls: "occurrence-modal-field",
-    })
-    const topicsIcon = topicsContainer.createEl("span", {
-      cls: "occurrence-modal-field-icon",
-    })
-    setIcon(topicsIcon, "lightbulb")
-    topicsContainer.createEl("label", {
-      text: "Topics",
-      cls: "occurrence-modal-field-label",
+    const topicsContainer = createFieldContainer(formContainer, {
+      icon: "lightbulb",
+      label: "Topics",
     })
     this.topicsSelector = new MultiFileSelector(
       topicsContainer,
@@ -210,16 +183,9 @@ export class OccurrenceModal extends Modal {
     }
 
     // Tags field (moved after topics)
-    const tagsContainer = formContainer.createEl("div", {
-      cls: "occurrence-modal-field",
-    })
-    const tagsIcon = tagsContainer.createEl("span", {
-      cls: "occurrence-modal-field-icon",
-    })
-    setIcon(tagsIcon, "tags")
-    tagsContainer.createEl("label", {
-      text: "Tags",
-      cls: "occurrence-modal-field-label",
+    const tagsContainer = createFieldContainer(formContainer, {
+      icon: "tags",
+      label: "Tags",
     })
     this.tagSelector = new TagSelector(
       tagsContainer,
@@ -233,16 +199,9 @@ export class OccurrenceModal extends Modal {
     }
 
     // To Process field
-    const toProcessContainer = formContainer.createEl("div", {
-      cls: "occurrence-modal-field",
-    })
-    const toProcessIcon = toProcessContainer.createEl("span", {
-      cls: "occurrence-modal-field-icon",
-    })
-    setIcon(toProcessIcon, "square-check-big")
-    toProcessContainer.createEl("label", {
-      text: "To Process",
-      cls: "occurrence-modal-field-label",
+    const toProcessContainer = createFieldContainer(formContainer, {
+      icon: "square-check-big",
+      label: "To Process",
     })
     const toProcessCheckboxContainer = toProcessContainer.createEl("div", {
       cls: "occurrence-modal-to-process",

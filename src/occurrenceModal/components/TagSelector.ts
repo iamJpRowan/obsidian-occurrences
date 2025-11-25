@@ -1,5 +1,6 @@
 import { OccurrenceStore } from "@/occurrenceStore"
 import { Component, debounce } from "obsidian"
+import { SuggestionUtils } from "../utils/suggestionUtils"
 
 export class TagSelector extends Component {
   private tagContainer: HTMLElement
@@ -427,16 +428,11 @@ export class TagSelector extends Component {
    * Update suggestion highlight
    */
   private updateSuggestionHighlight(): void {
-    const suggestions = this.suggestionsList.querySelectorAll(".occurrence-modal-tag-suggestion")
-    suggestions.forEach((el, index) => {
-      if (index === this.selectedSuggestionIndex) {
-        el.addClass("is-selected")
-        // Scroll the selected element into view
-        el.scrollIntoView({ block: "nearest", behavior: "smooth" })
-      } else {
-        el.removeClass("is-selected")
-      }
-    })
+    SuggestionUtils.updateSuggestionHighlight(
+      this.suggestionsList,
+      this.selectedSuggestionIndex,
+      "occurrence-modal-tag-suggestion"
+    )
   }
 
   /**
