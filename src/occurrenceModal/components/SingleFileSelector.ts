@@ -96,13 +96,11 @@ export class SingleFileSelector extends Component {
         "aria-label": "Clear file selection",
       },
     })
-    this.fileClear.style.display = "none"
 
     // Create suggestions container
     this.suggestionsContainer = this.fileContainer.createEl("div", {
       cls: "occurrence-modal-file-suggestions-container",
     })
-    this.suggestionsContainer.style.display = "none"
 
     this.suggestionsList = this.suggestionsContainer.createEl("div", {
       cls: "occurrence-modal-file-suggestions-list",
@@ -296,7 +294,7 @@ export class SingleFileSelector extends Component {
    * Handle keyboard navigation
    */
   private handleKeydown(e: KeyboardEvent): void {
-    if (this.suggestionsContainer.style.display === "none") return
+    if (!this.suggestionsContainer.hasClass("is-visible")) return
 
     switch (e.key) {
       case "ArrowDown":
@@ -341,7 +339,11 @@ export class SingleFileSelector extends Component {
    * Update clear button visibility
    */
   private updateClearButton(value: string): void {
-    this.fileClear.style.display = value.length > 0 ? "flex" : "none"
+    if (value.length > 0) {
+      this.fileClear.addClass("is-visible")
+    } else {
+      this.fileClear.removeClass("is-visible")
+    }
   }
 
   /**
@@ -359,14 +361,14 @@ export class SingleFileSelector extends Component {
    * Show suggestions container
    */
   private showSuggestions(): void {
-    this.suggestionsContainer.style.display = "block"
+    this.suggestionsContainer.addClass("is-visible")
   }
 
   /**
    * Hide suggestions container
    */
   private hideSuggestions(): void {
-    this.suggestionsContainer.style.display = "none"
+    this.suggestionsContainer.removeClass("is-visible")
     this.selectedSuggestionIndex = -1
   }
 

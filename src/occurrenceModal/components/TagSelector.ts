@@ -71,7 +71,6 @@ export class TagSelector extends Component {
     this.suggestionsContainer = this.tagContainer.createEl("div", {
       cls: "occurrence-modal-file-suggestions-container",
     })
-    this.suggestionsContainer.style.display = "none"
 
     this.suggestionsList = this.suggestionsContainer.createEl("div", {
       cls: "occurrence-modal-file-suggestions-list",
@@ -530,7 +529,7 @@ export class TagSelector extends Component {
    * Show suggestions container
    */
   private showSuggestions(): void {
-    this.suggestionsContainer.style.display = "block"
+    this.suggestionsContainer.addClass("is-visible")
     this.suggestionsVisible = true
   }
 
@@ -538,7 +537,7 @@ export class TagSelector extends Component {
    * Hide suggestions container
    */
   private hideSuggestions(): void {
-    this.suggestionsContainer.style.display = "none"
+    this.suggestionsContainer.removeClass("is-visible")
     this.suggestionsVisible = false
     this.selectedSuggestionIndex = -1
   }

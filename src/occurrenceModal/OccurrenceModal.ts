@@ -335,17 +335,11 @@ export class OccurrenceModal extends Modal {
     if (errorText) {
       errorText.textContent = message
     }
-    // Show error by making it visible
-    this.errorMessage.style.visibility = "visible"
-    this.errorMessage.style.opacity = "1"
-    this.errorMessage.style.minHeight = "auto"
+    this.errorMessage.addClass("is-visible")
   }
 
   private hideError(): void {
-    // Hide error but reserve space
-    this.errorMessage.style.visibility = "hidden"
-    this.errorMessage.style.opacity = "0"
-    this.errorMessage.style.minHeight = "1.5rem" // Reserve space for error message
+    this.errorMessage.removeClass("is-visible")
     const errorText = this.errorMessage.querySelector(".occurrence-modal-error-text")
     if (errorText) {
       errorText.textContent = ""

@@ -5,7 +5,7 @@
 }
 
 .occurrence-modal-title-header {
-  padding: 0.25rem 1rem 1rem 1rem;
+  padding: var(--size-4-1) var(--size-4-2) var(--size-4-2) var(--size-4-2);
 }
 
 /* Shared title input styles for modal and form */
@@ -39,7 +39,7 @@
 
 
 .occurrence-modal-form {
-  padding: 0 1rem 1rem 1rem;
+  padding: 0 var(--size-4-2) var(--size-4-2) var(--size-4-2);
 }
 
 /* Occurrence Form View Styles (Mobile ItemView) */
@@ -56,8 +56,8 @@
 .occurrence-form-view-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem;
+  gap: var(--size-4-2);
+  padding: var(--size-4-2);
   flex-shrink: 0;
   background: var(--background-primary);
   /* Sticky header when scrolling */
@@ -74,8 +74,8 @@
 
 .occurrence-form-view-form {
   /* Remove overflow - let parent container handle scrolling */
-  padding: 1rem;
-  padding-bottom: 2rem; /* Extra space for keyboard */
+  padding: var(--size-4-2);
+  padding-bottom: var(--size-4-4); /* Extra space for keyboard */
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -85,10 +85,10 @@
 .occurrence-modal-field {
   display: flex;
   align-items: flex-start;
-  gap: 0.5rem;
+  gap: var(--size-4-2);
   margin-bottom: var(--size-2-1);
   padding: var(--size-2-1);
-  border-radius: 4px;
+  border-radius: var(--radius-s);
   border: 1px solid transparent;
   transition: border-color var(--anim-duration-fast) ease-in-out;
 }
@@ -147,8 +147,8 @@
 }
 
 .datetime-input-container:focus-within {
-  outline: 3px solid var(--background-modifier-border-focus);
-  outline-offset: -3px;
+  outline: var(--size-2-1) solid var(--background-modifier-border-focus);
+  outline-offset: calc(-1 * var(--size-2-1));
 }
 
 .datetime-input-wrapper {
@@ -157,16 +157,16 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 0px 8px 0px 0px;
+  padding: 0 var(--size-4-2) 0 0;
   min-height: var(--input-height);
-  gap: 0.5rem;
+  gap: var(--size-4-2);
 }
 
 .datetime-input-native {
   flex: 0 1 auto;
   border: none;
   background: transparent !important;
-  padding: 0.5rem 0.25rem;
+  padding: var(--size-4-2) var(--size-4-1);
   color: var(--text-normal);
   font-size: var(--font-ui-small);
   font-family: inherit;
@@ -185,13 +185,13 @@
 .datetime-input-native:focus {
   outline: none;
   background-color: var(--background-modifier-hover);
-  border-radius: 3px;
+  border-radius: var(--radius-s);
 }
 
 .datetime-input-native[type="datetime-local"] {
   min-width: 230px;
   flex: 0 1 230px;
-  padding-right: 0.5rem;
+  padding-right: var(--size-4-2);
 }
 
 /* More specific selector to override Obsidian's datetime-local input background */
@@ -210,10 +210,10 @@
   /* Fix line-height - use normal instead of matching full height */
   line-height: normal;
   /* Ensure padding matches other inputs */
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  padding-left: 0.25rem;
-  padding-right: 1.5rem;
+  padding-top: var(--size-4-2);
+  padding-bottom: var(--size-4-2);
+  padding-left: var(--size-4-1);
+  padding-right: var(--size-4-3);
   box-sizing: border-box;
   /* Remove all borders */
   border: none;
@@ -234,7 +234,7 @@
 .datetime-input-native[type="datetime-local"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
   opacity: 0.6;
-  margin-left: 0.25rem;
+  margin-left: var(--size-4-1);
 }
 
 .datetime-input-native[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
@@ -245,22 +245,22 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0.5rem;
-  margin-top: 1.5rem;
-  padding-top: 1rem;
+  gap: var(--size-4-2);
+  margin-top: var(--size-4-3);
+  padding-top: var(--size-4-2);
   border-top: 1px solid var(--background-modifier-border);
 }
 
 /* Submit button styles for form view */
 .occurrence-form-view-form button.mod-cta {
-  margin-top: 2rem;
+  margin-top: var(--size-4-4);
   width: 100%;
 }
 
 .occurrence-modal-to-process {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--size-4-2);
   flex: 1;
   min-width: 0;
   min-height: var(--input-height);
@@ -274,19 +274,27 @@
 .occurrence-modal-to-process label {
   margin: 0;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: var(--font-ui-small);
   color: var(--text-normal);
 }
 
 .occurrence-modal-error {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0;
-  margin: 0.5rem 0 0 0;
+  gap: var(--size-4-2);
+  padding: var(--size-4-1) 0;
+  margin: var(--size-4-2) 0 0 0;
   color: var(--text-error);
-  min-height: 1.5rem; /* Reserve space to prevent layout shift */
-  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  min-height: var(--size-4-3); /* Reserve space to prevent layout shift */
+  transition: opacity var(--anim-duration-fast) ease-in-out, visibility var(--anim-duration-fast) ease-in-out;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.occurrence-modal-error.is-visible {
+  visibility: visible;
+  opacity: 1;
+  min-height: auto;
 }
 
 .occurrence-modal-error-icon {
@@ -314,7 +322,7 @@
 .occurrence-modal-file-input-container {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--size-4-2);
   border: none;
   border-radius: 0;
   padding: 0;
@@ -330,7 +338,7 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.25rem;
+  gap: var(--size-4-1);
   min-height: var(--input-height);
   position: relative;
 }
@@ -341,18 +349,18 @@
   background: transparent;
   outline: none;
   min-width: 100px;
-  font-size: 0.9rem;
-  padding-right: 28px;
+  font-size: var(--font-ui-small);
+  padding-right: var(--size-4-4);
 }
 
 .occurrence-modal-file-pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.5rem;
+  gap: var(--size-4-1);
+  padding: var(--size-4-1) var(--size-4-2);
   background-color: var(--background-modifier-border);
-  border-radius: 4px;
-  font-size: 0.85rem;
+  border-radius: var(--radius-s);
+  font-size: var(--font-ui-smaller);
 }
 
 .occurrence-modal-file-pill-text {
@@ -362,9 +370,9 @@
 .occurrence-modal-file-pill-remove {
   cursor: pointer;
   color: var(--text-muted);
-  font-size: 1.2rem;
+  font-size: var(--font-ui-medium);
   line-height: 1;
-  padding: 0 0.25rem;
+  padding: 0 var(--size-4-1);
 }
 
 .occurrence-modal-file-pill-remove:hover {
@@ -373,8 +381,8 @@
 
 /* Keyboard-selected file highlighting */
 .occurrence-modal-file-pill.is-keyboard-selected {
-  outline: 2px solid var(--background-modifier-border-focus);
-  outline-offset: 2px;
+  outline: var(--size-2-1) solid var(--background-modifier-border-focus);
+  outline-offset: var(--size-2-1);
 }
 
 .occurrence-modal-clear-button {
@@ -384,23 +392,27 @@
   color: var(--text-muted);
   cursor: pointer;
   top: 50%;
-  right: 2px;
+  right: var(--size-2-1);
   transform: translateY(-50%);
   line-height: 0;
   height: var(--input-height);
-  width: 28px;
+  width: var(--size-4-4);
   padding: 0;
   text-align: center;
-  display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
   transition: color var(--anim-duration-fast) ease-in-out;
   z-index: 2;
 }
 
+.occurrence-modal-clear-button.is-visible {
+  display: flex;
+}
+
 .occurrence-modal-clear-button::before {
   content: "✕";
-  font-size: 14px;
+  font-size: var(--font-ui-small);
   font-weight: normal;
   line-height: 1;
 }
@@ -414,27 +426,32 @@
   top: 100%;
   left: 0;
   right: 0;
-  margin-top: 0.25rem;
+  margin-top: var(--size-4-1);
   background-color: var(--background-primary);
   border: 1px solid var(--background-modifier-border);
-  border-radius: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-s);
   z-index: 1000;
-  max-height: 300px;
+  max-height: 20rem;
   overflow-y: auto;
+  display: none;
+}
+
+.occurrence-modal-file-suggestions-container.is-visible {
+  display: block;
 }
 
 .occurrence-modal-file-suggestions-list {
-  padding: 0.25rem;
+  padding: var(--size-4-1);
 }
 
 .occurrence-modal-file-suggestion {
-  padding: 0.5rem;
-  border-radius: 4px;
+  padding: var(--size-4-2);
+  border-radius: var(--radius-s);
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--size-4-2);
 }
 
 .occurrence-modal-file-suggestion:hover,
@@ -458,7 +475,7 @@
 }
 
 .occurrence-modal-file-suggestion-path {
-  font-size: 0.85rem;
+  font-size: var(--font-ui-smaller);
   color: var(--text-muted);
   margin-left: auto;
 }
@@ -471,10 +488,10 @@
   align-items: center;
   background-color: var(--tag-background);
   color: var(--tag-color);
-  border-radius: 12px;
-  padding: 2px 8px;
+  border-radius: var(--radius-m);
+  padding: var(--size-2-1) var(--size-4-2);
   font-size: var(--font-ui-smaller);
-  gap: 4px;
+  gap: var(--size-2-1);
   flex: 0 0 auto;
 }
 
@@ -486,22 +503,22 @@
   cursor: pointer;
   color: var(--tag-color);
   font-weight: lighter;
-  font-size: 18px;
-  margin-top: -2px;
+  font-size: var(--font-ui-medium);
+  margin-top: calc(-1 * var(--size-2-1));
   line-height: 1;
   border-radius: 50%;
-  transition: background-color 0.2s ease;
-  padding: 0 0.25rem;
+  transition: background-color var(--anim-duration-fast) ease;
+  padding: 0 var(--size-4-1);
 }
 
 .occurrence-modal-tag-pill-remove:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--background-modifier-hover);
 }
 
 /* Keyboard-selected tag highlighting */
 .occurrence-modal-tag-pill.is-keyboard-selected {
-  outline: 2px solid var(--background-modifier-border-focus);
-  outline-offset: 2px;
+  outline: var(--size-2-1) solid var(--background-modifier-border-focus);
+  outline-offset: var(--size-2-1);
 }
 
 /* Clear button positioning for tags - positioned within input wrapper */
@@ -511,7 +528,7 @@
 
 .occurrence-modal-tag-container .occurrence-modal-clear-button {
   position: absolute;
-  right: 4px;
+  right: var(--size-2-1);
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
