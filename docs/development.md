@@ -248,7 +248,7 @@ Before releasing to the Obsidian Community Plugins directory, ensure compliance 
 
 ### Release Process
 
-For detailed release instructions, see [RELEASE.md](../RELEASE.md) in the repository root.
+For detailed release instructions, see [Release Guide](release.md).
 
 Quick overview:
 1. **Version bump**: `npm version patch|minor|major`
@@ -256,7 +256,7 @@ Quick overview:
 3. **Create GitHub release**: Draft a new release on GitHub
 4. **Automated build**: GitHub Actions builds and uploads `release.zip` automatically
 
-The release process is automated via GitHub Actions. See [RELEASE.md](../RELEASE.md) for complete step-by-step instructions.
+The release process is automated via GitHub Actions. See [Release Guide](release.md) for complete step-by-step instructions.
 
 ### Guidelines Reference
 

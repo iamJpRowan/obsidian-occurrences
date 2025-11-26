@@ -6,7 +6,7 @@ This guide walks you through the process of creating a new release for the Occur
 
 - All code changes committed and pushed to the repository
 - Plugin tested and working correctly
-- All submission requirements met (see `SUBMISSION_STATUS.md`)
+- All submission requirements met (see [Submission Guide](submission.md))
 
 ## Release Process
 
@@ -164,7 +164,7 @@ git push && git push --tags  # Push changes and tags
 
 ## See Also
 
-- [GitHub Actions Workflow Documentation](.github/workflows/README.md)
-- [Submission Requirements](SUBMISSION_STATUS.md)
-- [Development Guide](docs/development.md)
+- [GitHub Actions Workflow Documentation](../.github/workflows/README.md)
+- [Submission Guide](submission.md)
+- [Development Guide](development.md)
 

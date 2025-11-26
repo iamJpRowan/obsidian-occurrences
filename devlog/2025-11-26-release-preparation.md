@@ -154,15 +154,14 @@ The goal was to ensure the plugin:
 - Removed "coming soon" from command descriptions
 - Added keywords to package.json for discoverability
 - Aligned package.json description with manifest.json
-- Created SUBMISSION_CHECKLIST.md with comprehensive requirements
-- Created SUBMISSION_STATUS.md tracking completed and remaining items
+- Created submission guide (now in `docs/submission.md`)
 
 ### Automated Release Workflow
 - Created GitHub Actions workflow (`.github/workflows/release.yml`) for automated builds
 - Updated esbuild.config.mjs to support CI/CD via OUT_DIR environment variable
 - Fixed version-bump.mjs to use correct manifest.json path (src/manifest.json)
 - Updated package.json version script to reference correct files
-- Created RELEASE.md with comprehensive release process guide
+- Created release guide (now in `docs/release.md`)
 - Created GitHub Actions workflow documentation
 
 ### Commits Made
@@ -203,7 +202,7 @@ The following manual steps are required before submission:
 3. **Testing**: Verify functionality on desktop and mobile, test compatibility
 4. **Submission**: Fill out Obsidian's submission form with repository and release URLs
 
-See `SUBMISSION_STATUS.md` for detailed tracking of completed and remaining items.
+See [Submission Guide](../docs/submission.md) for detailed submission instructions.
 
 ## Future Considerations
 
