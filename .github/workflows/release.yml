@@ -39,4 +39,29 @@ jobs:
             release.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Create tag without 'v' prefix for Obsidian validation
+        run: |
+          # Extract version from manifest.json (without 'v' prefix)
+          VERSION=$(node -p "require('./dist/manifest.json').version")
+          RELEASE_TAG="${{ github.event.release.tag_name }}"
+          
+          # If release tag has 'v' prefix but version doesn't, create tag without 'v'
+          if [[ "$RELEASE_TAG" == v* ]] && [[ "$VERSION" != v* ]]; then
+            echo "Creating tag $VERSION for Obsidian validation (release tag: $RELEASE_TAG)"
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            
+            # Get the commit SHA from the release tag
+            COMMIT_SHA=$(git rev-parse "$RELEASE_TAG^{}")
+            
+            # Create or update the tag without 'v' prefix
+            git tag -f "$VERSION" "$COMMIT_SHA"
+            
+            # Configure git to use token for authentication
+            git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+            git push origin "$VERSION" --force || echo "Tag $VERSION already exists or push failed (this is OK)"
+          else
+            echo "Tag format matches version ($RELEASE_TAG), no additional tag needed"
+          fi
 
