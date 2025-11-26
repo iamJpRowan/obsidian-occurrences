@@ -12,6 +12,8 @@ let manifest = JSON.parse(readFileSync("src/manifest.json", "utf8"));
 const { minAppVersion } = manifest;
 manifest.version = targetVersion;
 writeFileSync("src/manifest.json", JSON.stringify(manifest, null, "\t"));
+// Also update root manifest.json (required for Obsidian validation)
+writeFileSync("manifest.json", JSON.stringify(manifest, null, "\t"));
 
 // update versions.json with target version and minAppVersion from manifest.json
 let versions = JSON.parse(readFileSync("versions.json", "utf8"));
