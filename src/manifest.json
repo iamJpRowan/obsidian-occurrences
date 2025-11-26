@@ -1,11 +1,11 @@
 {
-  "id": "occurrences",
-  "name": "Occurrences",
-  "version": "0.1.0",
-  "minAppVersion": "0.15.0",
-  "description": "A plugin for managing and viewing occurrences (time-stamped events) in your Obsidian vault.",
-  "author": "Jp Rowan",
-  "authorUrl": "https://github.com/iamJpRowan",
-  "fundingUrl": "",
-  "isDesktopOnly": false
+	"id": "occurrences",
+	"name": "Occurrences",
+	"minAppVersion": "0.15.0",
+	"description": "A plugin for managing and viewing occurrences (time-stamped events) in your Obsidian vault.",
+	"author": "Jp Rowan",
+	"authorUrl": "https://github.com/iamJpRowan",
+	"fundingUrl": "",
+	"isDesktopOnly": false,
+	"version": "1.0.0"
 }
