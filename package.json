@@ -1,7 +1,7 @@
 {
   "name": "obsidian-occurrences",
   "version": "0.1.0",
-  "description": "Extend your Obsidian vault with Occurrences.",
+  "description": "A plugin for managing and viewing occurrences (time-stamped events) in your Obsidian vault.",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
