@@ -55,8 +55,11 @@ async function copyPluginFiles() {
     // Create the directory if it doesn't exist
     await fs.mkdir(outDir, { recursive: true })
 
-    // Copy manifest.json
+    // Copy manifest.json to output directory
     await fs.copyFile("src/manifest.json", path.join(outDir, "manifest.json"))
+    
+    // Also sync root manifest.json (required for Obsidian validation)
+    await fs.copyFile("src/manifest.json", "manifest.json")
 
     // Bundle CSS files
     await bundleCssFiles()
