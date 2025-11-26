@@ -15,11 +15,11 @@ A plugin for managing and viewing occurrences (time-stamped events) in your Obsi
 
 ### From Obsidian Community Plugins
 
-**Coming Soon** - The plugin will be available in the Obsidian Community Plugins directory soon.
+The plugin will be available in the Obsidian Community Plugins directory soon. For now, use manual installation below.
 
 ### Manual Installation
 
-1. Download the latest release from the [releases page](https://github.com/your-repo/obsidian-occurrences/releases)
+1. Download the latest release from the [releases page](https://github.com/iamJpRowan/obsidian-occurrences/releases)
 2. Extract to your vault's `.obsidian/plugins/occurrences` directory
 3. Reload Obsidian
 4. Enable the plugin in **Settings → Community plugins**
@@ -113,7 +113,7 @@ The Occurrences View provides several ways to filter and view your occurrences:
 ### Commands
 
 - **Open Occurrences View**: Opens the main occurrences view
-- **Add Occurrence**: Create a new occurrence file (coming soon)
+- **Add Occurrence**: Create a new occurrence file
 
 ### Ribbon Icon
 
