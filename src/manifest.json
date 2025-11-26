@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "minAppVersion": "0.15.0",
   "description": "Extend your vault with Occurrences.",
-  "author": "cortex-project",
-  "authorUrl": "https://github.com/occurrences-project",
+  "author": "Jp Rowan",
+  "authorUrl": "https://github.com/iamJpRowan",
   "fundingUrl": "",
   "isDesktopOnly": false
 }
