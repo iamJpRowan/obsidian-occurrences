@@ -248,25 +248,15 @@ Before releasing to the Obsidian Community Plugins directory, ensure compliance 
 
 ### Release Process
 
-1. **Build for production**:
-   ```bash
-   npm run build
-   ```
+For detailed release instructions, see [RELEASE.md](../RELEASE.md) in the repository root.
 
-2. **Version bump**:
-   ```bash
-   npm run version
-   ```
-   This updates `manifest.json` and `versions.json`
+Quick overview:
+1. **Version bump**: `npm version patch|minor|major`
+2. **Push changes**: `git push && git push --tags`
+3. **Create GitHub release**: Draft a new release on GitHub
+4. **Automated build**: GitHub Actions builds and uploads `release.zip` automatically
 
-3. **Create GitHub release**:
-   - Tag the release with version number
-   - Upload `main.js`, `manifest.json`, and `styles.css` as release assets
-   - Include release notes
-
-4. **Submit to Community Plugins**:
-   - Follow [Obsidian's submission process](https://docs.obsidian.md/Plugins/Releasing/Submitting+your+plugin)
-   - Ensure all guidelines are met
+The release process is automated via GitHub Actions. See [RELEASE.md](../RELEASE.md) for complete step-by-step instructions.
 
 ### Guidelines Reference
 

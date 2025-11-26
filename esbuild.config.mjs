@@ -8,7 +8,8 @@ import process from "process"
 import { fileURLToPath } from "url"
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
-const outDir = "/Users/jprowan/vaults/cortex/.obsidian/plugins/occurrences"
+// Support CI/CD builds via OUT_DIR environment variable, fallback to local dev path
+const outDir = process.env.OUT_DIR || "/Users/jprowan/vaults/cortex/.obsidian/plugins/occurrences"
 
 // Bundle all CSS files into one
 async function bundleCssFiles() {

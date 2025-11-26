@@ -110,6 +110,18 @@ The goal was to ensure the plugin:
 - **Attribution**: User (Jp Rowan) with AI (Auto)
 - **Date**: 2025-11-26
 
+### Automated Release Workflow
+
+- **Option 1**: Manual release process (build locally, upload assets manually)
+  - Cons: Error-prone, time-consuming, requires manual steps for each release
+- **Option 2**: GitHub Actions workflow for automated builds and releases
+  - Pros: Consistent builds, automated packaging, reduces human error, follows Obsidian best practices
+
+**Decision**: Option 2 - Implement GitHub Actions workflow
+- **Rationale**: Following [Obsidian's release automation guide](https://docs.obsidian.md/Plugins/Releasing/Release+your+plugin+with+GitHub+Actions), automated releases ensure consistent builds, reduce manual errors, and streamline the release process. The workflow builds on release creation and automatically packages the plugin for distribution.
+- **Attribution**: User (Jp Rowan) with AI (Auto)
+- **Date**: 2025-11-26
+
 ## Implementation Details
 
 ### Security Fixes
@@ -145,6 +157,14 @@ The goal was to ensure the plugin:
 - Created SUBMISSION_CHECKLIST.md with comprehensive requirements
 - Created SUBMISSION_STATUS.md tracking completed and remaining items
 
+### Automated Release Workflow
+- Created GitHub Actions workflow (`.github/workflows/release.yml`) for automated builds
+- Updated esbuild.config.mjs to support CI/CD via OUT_DIR environment variable
+- Fixed version-bump.mjs to use correct manifest.json path (src/manifest.json)
+- Updated package.json version script to reference correct files
+- Created RELEASE.md with comprehensive release process guide
+- Created GitHub Actions workflow documentation
+
 ### Commits Made
 
 **Plugin Guidelines Compliance:**
@@ -162,6 +182,9 @@ The goal was to ensure the plugin:
 10. `docs: Align package.json description with manifest.json`
 11. `docs: Add submission requirements checklist and status`
 
+**Automated Releases:**
+12. `feat: Add GitHub Actions workflow for automated releases`
+
 ## Submission Readiness
 
 ### Code-Level Requirements: ✅ Complete
@@ -176,7 +199,7 @@ All code-level submission requirements have been addressed:
 ### Remaining Manual Steps
 The following manual steps are required before submission:
 1. **GitHub Repository Settings**: Set repository to public, add description and topics
-2. **Release Creation**: Build production version, create GitHub release with assets
+2. **Release Creation**: Use `npm version` and create GitHub release (workflow handles build/upload automatically)
 3. **Testing**: Verify functionality on desktop and mobile, test compatibility
 4. **Submission**: Fill out Obsidian's submission form with repository and release URLs
 
@@ -193,5 +216,6 @@ See `SUBMISSION_STATUS.md` for detailed tracking of completed and remaining item
 
 - [Obsidian Plugin Guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines)
 - [Obsidian Plugin Submission Requirements](https://docs.obsidian.md/Plugins/Releasing/Submission+requirements+for+plugins)
+- [Obsidian Release Automation Guide](https://docs.obsidian.md/Plugins/Releasing/Release+your+plugin+with+GitHub+Actions)
 - [Obsidian October Plugin Self-Critique Checklist](https://docs.obsidian.md/oo/plugin)
 
