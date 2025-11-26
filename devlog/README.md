@@ -54,4 +54,4 @@ Example:
 - [2025-11-16: Current Architecture and State](2025-11-16-current-architecture.md) - Current state of the plugin architecture and design decisions
 - [2025-11-18: DateTime Selector Feature](2025-11-18-datetime-selector-feature.md) - Implementation of date, time, and timezone selection for occurrences
 - [2025-11-19: File Selector Filtering Feature](2025-11-19-file-selector-filtering.md) - Implementation of folder and tag filtering for file selector suggestions
-- [2025-11-26: Plugin Guidelines Compliance](2025-11-26-plugin-guidelines-compliance.md) - Alignment with Obsidian Plugin Guidelines in preparation for release
+- [2025-11-26: Release Preparation](2025-11-26-release-preparation.md) - Alignment with Obsidian Plugin Guidelines and submission requirements in preparation for release

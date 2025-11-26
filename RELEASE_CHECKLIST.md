@@ -2,7 +2,7 @@
 
 This document provides a checklist for ensuring compliance with the [Obsidian Plugin Guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines) before releasing to the Community Plugins directory.
 
-> **Note**: This checklist was completed on 2025-11-26. See [devlog entry](../devlog/2025-11-26-plugin-guidelines-compliance.md) for detailed decisions and implementation.
+> **Note**: This checklist was completed on 2025-11-26. See [devlog entry](../devlog/2025-11-26-release-preparation.md) for detailed decisions and implementation.
 
 ## ✅ Code Organization
 
