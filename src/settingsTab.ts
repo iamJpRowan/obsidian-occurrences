@@ -273,8 +273,8 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
    */
   private getPropertyDisplayName(property: keyof OccurrenceObject): string {
     const names: Record<string, string> = {
-      occurredAt: "Occurred At",
-      toProcess: "To Process",
+      occurredAt: "Occurred at",
+      toProcess: "To process",
       participants: "Participants",
       topics: "Topics",
       location: "Location",
