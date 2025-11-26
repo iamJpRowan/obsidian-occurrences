@@ -124,9 +124,7 @@ export class EventHandler extends Events {
 
     // Check if target filename already exists
     if (this.app.vault.getAbstractFileByPath(newFilePath)) {
-      console.warn(
-        `Cannot rename ${file.path} to ${newFilePath}: target file already exists`
-      )
+      // Target file already exists, skip rename
       return
     }
 

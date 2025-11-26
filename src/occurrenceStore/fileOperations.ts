@@ -158,10 +158,7 @@ export class FileOperations {
     }
 
     // If we get here, the cache never became ready
-    console.warn(
-      `OccurrenceStore: Cache not ready for renamed file after ${maxAttempts} attempts:`,
-      file.path
-    )
+    // Silently fail - the file will be processed on next metadata cache update
     // Try to add anyway in case the cache is ready now
     addCallback(file)
   }
