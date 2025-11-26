@@ -3,7 +3,7 @@
   "name": "Occurrences",
   "version": "0.1.0",
   "minAppVersion": "0.15.0",
-  "description": "Extend your vault with Occurrences.",
+  "description": "A plugin for managing and viewing occurrences (time-stamped events) in your Obsidian vault.",
   "author": "Jp Rowan",
   "authorUrl": "https://github.com/iamJpRowan",
   "fundingUrl": "",
