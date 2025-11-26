@@ -267,7 +267,14 @@ export class TagSelector extends Component {
         )
         const afterMatch = displayTag.substring(matchIndex + searchQuery.length)
 
-        tagNameEl.innerHTML = `${beforeMatch}<strong>${match}</strong>${afterMatch}`
+        // Use safe DOM manipulation instead of innerHTML
+        if (beforeMatch) {
+          tagNameEl.createSpan({ text: beforeMatch })
+        }
+        tagNameEl.createEl("strong", { text: match })
+        if (afterMatch) {
+          tagNameEl.createSpan({ text: afterMatch })
+        }
       } else {
         tagNameEl.textContent = displayTag
       }

@@ -1,15 +1,24 @@
 {
   "name": "obsidian-occurrences",
   "version": "0.1.0",
-  "description": "Extend your Obsidian vault with Occurrences.",
+  "description": "A plugin for managing and viewing occurrences (time-stamped events) in your Obsidian vault.",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-    "version": "node version-bump.mjs && git add manifest.json versions.json"
+    "version": "node version-bump.mjs && git add src/manifest.json versions.json"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "obsidian",
+    "obsidian-plugin",
+    "occurrences",
+    "events",
+    "time-stamped",
+    "notes",
+    "vault",
+    "markdown"
+  ],
+  "author": "Jp Rowan",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^16.11.6",

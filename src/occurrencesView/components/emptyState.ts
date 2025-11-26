@@ -56,7 +56,7 @@ export class EmptyState extends Component {
       // Create reset filters button
       const resetButton = this.emptyStateEl.createEl("button", {
         cls: "mod-cta empty-state-reset-button",
-        text: "Reset Filters",
+        text: "Reset filters",
       })
 
       this.registerDomEvent(resetButton, "click", () => {

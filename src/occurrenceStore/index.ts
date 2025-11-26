@@ -65,12 +65,6 @@ export class OccurrenceStore {
       console.error(`Error loading OccurrenceStore`, error)
     } finally {
       this.isLoading = false
-      const endTime = performance.now()
-      const duration = (endTime - startTime).toFixed(2)
-
-      console.info(
-        `OccurrenceStore: loaded ${this.items.size} items in ${duration}ms`
-      )
       this.eventHandler.trigger("loaded")
     }
   }
@@ -89,12 +83,10 @@ export class OccurrenceStore {
    */
   public add(file: TFile): void {
     if (!this.fileOps.isRelevantFile(file.path)) {
-      console.error(`OccurrenceStore not relevant: ${file.path}`)
       return
     }
     this.fileOps.processFile(file).then(item => {
       if (!item) {
-        console.error(`OccurrenceStore not found: ${file.path}`)
         return
       }
       this.storeOps.addOccurrence(item)
@@ -107,7 +99,6 @@ export class OccurrenceStore {
    * @emits deleted { string } - The path of the occurrence that was deleted
    */
   public remove(path: string): void {
-    console.info(`OccurrenceStore remove:`, path)
     this.storeOps.removeOccurrenceFromPath(path)
   }
 

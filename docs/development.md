@@ -227,10 +227,47 @@ None - plugin uses only Obsidian's built-in APIs
 - **@typescript-eslint/\*** - TypeScript linting
 - **obsidian** - Obsidian type definitions (for development)
 
+## Preparing for Release
+
+Before releasing to the Obsidian Community Plugins directory, ensure compliance with [Obsidian Plugin Guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
+
+### Pre-Release Checklist
+
+- [ ] **Security**: No `innerHTML`/`outerHTML` usage - use safe DOM helpers
+- [ ] **UI Text**: All UI text follows sentence case (first word + proper nouns only)
+- [ ] **Headings**: Settings tab doesn't use HTML heading tags unnecessarily
+- [ ] **Console Logging**: Minimized to essential error logs only
+- [ ] **License**: LICENSE file matches package.json license field
+- [ ] **Author Info**: Author information complete in LICENSE, package.json, and manifest.json
+- [ ] **Description**: manifest.json has descriptive description
+- [ ] **App Instance**: Uses `this.app` instead of global `app` object
+- [ ] **Resource Cleanup**: Uses `registerEvent()` and `addCommand()` for cleanup
+- [ ] **Performance**: Uses `onLayoutReady()` for deferred operations
+- [ ] **No Placeholders**: No placeholder class names (MyPlugin, SampleSettingTab, etc.)
+- [ ] **main.js**: Excluded from repository (in .gitignore)
+
+### Release Process
+
+For detailed release instructions, see [RELEASE.md](../RELEASE.md) in the repository root.
+
+Quick overview:
+1. **Version bump**: `npm version patch|minor|major`
+2. **Push changes**: `git push && git push --tags`
+3. **Create GitHub release**: Draft a new release on GitHub
+4. **Automated build**: GitHub Actions builds and uploads `release.zip` automatically
+
+The release process is automated via GitHub Actions. See [RELEASE.md](../RELEASE.md) for complete step-by-step instructions.
+
+### Guidelines Reference
+
+See `.cursorrules.md` for detailed Obsidian Plugin Guidelines compliance standards.
+
 ## Resources
 
 - [Obsidian Plugin API Documentation](https://docs.obsidian.md/Plugins)
 - [Obsidian Plugin Development Guide](https://docs.obsidian.md/Plugins/Getting+started)
+- [Obsidian Plugin Guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines)
+- [Obsidian Plugin Self-Critique Checklist](https://docs.obsidian.md/oo/plugin)
 - [TypeScript Documentation](https://www.typescriptlang.org/docs/)
 - [esbuild Documentation](https://esbuild.github.io/)
 
