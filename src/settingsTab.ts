@@ -20,18 +20,8 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
 
     containerEl.empty()
 
-    containerEl.createEl("h2", { text: "Occurrences Plugin Settings" })
-
     containerEl.createEl("p", {
       text: "Configure which frontmatter fields are used for each occurrence property.",
-    })
-
-    // Property mapping settings
-    containerEl.createEl("h3", { text: "Property Mapping" })
-
-    containerEl.createEl("p", {
-      text: "Map OccurrenceObject properties to frontmatter field names. These determine which frontmatter fields are read when creating occurrence objects.",
-      cls: "setting-item-description",
     })
 
     // Create a setting for each mappable property
