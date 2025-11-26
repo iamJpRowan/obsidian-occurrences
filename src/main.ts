@@ -1,12 +1,15 @@
-import { Plugin, WorkspaceLeaf } from "obsidian"
+import { Plugin, Platform, WorkspaceLeaf } from "obsidian"
 import { OccurrenceStore } from "./occurrenceStore"
 import { OCCURRENCES_VIEW, OccurrencesView } from "./occurrencesView"
 import { DEFAULT_SETTINGS, OccurrencesPluginSettings } from "./settings"
 import { OccurrencesSettingsTab } from "./settingsTab"
+import { OccurrenceModal, OccurrenceForm, OCCURRENCE_FORM_VIEW } from "./occurrenceEditor"
 
 export default class OccurrencesPlugin extends Plugin {
   occurrenceStore: OccurrenceStore
   settings: OccurrencesPluginSettings
+  // Temporary storage for occurrence when opening form view
+  private pendingOccurrence: import("./types").OccurrenceObject | null = null
 
   async onload() {
     await this.loadSettings()
@@ -26,8 +29,14 @@ export default class OccurrencesPlugin extends Plugin {
         this.openView()
       }
     )
-    // Register View
+    // Register Views
     this.registerView(OCCURRENCES_VIEW, leaf => new OccurrencesView(leaf, this))
+    // OccurrenceForm - get occurrence from plugin's temporary storage
+    this.registerView(OCCURRENCE_FORM_VIEW, leaf => {
+      const occurrence = this.pendingOccurrence
+      this.pendingOccurrence = null // Clear after use
+      return new OccurrenceForm(leaf, this, occurrence)
+    })
 
     // Add Commands
     this.addCommand({
@@ -42,28 +51,14 @@ export default class OccurrencesPlugin extends Plugin {
     this.addCommand({
       id: "add-occurrence",
       name: "Add Occurrence",
-      callback: () => {
-        try {
-          // TODO: Convert ObjectModal to be used here
-          // new ObjectModal({
-          //   plugin: this,
-          //   objectClass: "Entity",
-          //   onSubmit: (file: any) => {
-          //     // Once created open the entity in the active editor
-          //     this.app.workspace.openLinkText(file.path, "", false)
-          //   },
-          // }).open()
-        } catch (error) {
-          console.error("Failed to create Occurrence:", error)
-        }
+      callback: async () => {
+        await this.openOccurrenceForm(null)
       },
     })
 
-    // TODO: Update mobile app to use add-occurrence
-    this.registerObsidianProtocolHandler("add-occurrence", params => {
-      // new OccurrenceModal(this, params as Partial<OccurrenceObject>, file => {
-      //   this.app.workspace.openLinkText(file.path, "", false)
-      // }).open()
+    // Obsidian protocol handler for mobile app
+    this.registerObsidianProtocolHandler("add-occurrence", async params => {
+      await this.openOccurrenceForm(null)
     })
   }
 
@@ -93,6 +88,27 @@ export default class OccurrencesPlugin extends Plugin {
 
       // Brief timeout to allow UI to update
       await new Promise(resolve => setTimeout(resolve, 50))
+    }
+  }
+
+  /**
+   * Open occurrence form (view on mobile, modal on desktop)
+   */
+  async openOccurrenceForm(occurrence: import("./types").OccurrenceObject | null): Promise<void> {
+    try {
+      if (Platform.isMobile || Platform.isMobileApp) {
+        const { workspace } = this.app
+        // Store occurrence temporarily for view factory to use
+        this.pendingOccurrence = occurrence
+        const leaf = workspace.getLeaf(true)
+        await leaf.setViewState({ type: OCCURRENCE_FORM_VIEW, active: true })
+        workspace.revealLeaf(leaf)
+      } else {
+        new OccurrenceModal(this, occurrence).open()
+      }
+    } catch (error) {
+      console.error("Failed to open occurrence form:", error)
+      this.pendingOccurrence = null // Clear on error
     }
   }
 

@@ -3,6 +3,7 @@ import OccurrencesPlugin from "@/main"
 import { OccurrenceStore } from "@/occurrenceStore"
 import { OccurrenceObject } from "@/types"
 import { App, Menu, TFile, setTooltip } from "obsidian"
+import { OccurrenceModal } from "@/occurrenceEditor"
 
 export class OccurrenceListItem extends ListItem<OccurrenceObject> {
   private plugin: OccurrencesPlugin
@@ -52,6 +53,12 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
       // Prevent default to avoid any unwanted behavior
       event.preventDefault()
 
+      // Check if Option/Alt key is pressed for update form
+      if (event.altKey) {
+        this.plugin.openOccurrenceForm(this.occurrence)
+        return
+      }
+
       // Check if cmd (Mac) or ctrl (Windows/Linux) is pressed for new tab
       const openInNewTab = event.metaKey || event.ctrlKey
 
@@ -76,10 +83,19 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
   }
 
   private configureMenu() {
+    // Update occurrence option
+    this.menu.addItem(item => {
+      item
+        .setTitle("Edit")
+        .setIcon("pencil")
+        .onClick(() => {
+          this.plugin.openOccurrenceForm(this.occurrence)
+        })
+    })
     // Open file option
     this.menu.addItem(item => {
       item
-        .setTitle("Open File")
+        .setTitle("Open")
         .setIcon("file-symlink")
         .onClick(() =>
           this.plugin.app.workspace.openLinkText(
@@ -92,7 +108,7 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
     // Open file in new tab option
     this.menu.addItem(item => {
       item
-        .setTitle("Open File in New Tab")
+        .setTitle("Open in New Tab")
         .setIcon("arrow-up-right")
         .onClick(() =>
           this.plugin.app.workspace.openLinkText(

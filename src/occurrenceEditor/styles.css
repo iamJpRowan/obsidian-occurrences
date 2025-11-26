@@ -1,0 +1,540 @@
+/* Occurrence Modal Styles */
+
+.occurrence-modal {
+  padding: 0;
+}
+
+.occurrence-modal-title-header {
+  padding: var(--size-4-1) var(--size-4-2) var(--size-4-2) var(--size-4-2);
+}
+
+/* Shared title input styles for modal and form */
+.occurrence-modal-title-header input,
+.occurrence-form-view-title-header input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+  font-size: var(--font-ui-large);
+  font-weight: 600;
+  color: var(--text-normal);
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+}
+
+.occurrence-modal-title-header input::placeholder,
+.occurrence-form-view-title-header input::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+.occurrence-modal-title-header input:focus,
+.occurrence-form-view-title-header input:focus {
+  outline: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+
+.occurrence-modal-form {
+  padding: 0 var(--size-4-2) var(--size-4-2) var(--size-4-2);
+}
+
+/* Occurrence Form View Styles (Mobile ItemView) */
+.occurrence-form-view {
+  position: relative;
+  /* Make entire container scrollable like settings tab */
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  -webkit-overflow-scrolling: touch;
+}
+
+.occurrence-form-view-header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  padding: var(--size-4-2);
+  flex-shrink: 0;
+  background: var(--background-primary);
+  /* Sticky header when scrolling */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.occurrence-form-view-title-header {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.occurrence-form-view-form {
+  /* Remove overflow - let parent container handle scrolling */
+  padding: var(--size-4-2);
+  padding-bottom: var(--size-4-4); /* Extra space for keyboard */
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex-shrink: 0;
+  /* Let content determine height naturally */
+}
+
+.occurrence-modal-field {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--size-4-2);
+  margin-bottom: var(--size-2-1);
+  padding: var(--size-2-1);
+  border-radius: var(--radius-s);
+  border: 1px solid transparent;
+  transition: border-color var(--anim-duration-fast) ease-in-out;
+}
+
+.occurrence-modal-field:hover {
+  border-color: var(--background-modifier-border);
+}
+
+.occurrence-modal-field-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  padding-top: calc((var(--input-height) - var(--icon-xs)) / 2);
+}
+
+.occurrence-modal-field-icon svg {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+}
+
+.occurrence-modal-field-label {
+  display: inline-flex;
+  align-items: center;
+  font-weight: var(--font-normal);
+  font-size: var(--font-ui-smaller);
+  width: 100px;
+  flex-shrink: 0;
+  margin: 0;
+  color: var(--text-normal);
+  min-height: var(--input-height);
+}
+
+.occurrence-modal-field > .occurrence-modal-file-container {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* Date/Time/Timezone Input Styles - Unified Input Pattern */
+
+.datetime-input-container {
+  position: relative;
+  padding: 0;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-radius: var(--input-radius);
+  cursor: text;
+  transition: border-color var(--anim-duration-fast) ease-in-out;
+  flex: 1;
+  min-width: 0;
+}
+
+.datetime-input-container:focus-within {
+  outline: var(--size-2-1) solid var(--background-modifier-border-focus);
+  outline-offset: calc(-1 * var(--size-2-1));
+}
+
+.datetime-input-wrapper {
+  position: relative;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 var(--size-4-2) 0 0;
+  min-height: var(--input-height);
+  gap: var(--size-4-2);
+}
+
+.datetime-input-native {
+  flex: 0 1 auto;
+  border: none;
+  background: transparent !important;
+  padding: var(--size-4-2) var(--size-4-1);
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  font-family: inherit;
+  height: calc(var(--input-height) - 2px);
+  line-height: calc(var(--input-height) - 2px);
+  outline: none;
+  cursor: text;
+}
+
+/* More specific selector for inputs in wrapper to override any defaults */
+.datetime-input-wrapper .datetime-input-native {
+  border: none;
+  background: transparent;
+}
+
+.datetime-input-native:focus {
+  outline: none;
+  background-color: var(--background-modifier-hover);
+  border-radius: var(--radius-s);
+}
+
+.datetime-input-native[type="datetime-local"] {
+  min-width: 230px;
+  flex: 0 1 230px;
+  padding-right: var(--size-4-2);
+}
+
+/* More specific selector to override Obsidian's datetime-local input background */
+.datetime-input-wrapper .datetime-input-native[type="datetime-local"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none;
+  border-width: 0;
+}
+
+/* More specific selector using parent container for higher specificity */
+.datetime-input-wrapper select.datetime-input-native {
+  min-width: 120px;
+  flex: 0 1 120px;
+  cursor: pointer;
+  /* Fix line-height - use normal instead of matching full height */
+  line-height: normal;
+  /* Ensure padding matches other inputs */
+  padding-top: var(--size-4-2);
+  padding-bottom: var(--size-4-2);
+  padding-left: var(--size-4-1);
+  padding-right: var(--size-4-3);
+  box-sizing: border-box;
+  /* Remove all borders */
+  border: none;
+  border-width: 0;
+  /* Remove box-shadow that creates border-like appearance */
+  box-shadow: none;
+}
+
+/* Remove default select styling to blend in */
+.datetime-input-wrapper select.datetime-input-native {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: none;
+}
+
+/* Style the native datetime-local input icon */
+.datetime-input-native[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  margin-left: var(--size-4-1);
+}
+
+.datetime-input-native[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+.occurrence-modal-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--size-4-2);
+  margin-top: var(--size-4-3);
+  padding-top: var(--size-4-2);
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+/* Submit button styles for form view */
+.occurrence-form-view-form button.mod-cta {
+  margin-top: var(--size-4-4);
+  width: 100%;
+}
+
+.occurrence-modal-to-process {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  flex: 1;
+  min-width: 0;
+  min-height: var(--input-height);
+}
+
+.occurrence-modal-to-process input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+}
+
+.occurrence-modal-to-process label {
+  margin: 0;
+  cursor: pointer;
+  font-size: var(--font-ui-small);
+  color: var(--text-normal);
+}
+
+.occurrence-modal-error {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  padding: var(--size-4-1) 0;
+  margin: var(--size-4-2) 0 0 0;
+  color: var(--text-error);
+  min-height: var(--size-4-3); /* Reserve space to prevent layout shift */
+  transition: opacity var(--anim-duration-fast) ease-in-out, visibility var(--anim-duration-fast) ease-in-out;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.occurrence-modal-error.is-visible {
+  visibility: visible;
+  opacity: 1;
+  min-height: auto;
+}
+
+.occurrence-modal-error-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--text-error);
+}
+
+.occurrence-modal-error-icon svg {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+}
+
+.occurrence-modal-error-text {
+  color: var(--text-error);
+}
+
+/* File Selector Styles */
+
+.occurrence-modal-file-container {
+  position: relative;
+}
+
+.occurrence-modal-file-input-container {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background-color: transparent;
+}
+
+.occurrence-modal-file-input-icon {
+  display: none;
+}
+
+.occurrence-modal-file-input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--size-4-1);
+  min-height: var(--input-height);
+  position: relative;
+}
+
+.occurrence-modal-file-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  min-width: 100px;
+  font-size: var(--font-ui-small);
+  padding-right: var(--size-4-4);
+}
+
+.occurrence-modal-file-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-4-1);
+  padding: var(--size-4-1) var(--size-4-2);
+  background-color: var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  font-size: var(--font-ui-smaller);
+}
+
+.occurrence-modal-file-pill-text {
+  color: var(--text-normal);
+}
+
+.occurrence-modal-file-pill-remove {
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: var(--font-ui-medium);
+  line-height: 1;
+  padding: 0 var(--size-4-1);
+}
+
+.occurrence-modal-file-pill-remove:hover {
+  color: var(--text-error);
+}
+
+/* Keyboard-selected file highlighting */
+.occurrence-modal-file-pill.is-keyboard-selected {
+  outline: var(--size-2-1) solid var(--background-modifier-border-focus);
+  outline-offset: var(--size-2-1);
+}
+
+.occurrence-modal-clear-button {
+  position: absolute;
+  background: transparent;
+  border-radius: 50%;
+  color: var(--text-muted);
+  cursor: pointer;
+  top: 50%;
+  right: var(--size-2-1);
+  transform: translateY(-50%);
+  line-height: 0;
+  height: var(--input-height);
+  width: var(--size-4-4);
+  padding: 0;
+  text-align: center;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  transition: color var(--anim-duration-fast) ease-in-out;
+  z-index: 2;
+}
+
+.occurrence-modal-clear-button.is-visible {
+  display: flex;
+}
+
+.occurrence-modal-clear-button::before {
+  content: "✕";
+  font-size: var(--font-ui-small);
+  font-weight: normal;
+  line-height: 1;
+}
+
+.occurrence-modal-clear-button:hover {
+  color: var(--text-normal);
+}
+
+.occurrence-modal-file-suggestions-container {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: var(--size-4-1);
+  background-color: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-s);
+  z-index: 1000;
+  max-height: 20rem;
+  overflow-y: auto;
+  display: none;
+}
+
+.occurrence-modal-file-suggestions-container.is-visible {
+  display: block;
+}
+
+.occurrence-modal-file-suggestions-list {
+  padding: var(--size-4-1);
+}
+
+.occurrence-modal-file-suggestion {
+  padding: var(--size-4-2);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+}
+
+.occurrence-modal-file-suggestion:hover,
+.occurrence-modal-file-suggestion.is-selected {
+  background-color: var(--background-modifier-hover);
+}
+
+.occurrence-modal-file-suggestion.is-new {
+  color: var(--text-accent);
+}
+
+.occurrence-modal-file-suggestion-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.occurrence-modal-file-suggestion-name {
+  font-weight: 500;
+  color: var(--text-normal);
+}
+
+.occurrence-modal-file-suggestion-path {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+/* Tag Selector Styles - Override file selector styles for tags */
+
+/* Tag pill styling - matches occurrences view */
+.occurrence-modal-tag-pill {
+  display: flex;
+  align-items: center;
+  background-color: var(--tag-background);
+  color: var(--tag-color);
+  border-radius: var(--radius-m);
+  padding: var(--size-2-1) var(--size-4-2);
+  font-size: var(--font-ui-smaller);
+  gap: var(--size-2-1);
+  flex: 0 0 auto;
+}
+
+.occurrence-modal-tag-pill-text {
+  color: var(--tag-color);
+}
+
+.occurrence-modal-tag-pill-remove {
+  cursor: pointer;
+  color: var(--tag-color);
+  font-weight: lighter;
+  font-size: var(--font-ui-medium);
+  margin-top: calc(-1 * var(--size-2-1));
+  line-height: 1;
+  border-radius: 50%;
+  transition: background-color var(--anim-duration-fast) ease;
+  padding: 0 var(--size-4-1);
+}
+
+.occurrence-modal-tag-pill-remove:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+/* Keyboard-selected tag highlighting */
+.occurrence-modal-tag-pill.is-keyboard-selected {
+  outline: var(--size-2-1) solid var(--background-modifier-border-focus);
+  outline-offset: var(--size-2-1);
+}
+
+/* Clear button positioning for tags - positioned within input wrapper */
+.occurrence-modal-tag-container .occurrence-modal-file-input-wrapper {
+  position: relative;
+}
+
+.occurrence-modal-tag-container .occurrence-modal-clear-button {
+  position: absolute;
+  right: var(--size-2-1);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+/* Tag suggestions container - use fixed positioning for modal */
+

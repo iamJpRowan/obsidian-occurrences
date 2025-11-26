@@ -14,10 +14,30 @@ export const MAPPABLE_PROPERTIES: (keyof OccurrenceObject)[] = [
 ]
 
 /**
+ * File selector filter settings
+ */
+export interface FileSelectorFilterSettings {
+  enabled?: boolean
+  folders?: {
+    include?: string[]  // Folder paths to include (e.g., ["People/", "Places/"])
+    exclude?: string[]  // Folder paths to exclude
+  }
+  tags?: {
+    include?: string[]  // Tags to include (must have at least one)
+    exclude?: string[]  // Tags to exclude (must not have any)
+  }
+}
+
+/**
  * Plugin settings interface
  */
 export interface OccurrencesPluginSettings {
   propertyMapping: Record<string, string>
+  fileSelectorFilters: {
+    location: FileSelectorFilterSettings
+    participants: FileSelectorFilterSettings
+    topics: FileSelectorFilterSettings
+  }
 }
 
 /**
@@ -30,6 +50,11 @@ export const DEFAULT_SETTINGS: OccurrencesPluginSettings = {
     participants: "participants",
     topics: "topics",
     location: "location",
+  },
+  fileSelectorFilters: {
+    location: {},
+    participants: {},
+    topics: {},
   },
 }
 
