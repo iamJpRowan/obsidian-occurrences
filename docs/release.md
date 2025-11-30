@@ -90,7 +90,11 @@ Once you publish the release, GitHub Actions will automatically:
    - `main.js` (compiled plugin)
    - `manifest.json` (plugin manifest)
    - `styles.css` (bundled styles)
-5. ✅ Upload `release.zip` as a release asset
+5. ✅ Upload release assets:
+   - `main.js` (individual file)
+   - `manifest.json` (individual file)
+   - `styles.css` (individual file)
+   - `release.zip` (complete package)
 
 You can monitor the workflow progress in the **Actions** tab of your repository.
 
@@ -121,6 +125,10 @@ If this is your first release and you haven't submitted to the Community Plugins
 
 Each release will contain:
 
+- **Individual files**:
+  - `main.js` - Compiled plugin code
+  - `manifest.json` - Plugin manifest
+  - `styles.css` - Bundled styles
 - **release.zip**: Complete plugin package ready for installation
   - Extract to `.obsidian/plugins/occurrences/` in any vault
   - Contains: `main.js`, `manifest.json`, `styles.css`

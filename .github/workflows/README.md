@@ -12,7 +12,11 @@ The release workflow automatically builds and packages the plugin when a GitHub 
    - `main.js` (compiled plugin)
    - `manifest.json` (plugin manifest)
    - `styles.css` (bundled styles)
-4. **Upload**: Uploads the zip file as a release asset
+4. **Upload**: Uploads individual files and zip as release assets:
+   - `main.js` (individual file)
+   - `manifest.json` (individual file)
+   - `styles.css` (individual file)
+   - `release.zip` (complete package)
 
 ### Usage
 
@@ -35,12 +39,13 @@ The release workflow automatically builds and packages the plugin when a GitHub 
 
 4. **Workflow runs automatically**:
    - The workflow will build the plugin
-   - Upload `release.zip` to the release assets
+   - Upload individual files (`main.js`, `manifest.json`, `styles.css`) and `release.zip` to the release assets
    - You'll see the workflow run in the Actions tab
 
 ### Release Assets
 
 After the workflow completes, your release will have:
+- Individual files: `main.js`, `manifest.json`, `styles.css`
 - `release.zip` - Contains all plugin files ready for distribution
 
 Users can download and extract this zip to their `.obsidian/plugins/occurrences/` directory.
