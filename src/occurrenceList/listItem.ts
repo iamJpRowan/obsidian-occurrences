@@ -90,7 +90,7 @@ export class ListItem<T = string> extends Component {
       })
     }
 
-    const textEl = rightSection.createEl("span", {
+    rightSection.createEl("span", {
       cls: `list-item-text-right ${className || ""}`,
       text: text,
     })

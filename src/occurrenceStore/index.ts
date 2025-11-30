@@ -43,7 +43,6 @@ export class OccurrenceStore {
   public async load(): Promise<void> {
     if (this.isLoading) return
 
-    const startTime = performance.now()
     this.isLoading = true
 
     try {
