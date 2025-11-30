@@ -60,8 +60,8 @@ git push --tags
 1. Go to your repository on GitHub
 2. Click on **Releases** (in the right sidebar or under the Code tab)
 3. Click **Draft a new release**
-4. Select the tag you just created (e.g., `v0.1.0`)
-5. **Release title**: Use the version number (e.g., `v0.1.0`) or a descriptive title
+4. Select the tag you just created (e.g., `1.0.1`)
+5. **Release title**: Use the version number WITHOUT the `v` prefix (e.g., `1.0.1`, NOT `v1.0.1`)
 6. **Release notes**: Describe what's new, changed, or fixed in this release
 
    Example release notes:
@@ -157,9 +157,15 @@ If `release.zip` doesn't appear:
 
 ```bash
 # Full release process
-npm version patch          # Bump version
+npm version patch          # Bump version (creates tag like 1.0.1)
 git push && git push --tags  # Push changes and tags
-# Then create release on GitHub
+
+# Create GitHub release (using GitHub CLI)
+# Note: Release title should NOT have 'v' prefix
+gh release create <VERSION> --title "<VERSION>" --notes "..."
+
+# Example:
+gh release create 1.0.1 --title "1.0.1" --notes "## Bug Fixes\n- Fixed issue X"
 ```
 
 ## See Also
