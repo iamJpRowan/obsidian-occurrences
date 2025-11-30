@@ -24,6 +24,8 @@ export default class OccurrencesPlugin extends Plugin {
 
     this.addRibbonIcon(
       "calendar-range",
+      // "Occurrences" is a proper noun (plugin's main concept)
+      // eslint-disable-next-line obsidianmd/ui/sentence-case
       "Open Occurrences View",
       (evt: MouseEvent) => {
         this.openView()
@@ -45,6 +47,8 @@ export default class OccurrencesPlugin extends Plugin {
       id: "open-occurrences-view",
       // Command name includes plugin name for user clarity in command palette
       // eslint-disable-next-line obsidianmd/commands/no-plugin-name-in-command-name
+      // "Occurrences" is a proper noun (plugin's main concept)
+      // eslint-disable-next-line obsidianmd/ui/sentence-case
       name: "Open Occurrences View",
       callback: () => {
         this.openView()
@@ -54,6 +58,8 @@ export default class OccurrencesPlugin extends Plugin {
     // Create Occurrence
     this.addCommand({
       id: "add-occurrence",
+      // "Occurrence" is a proper noun (plugin's main concept)
+      // eslint-disable-next-line obsidianmd/ui/sentence-case
       name: "Add Occurrence",
       callback: async () => {
         await this.openOccurrenceForm(null)

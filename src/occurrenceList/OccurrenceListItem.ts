@@ -108,7 +108,7 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
     // Open file in new tab option
     this.menu.addItem(item => {
       item
-        .setTitle("Open in New Tab")
+        .setTitle("Open in new tab")
         .setIcon("arrow-up-right")
         .onClick(() =>
           this.plugin.app.workspace.openLinkText(
@@ -122,6 +122,8 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
     this.menu.addSeparator()
     this.menu.addItem(item => {
       item
+        // "Occurrence" is a proper noun (plugin's main concept)
+        // eslint-disable-next-line obsidianmd/ui/sentence-case
         .setTitle("Delete Occurrence")
         .setIcon("trash")
         .onClick(() => {
