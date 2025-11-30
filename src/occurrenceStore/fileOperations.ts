@@ -54,15 +54,15 @@ export class FileOperations {
     // Extract values from frontmatter using dynamic field names
     // Obsidian's frontmatter is inherently any type
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    const occurrence_occurred_at = frontmatter[occurredAtField]
+    const occurredAt = frontmatter[occurredAtField]
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    const occurrence_to_process = frontmatter[toProcessField]
+    const toProcess = frontmatter[toProcessField]
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    const occurrence_location = frontmatter[locationField]
+    const location = frontmatter[locationField]
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    const occurrence_participants = frontmatter[participantsField]
+    const participants = frontmatter[participantsField]
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    const occurrence_topics = frontmatter[topicsField]
+    const topics = frontmatter[topicsField]
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const tags = frontmatter[tagsField]
 
@@ -71,20 +71,23 @@ export class FileOperations {
       file,
       title: this.removeDatePrefix(file.basename, OCCURRENCE_DATE_FORMAT),
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      occurredAt: new Date(occurrence_occurred_at),
+      occurredAt: new Date(occurredAt),
       toProcess:
-        !occurrence_occurred_at ||
+        !occurredAt ||
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        isNaN(new Date(occurrence_occurred_at).getTime()) ||
-        occurrence_to_process
+        isNaN(new Date(occurredAt).getTime()) ||
+        toProcess
           ? true
           : false,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      participants: convertListToLinks(occurrence_participants),
+      participants: convertListToLinks(participants),
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      topics: convertListToLinks(occurrence_topics),
+      topics: convertListToLinks(topics),
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      location: occurrence_location ? parseLink(occurrence_location) : null,
+      location:
+        location && typeof location === "string"
+          ? parseLink(location)
+          : null,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       tags: this.normalizeTags(tags),
     }
@@ -135,14 +138,14 @@ export class FileOperations {
     const occurredAtField = getFrontmatterFieldName("occurredAt", this.settings)
     // Obsidian's frontmatter is inherently any type
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    const occurrence_occurred_at = frontmatter[occurredAtField]
+    const occurredAt = frontmatter[occurredAtField]
 
-    if (occurrence_occurred_at) {
+    if (occurredAt) {
       const title = this.removeDatePrefix(file.basename, OCCURRENCE_DATE_FORMAT)
       return this.applyDatePrefix(
         title,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        new Date(occurrence_occurred_at),
+        new Date(occurredAt),
         OCCURRENCE_DATE_FORMAT
       )
     }

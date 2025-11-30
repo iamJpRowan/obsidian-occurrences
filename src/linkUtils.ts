@@ -4,6 +4,11 @@ import { ObsidianLink } from "@/types"
  * Parse an Obsidian link from a markdown string
  */
 export function parseLink(linkText: string): ObsidianLink | null {
+  // Ensure linkText is a string
+  if (typeof linkText !== "string") {
+    return null
+  }
+
   // Parse wikilinks [[Target]] or [[Target|Alias]]
   const wikiLinkRegex = /\[\[(.*?)(?:#(.*?))?(?:\|(.*?))?\]\]/
   const wikiMatch = linkText.match(wikiLinkRegex)
@@ -66,19 +71,21 @@ export function parseLink(linkText: string): ObsidianLink | null {
  */
 export function formatLink(link: ObsidianLink): string {
   switch (link.type) {
-    case "wiki":
+    case "wiki": {
       let wikiLink = `[[${link.target}`
       if (link.section) wikiLink += `#${link.section}`
       if (link.alias) wikiLink += `|${link.alias}`
       return wikiLink + "]]"
+    }
 
     case "markdown":
       return `[${link.displayText || link.target}](${link.target})`
 
-    case "uri":
+    case "uri": {
       let uri = `obsidian://open?file=${encodeURIComponent(link.target)}`
       if (link.vault) uri += `&vault=${encodeURIComponent(link.vault)}`
       return `[${link.displayText || link.target}](${uri})`
+    }
 
     default:
       return ""
@@ -149,6 +156,7 @@ export function convertListToLinks(list: any): ObsidianLink[] {
   if (!Array.isArray(list) || (list.length === 1 && list[0] === null)) return []
 
   return list
+    .filter((link): link is string => typeof link === "string")
     .map(link => parseLink(link))
     .filter((link): link is ObsidianLink => link !== null)
 }
