@@ -65,7 +65,7 @@ export class OccurrencesView extends ItemView {
     return "Occurrences"
   }
 
-  onOpen(): void {
+  onOpen(): Promise<void> {
     const container = this.containerEl.children[1]
     container.empty()
     container.addClass("occurrences-view-container")
@@ -110,6 +110,7 @@ export class OccurrencesView extends ItemView {
 
     // Load initial occurrences
     this.loadAndRenderOccurrences()
+    return Promise.resolve()
   }
 
   private handleFilterChange(filters: SearchFilters): void {
