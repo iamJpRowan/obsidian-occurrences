@@ -291,9 +291,9 @@ export class OccurrenceSearch {
     if (a.length === 0) return b.length
     if (b.length === 0) return a.length
 
-    const matrix = Array(b.length + 1)
+    const matrix: number[][] = Array(b.length + 1)
       .fill(null)
-      .map(() => Array(a.length + 1).fill(null))
+      .map(() => Array(a.length + 1).fill(null) as number[])
 
     for (let i = 0; i <= a.length; i++) matrix[0][i] = i
     for (let j = 0; j <= b.length; j++) matrix[j][0] = j

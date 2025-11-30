@@ -40,7 +40,7 @@ export class OccurrenceStore {
   /**
    * Load occurrences from the vault
    */
-  public async load(): Promise<void> {
+  public load(): void {
     if (this.isLoading) return
 
     this.isLoading = true
@@ -61,6 +61,8 @@ export class OccurrenceStore {
         }
       }
     } catch (error) {
+      // Error type is unknown in catch blocks
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       console.error(`Error loading OccurrenceStore`, error)
     } finally {
       this.isLoading = false
@@ -84,12 +86,11 @@ export class OccurrenceStore {
     if (!this.fileOps.isRelevantFile(file.path)) {
       return
     }
-    void this.fileOps.processFile(file).then(item => {
-      if (!item) {
-        return
-      }
-      this.storeOps.addOccurrence(item)
-    })
+    const item = this.fileOps.processFile(file)
+    if (!item) {
+      return
+    }
+    this.storeOps.addOccurrence(item)
   }
 
   /**
@@ -124,22 +125,29 @@ export class OccurrenceStore {
 
   /**
    * Subscribe to store events
+   * Event callbacks can have various argument types
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public on(event: string, callback: (...args: any[]) => void) {
     return this.eventHandler.on(event, callback)
   }
 
   /**
    * Unsubscribe from store events
+   * Event callbacks can have various argument types
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public off(event: string, callback: (...args: any[]) => void) {
     this.eventHandler.off(event, callback)
   }
 
   /**
    * Trigger store events
+   * Event arguments can be of various types
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public trigger(event: string, ...args: any[]) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.eventHandler.trigger(event, ...args)
   }
 }

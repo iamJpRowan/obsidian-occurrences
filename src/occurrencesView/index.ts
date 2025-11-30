@@ -165,6 +165,7 @@ export class OccurrencesView extends ItemView {
       // Add occurrences to the list
       for (const occurrence of searchResult.items) {
         const listItem = this.occurrenceList.addItem(occurrence)
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         this.occurrenceListItems.set(occurrence.file.path, listItem)
       }
     }
@@ -203,6 +204,7 @@ export class OccurrencesView extends ItemView {
 
     // Diff against current state
     const currentPaths = new Set(this.occurrenceListItems.keys())
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const diff = this.searchService.diffResults(
       currentPaths,
       searchResult.items

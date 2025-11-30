@@ -129,6 +129,8 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
           this.occurrenceStore.remove(this.occurrence.file.path)
         })
       // Add a danger class to the item for styling
+      // Accessing Obsidian's internal MenuItem.dom property
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
       const itemDom = (item as any).dom as HTMLElement
       if (itemDom) {
         itemDom.addClass("menu-item-danger")

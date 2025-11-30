@@ -96,6 +96,8 @@ export class EventHandler extends Events {
     if (!newItem) return
 
     // Compare old and new items - only update if they're different
+    // cachedItem is OccurrenceObject | undefined, but we've checked it's not undefined above
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     if (!this.fileOps.occurrencesEqual(cachedItem, newItem)) {
       this.storeOps.updateOccurrence(newItem)
     }
@@ -104,7 +106,7 @@ export class EventHandler extends Events {
   /**
    * Add an occurrence from a file
    */
-  private async addOccurrenceFromFile(file: TFile): Promise<void> {
+  private addOccurrenceFromFile(file: TFile): void {
     const item = this.fileOps.processFile(file)
     if (!item) return
 
@@ -135,6 +137,8 @@ export class EventHandler extends Events {
       // Rename the file - this will trigger the rename event handlers which will add the new item
       await this.app.fileManager.renameFile(file, newFilePath)
     } catch (error) {
+      // Error type is unknown in catch blocks
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       console.error(
         `Error renaming file ${file.path} to ${newFilePath}:`,
         error

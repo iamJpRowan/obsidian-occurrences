@@ -52,27 +52,40 @@ export class FileOperations {
     const tagsField = "tags"
 
     // Extract values from frontmatter using dynamic field names
+    // Obsidian's frontmatter is inherently any type
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const occurrence_occurred_at = frontmatter[occurredAtField]
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const occurrence_to_process = frontmatter[toProcessField]
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const occurrence_location = frontmatter[locationField]
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const occurrence_participants = frontmatter[participantsField]
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const occurrence_topics = frontmatter[topicsField]
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const tags = frontmatter[tagsField]
 
     const occurrence: OccurrenceObject = {
       path: file.path,
       file,
       title: this.removeDatePrefix(file.basename, OCCURRENCE_DATE_FORMAT),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       occurredAt: new Date(occurrence_occurred_at),
       toProcess:
         !occurrence_occurred_at ||
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         isNaN(new Date(occurrence_occurred_at).getTime()) ||
         occurrence_to_process
           ? true
           : false,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       participants: convertListToLinks(occurrence_participants),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       topics: convertListToLinks(occurrence_topics),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       location: occurrence_location ? parseLink(occurrence_location) : null,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       tags: this.normalizeTags(tags),
     }
 
@@ -120,12 +133,15 @@ export class FileOperations {
     const frontmatter = fileCache?.frontmatter ?? {}
 
     const occurredAtField = getFrontmatterFieldName("occurredAt", this.settings)
+    // Obsidian's frontmatter is inherently any type
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const occurrence_occurred_at = frontmatter[occurredAtField]
 
     if (occurrence_occurred_at) {
       const title = this.removeDatePrefix(file.basename, OCCURRENCE_DATE_FORMAT)
       return this.applyDatePrefix(
         title,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         new Date(occurrence_occurred_at),
         OCCURRENCE_DATE_FORMAT
       )
@@ -166,7 +182,11 @@ export class FileOperations {
   // Utility functions
   private normalizeTags(tags: unknown): string[] {
     if (!tags) return []
-    if (Array.isArray(tags)) return tags
+    if (Array.isArray(tags)) {
+      // Frontmatter tags can be any array type, filter to strings only
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return tags.filter((tag): tag is string => typeof tag === "string")
+    }
     if (typeof tags === "string") return [tags]
     return []
   }

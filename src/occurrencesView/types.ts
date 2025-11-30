@@ -27,8 +27,10 @@ export interface SearchOptions {
   sortOrder?: "asc" | "desc"
 }
 
+import { OccurrenceObject } from "@/types"
+
 export interface SearchResult {
-  items: any[]
+  items: OccurrenceObject[]
   pagination: {
     total: number
     offset: number

@@ -133,7 +133,7 @@ export function isLink(str: string): boolean {
 
 /**
  * Convert a YAML list to a list of ObsidianLink objects if they are links
- * @param list - the frontmatter list
+ * @param list - the frontmatter list (inherently any type from Obsidian)
  * @returns - A list of ObsidianLink objects or an empty list
  * @example
  * const list = ["[[link1]]", "[[link2|alias]]", "text"]
@@ -143,6 +143,7 @@ export function isLink(str: string): boolean {
  * //   { type: "wiki", target: "link2", alias: "alias" }
  * // ]
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function convertListToLinks(list: any): ObsidianLink[] {
   // Handle cases where the yaml doesn't match the expected format
   if (!Array.isArray(list) || (list.length === 1 && list[0] === null)) return []
