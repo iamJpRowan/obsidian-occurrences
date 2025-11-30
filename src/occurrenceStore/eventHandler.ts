@@ -49,7 +49,7 @@ export class EventHandler extends Events {
   /**
    * Handle file deletion events
    */
-  private async onFileDeleted(file: TFile): Promise<void> {
+  private onFileDeleted(file: TFile): void {
     if (!this.fileOps.isRelevantFile(file.path)) return
 
     this.storeOps.removeOccurrenceFromPath(file.path)

@@ -37,7 +37,7 @@ export class FileOperations {
    * @param file The file to process
    * @returns The parsed occurrence object or null if file should be ignored
    */
-  public async processFile(file: TFile): Promise<OccurrenceObject | null> {
+  public processFile(file: TFile): OccurrenceObject | null {
     const fileCache = this.app.metadataCache.getFileCache(file)
 
     const frontmatter = fileCache?.frontmatter ?? {}
@@ -115,7 +115,7 @@ export class FileOperations {
    * @param file The file to generate a filename for
    * @returns The expected filename or null if file should be ignored
    */
-  public async generateFileName(file: TFile): Promise<string | null> {
+  public generateFileName(file: TFile): string | null {
     const fileCache = this.app.metadataCache.getFileCache(file)
     const frontmatter = fileCache?.frontmatter ?? {}
 

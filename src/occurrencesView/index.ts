@@ -65,7 +65,7 @@ export class OccurrencesView extends ItemView {
     return "Occurrences"
   }
 
-  async onOpen(): Promise<void> {
+  onOpen(): void {
     const container = this.containerEl.children[1]
     container.empty()
     container.addClass("occurrences-view-container")
