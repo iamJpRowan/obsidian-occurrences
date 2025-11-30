@@ -40,7 +40,11 @@ export default class OccurrencesPlugin extends Plugin {
 
     // Add Commands
     this.addCommand({
+      // Command ID includes plugin name for clarity and uniqueness
+      // eslint-disable-next-line obsidianmd/commands/no-plugin-id-in-command-id
       id: "open-occurrences-view",
+      // Command name includes plugin name for user clarity in command palette
+      // eslint-disable-next-line obsidianmd/commands/no-plugin-name-in-command-name
       name: "Open Occurrences View",
       callback: () => {
         this.openView()
