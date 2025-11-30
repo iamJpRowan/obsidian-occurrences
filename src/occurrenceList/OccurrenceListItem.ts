@@ -54,7 +54,7 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
 
       // Check if Option/Alt key is pressed for update form
       if (event.altKey) {
-        this.plugin.openOccurrenceForm(this.occurrence)
+        void this.plugin.openOccurrenceForm(this.occurrence)
         return
       }
 
@@ -62,7 +62,7 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
       const openInNewTab = event.metaKey || event.ctrlKey
 
       // Open the file (in new tab if modifier key is pressed)
-      this.app.workspace.openLinkText(
+      void this.app.workspace.openLinkText(
         this.occurrence.file.path,
         "",
         openInNewTab
@@ -88,7 +88,7 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
         .setTitle("Edit")
         .setIcon("pencil")
         .onClick(() => {
-          this.plugin.openOccurrenceForm(this.occurrence)
+          void this.plugin.openOccurrenceForm(this.occurrence)
         })
     })
     // Open file option

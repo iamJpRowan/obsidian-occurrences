@@ -21,16 +21,16 @@ export class EventHandler extends Events {
   public registerEvents(): void {
     this.app.workspace.onLayoutReady(() => {
       this.app.vault.on("create", file => {
-        if (file instanceof TFile) this.onFileCreated(file)
+        if (file instanceof TFile) void this.onFileCreated(file)
       })
       this.app.vault.on("delete", file => {
         if (file instanceof TFile) this.onFileDeleted(file)
       })
       this.app.vault.on("rename", (file, oldPath) => {
-        if (file instanceof TFile) this.onFileRenamed(file, oldPath)
+        if (file instanceof TFile) void this.onFileRenamed(file, oldPath)
       })
       this.app.metadataCache.on("changed", file => {
-        if (file instanceof TFile) this.onMetadataChanged(file)
+        if (file instanceof TFile) void this.onMetadataChanged(file)
       })
     })
   }
@@ -42,7 +42,7 @@ export class EventHandler extends Events {
     if (!this.fileOps.isRelevantFile(file.path)) return
 
     await this.fileOps.waitForCacheAndAdd(file, file =>
-      this.addOccurrenceFromFile(file)
+      void this.addOccurrenceFromFile(file)
     )
   }
 
@@ -69,7 +69,7 @@ export class EventHandler extends Events {
     // Add to new path if it's relevant
     if (this.fileOps.isRelevantFile(file.path)) {
       await this.fileOps.waitForCacheAndAdd(file, file =>
-        this.addOccurrenceFromFile(file)
+        void this.addOccurrenceFromFile(file)
       )
     }
   }
@@ -81,7 +81,7 @@ export class EventHandler extends Events {
     if (!this.fileOps.isRelevantFile(file.path)) return
 
     // Check if file needs to be renamed based on content changes
-    const expectedFileName = await this.fileOps.generateFileName(file)
+    const expectedFileName = this.fileOps.generateFileName(file)
     if (expectedFileName && expectedFileName !== file.basename) {
       await this.handleFileRename(file, expectedFileName)
       return // Rename will trigger its own events, so we're done
@@ -92,7 +92,7 @@ export class EventHandler extends Events {
     if (!cachedItem) return // New file, will be handled by create event
 
     // Always process the file to get the current state
-    const newItem = await this.fileOps.processFile(file)
+    const newItem = this.fileOps.processFile(file)
     if (!newItem) return
 
     // Compare old and new items - only update if they're different
@@ -105,7 +105,7 @@ export class EventHandler extends Events {
    * Add an occurrence from a file
    */
   private async addOccurrenceFromFile(file: TFile): Promise<void> {
-    const item = await this.fileOps.processFile(file)
+    const item = this.fileOps.processFile(file)
     if (!item) return
 
     this.storeOps.addOccurrence(item)
@@ -140,7 +140,7 @@ export class EventHandler extends Events {
         error
       )
       // Re-add the item if rename failed
-      this.addOccurrenceFromFile(file)
+      void this.addOccurrenceFromFile(file)
     }
   }
 }

@@ -19,7 +19,7 @@ export default class OccurrencesPlugin extends Plugin {
     this.addSettingTab(new OccurrencesSettingsTab(this.app, this))
 
     this.app.workspace.onLayoutReady(() => {
-      this.occurrenceStore.load()
+      void this.occurrenceStore.load()
     })
 
     this.addRibbonIcon(
@@ -51,7 +51,7 @@ export default class OccurrencesPlugin extends Plugin {
       // eslint-disable-next-line obsidianmd/ui/sentence-case
       name: "Open Occurrences View",
       callback: () => {
-        this.openView()
+        void this.openView()
       },
     })
 
@@ -94,7 +94,7 @@ export default class OccurrencesPlugin extends Plugin {
       workspace.leftSplit.expand()
 
       // Reveal the leaf
-      workspace.revealLeaf(leaf)
+      void workspace.revealLeaf(leaf)
 
       // Brief timeout to allow UI to update
       await new Promise(resolve => setTimeout(resolve, 50))
@@ -112,7 +112,7 @@ export default class OccurrencesPlugin extends Plugin {
         this.pendingOccurrence = occurrence
         const leaf = workspace.getLeaf(true)
         await leaf.setViewState({ type: OCCURRENCE_FORM_VIEW, active: true })
-        workspace.revealLeaf(leaf)
+        void workspace.revealLeaf(leaf)
       } else {
         new OccurrenceModal(this, occurrence).open()
       }

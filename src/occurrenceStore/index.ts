@@ -54,7 +54,7 @@ export class OccurrenceStore {
         .filter(file => this.fileOps.isRelevantFile(file.path))
 
       for (const file of files) {
-        const processedItem = await this.fileOps.processFile(file)
+        const processedItem = this.fileOps.processFile(file)
         if (processedItem) {
           this.items.set(file.path, processedItem)
           this.searchService.updateIndexes(processedItem, "add")
@@ -84,7 +84,7 @@ export class OccurrenceStore {
     if (!this.fileOps.isRelevantFile(file.path)) {
       return
     }
-    this.fileOps.processFile(file).then(item => {
+    void this.fileOps.processFile(file).then(item => {
       if (!item) {
         return
       }
