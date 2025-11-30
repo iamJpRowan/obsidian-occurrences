@@ -40,13 +40,8 @@ export class ListItem<T = string> extends Component {
       })
     }
 
-    // Style the list item
-    this.containerEl.style.display = "flex"
-    this.containerEl.style.alignItems = "center"
-    this.containerEl.style.justifyContent = "space-between"
-    this.containerEl.style.padding = "4px 8px"
-    this.containerEl.style.marginBottom = "2px"
-    this.containerEl.style.borderRadius = "4px"
+    // List item styles are handled by CSS classes (see styles.css)
+    // Additional dynamic styles would go here if needed
   }
 
   /**

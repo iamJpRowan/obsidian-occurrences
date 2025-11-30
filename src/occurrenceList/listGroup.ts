@@ -38,48 +38,41 @@ export class ListGroup<T = any> extends Component {
     this.headerContainer = this.group.createEl("div", {
       cls: "intent-group-header",
     })
-    this.headerContainer.style.display = "flex"
-    this.headerContainer.style.alignItems = "center"
-    this.headerContainer.style.marginBottom = "4px"
-    this.headerContainer.style.borderBottom = "1px solid var(--text-muted)"
 
     // Create icon container
     this.iconContainer = this.headerContainer.createEl("span", {
       cls: "intent-group-icon",
     })
-    this.iconContainer.style.marginRight = "4px"
-    this.iconContainer.style.display = "inline-flex"
-    this.iconContainer.style.alignItems = "center"
 
     // Create group header text
     this.headerTextEl = this.headerContainer.createEl("small", {
       text: title + (this.showCount ? " (0)" : ""),
       cls: "intent-group-title",
     })
-    this.headerTextEl.style.fontWeight = "bold"
-    this.headerTextEl.style.flexGrow = "1"
 
     // Create buttons container
     this.buttonsContainer = this.headerContainer.createEl("div", {
       cls: "intent-group-buttons",
     })
-    this.buttonsContainer.style.display = "flex"
-    this.buttonsContainer.style.gap = "4px"
 
     // Create item container
     this.itemContainer = this.group.createEl("div", {
       cls: "intent-group-items",
     })
-    this.itemContainer.style.marginTop = "4px"
-    this.itemContainer.style.marginBottom = "12px"
 
     // Set up collapsible behavior if enabled
     if (this.showCollapsible) {
+      // Dynamic cursor style needed for interactive element
+      // eslint-disable-next-line obsidianmd/no-static-styles-assignment
       this.headerContainer.style.cursor = "pointer"
+      this.headerContainer.addClass("is-collapsible")
 
       // Set initial collapsed state
       if (this.isCollapsed) {
+        // Dynamic display toggle needed for collapsible functionality
+        // eslint-disable-next-line obsidianmd/no-static-styles-assignment
         this.itemContainer.style.display = "none"
+        this.itemContainer.addClass("is-collapsed")
         setIcon(this.iconContainer, "chevron-right")
       } else {
         setIcon(this.iconContainer, "chevron-down")
@@ -205,10 +198,16 @@ export class ListGroup<T = any> extends Component {
     this.isCollapsed = !this.isCollapsed
 
     if (this.isCollapsed) {
+      // Dynamic display toggle needed for collapsible functionality
+      // eslint-disable-next-line obsidianmd/no-static-styles-assignment
       this.itemContainer.style.display = "none"
+      this.itemContainer.addClass("is-collapsed")
       setIcon(this.iconContainer, "chevron-right")
     } else {
+      // Dynamic display toggle needed for collapsible functionality
+      // eslint-disable-next-line obsidianmd/no-static-styles-assignment
       this.itemContainer.style.display = "block"
+      this.itemContainer.removeClass("is-collapsed")
       setIcon(this.iconContainer, "chevron-down")
     }
 
