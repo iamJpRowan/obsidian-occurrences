@@ -24,9 +24,7 @@ export default class OccurrencesPlugin extends Plugin {
 
     this.addRibbonIcon(
       "calendar-range",
-      // "Occurrences" is a proper noun (plugin's main concept)
-      // eslint-disable-next-line obsidianmd/ui/sentence-case -- "Occurrences" is a proper noun representing the plugin's core concept
-      "Open Occurrences View",
+      "Open occurrences view",
       (evt: MouseEvent) => {
         this.openView()
       }
@@ -42,14 +40,8 @@ export default class OccurrencesPlugin extends Plugin {
 
     // Add Commands
     this.addCommand({
-      // Command ID includes plugin name for clarity and uniqueness
-      // eslint-disable-next-line obsidianmd/commands/no-plugin-id-in-command-id -- Command ID must be unique and descriptive
-      id: "open-occurrences-view",
-      // Command name includes plugin name for user clarity in command palette
-      // eslint-disable-next-line obsidianmd/commands/no-plugin-name-in-command-name -- Command name must be descriptive for users
-      // "Occurrences" is a proper noun (plugin's main concept)
-      // eslint-disable-next-line obsidianmd/ui/sentence-case -- "Occurrences" is a proper noun representing the plugin's core concept
-      name: "Open Occurrences View",
+      id: "open-view",
+      name: "Open view",
       callback: () => {
         void this.openView()
       },
@@ -58,9 +50,7 @@ export default class OccurrencesPlugin extends Plugin {
     // Create Occurrence
     this.addCommand({
       id: "add-occurrence",
-      // "Occurrence" is a proper noun (plugin's main concept)
-      // eslint-disable-next-line obsidianmd/ui/sentence-case -- "Occurrence" is a proper noun representing the plugin's core concept
-      name: "Add Occurrence",
+      name: "Add occurrence",
       callback: async () => {
         await this.openOccurrenceForm(null)
       },

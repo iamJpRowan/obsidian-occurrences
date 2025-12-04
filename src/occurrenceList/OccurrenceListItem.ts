@@ -121,9 +121,7 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
     this.menu.addSeparator()
     this.menu.addItem(item => {
       item
-        // "Occurrence" is a proper noun (plugin's main concept)
-        // eslint-disable-next-line obsidianmd/ui/sentence-case -- "Occurrence" is a proper noun representing the plugin's core concept
-        .setTitle("Delete Occurrence")
+        .setTitle("Delete occurrence")
         .setIcon("trash")
         .onClick(() => {
           this.occurrenceStore.remove(this.occurrence.file.path)

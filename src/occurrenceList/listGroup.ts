@@ -63,16 +63,12 @@ export class ListGroup<T = unknown> extends Component {
 
     // Set up collapsible behavior if enabled
     if (this.showCollapsible) {
-      // Dynamic cursor style needed for interactive element
-      // eslint-disable-next-line obsidianmd/no-static-styles-assignment -- Cursor style must be set dynamically for interactive elements
-      this.headerContainer.style.cursor = "pointer"
+      // Cursor style is handled by CSS class .intent-group-header.is-collapsible
       this.headerContainer.addClass("is-collapsible")
 
       // Set initial collapsed state
       if (this.isCollapsed) {
-        // Dynamic display toggle needed for collapsible functionality
-        // eslint-disable-next-line obsidianmd/no-static-styles-assignment -- Display state must be set dynamically for collapsible UI
-        this.itemContainer.style.display = "none"
+        // Display state is handled by CSS class .intent-group-items.is-collapsed
         this.itemContainer.addClass("is-collapsed")
         setIcon(this.iconContainer, "chevron-right")
       } else {
@@ -199,15 +195,11 @@ export class ListGroup<T = unknown> extends Component {
     this.isCollapsed = !this.isCollapsed
 
     if (this.isCollapsed) {
-      // Dynamic display toggle needed for collapsible functionality
-      // eslint-disable-next-line obsidianmd/no-static-styles-assignment -- Display state must be set dynamically for collapsible UI
-      this.itemContainer.style.display = "none"
+      // Display state is handled by CSS class .intent-group-items.is-collapsed
       this.itemContainer.addClass("is-collapsed")
       setIcon(this.iconContainer, "chevron-right")
     } else {
-      // Dynamic display toggle needed for collapsible functionality
-      // eslint-disable-next-line obsidianmd/no-static-styles-assignment -- Display state must be set dynamically for collapsible UI
-      this.itemContainer.style.display = "block"
+      // Display state is handled by CSS class .intent-group-items.is-collapsed
       this.itemContainer.removeClass("is-collapsed")
       setIcon(this.iconContainer, "chevron-down")
     }
