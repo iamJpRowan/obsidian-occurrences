@@ -8,7 +8,8 @@ export default defineConfig([
     ignores: ["dist/**", "node_modules/**", "*.js", "*.mjs"],
   },
   ...obsidianmd.configs.recommended,
-  ...tseslint.configs.recommended,
+  // Use recommendedTypeChecked for TypeScript files (matches Obsidian's config)
+  ...tseslint.configs.recommendedTypeChecked,
   {
     files: ["**/*.ts"],
     languageOptions: {
@@ -39,6 +40,14 @@ export default defineConfig([
       "@typescript-eslint/no-unsafe-call": "error",
       "@typescript-eslint/no-unsafe-argument": "error",
       "@typescript-eslint/no-unsafe-return": "error",
+      // Add rule for promises returned in callbacks
+      "@typescript-eslint/no-misused-promises": [
+        "error",
+        {
+          checksVoidReturn: true,
+          checksConditionals: true,
+        },
+      ],
       
       // Obsidian plugin rules (ensure command rules are enabled)
       "obsidianmd/commands/no-plugin-id-in-command-id": "error",
