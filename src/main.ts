@@ -26,7 +26,7 @@ export default class OccurrencesPlugin extends Plugin {
       "calendar-range",
       "Open occurrences view",
       (evt: MouseEvent) => {
-        this.openView()
+        void this.openView()
       }
     )
     // Register Views

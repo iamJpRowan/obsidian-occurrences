@@ -37,8 +37,9 @@ export class OccurrenceModal extends Modal implements OccurrenceFormView {
     return "occurrence-modal-actions"
   }
 
-  async handleSuccess(file: TFile): Promise<void> {
+  handleSuccess(file: TFile): Promise<void> {
     this.close()
+    return Promise.resolve()
   }
 
   onOpen() {

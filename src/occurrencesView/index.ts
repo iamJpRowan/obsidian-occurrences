@@ -319,7 +319,8 @@ export class OccurrencesView extends ItemView {
     })
   }
 
-  async onClose(): Promise<void> {
+  onClose(): Promise<void> {
     // Cleanup will be handled automatically by ItemView for registered child components
+    return Promise.resolve()
   }
 }

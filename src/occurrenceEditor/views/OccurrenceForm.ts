@@ -64,11 +64,12 @@ export class OccurrenceForm extends ItemView implements OccurrenceFormView {
     return null // Submit button goes directly in form container
   }
 
-  async handleSuccess(file: TFile): Promise<void> {
+  handleSuccess(file: TFile): Promise<void> {
     this.leaf.detach()
+    return Promise.resolve()
   }
 
-  async onOpen(): Promise<void> {
+  onOpen(): Promise<void> {
     const container = this.getContainer()
     container.addClass("occurrence-form-view")
 
@@ -103,9 +104,10 @@ export class OccurrenceForm extends ItemView implements OccurrenceFormView {
         titleInput.focus()
       }
     })
+    return Promise.resolve()
   }
 
-  async onClose(): Promise<void> {
+  onClose(): Promise<void> {
     // Remove close button listener
     if (this.closeButton && this.closeButtonHandler) {
       this.closeButton.removeEventListener("click", this.closeButtonHandler)
@@ -117,6 +119,7 @@ export class OccurrenceForm extends ItemView implements OccurrenceFormView {
     if (container) {
       container.empty()
     }
+    return Promise.resolve()
   }
 
 }
