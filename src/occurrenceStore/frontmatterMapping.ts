@@ -121,7 +121,6 @@ export function applyFrontmatterUpdates<T extends OccurrenceObject>(
     if (updates[interfaceProperty as keyof T] !== undefined) {
       const value = updates[interfaceProperty as keyof T]
       // transformValueForFrontmatter returns any due to frontmatter type flexibility
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Frontmatter assignment is type-unsafe by design
       const transformedValue = transformValueForFrontmatter(
         interfaceProperty,
         value
@@ -129,18 +128,15 @@ export function applyFrontmatterUpdates<T extends OccurrenceObject>(
 
       if (Array.isArray(transformedValue) && transformedValue.length === 0) {
         // Remove empty arrays
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- Frontmatter field access is dynamic and type-unsafe
         delete frontmatter[frontmatterField]
       } else if (
         transformedValue !== undefined &&
         transformedValue !== null &&
         transformedValue !== ""
       ) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access -- Frontmatter assignment is type-unsafe by design
         frontmatter[frontmatterField] = transformedValue
       } else {
         // Remove undefined/null/empty values
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- Frontmatter field access is dynamic and type-unsafe
         delete frontmatter[frontmatterField]
       }
     }
@@ -165,7 +161,6 @@ export function applyFrontmatterUpdates<T extends OccurrenceObject>(
       !isFrontmatterFieldName
     ) {
       // transformValueForFrontmatter returns any due to frontmatter type flexibility
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Frontmatter assignment is type-unsafe by design
       const transformedValue = transformValueForFrontmatter(key, value)
 
       if (
@@ -173,11 +168,9 @@ export function applyFrontmatterUpdates<T extends OccurrenceObject>(
         transformedValue !== null &&
         transformedValue !== ""
       ) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access -- Frontmatter assignment is type-unsafe by design
         frontmatter[key] = transformedValue
       } else {
         // Remove undefined/null/empty values
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- Frontmatter field access is dynamic and type-unsafe
         delete frontmatter[key]
       }
     }

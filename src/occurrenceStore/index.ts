@@ -62,7 +62,6 @@ export class OccurrenceStore {
       }
     } catch (error) {
       // Error type is unknown in catch blocks
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Error objects in catch blocks are type-unsafe
       console.error(`Error loading OccurrenceStore`, error)
     } finally {
       this.isLoading = false
@@ -144,7 +143,6 @@ export class OccurrenceStore {
    * Event arguments can be of various types
    */
   public trigger(event: string, ...args: unknown[]) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Event arguments are validated but type-unsafe
     this.eventHandler.trigger(event, ...args)
   }
 }
