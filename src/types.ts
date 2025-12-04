@@ -30,9 +30,11 @@ export const OCCURRENCE_DATE_FORMAT = "YYYY-MM-DD HHmm" as const
 
 // ======== TYPE GUARDS ========
 
-export function isOccurrenceObject(obj: any): obj is OccurrenceObject {
+export function isOccurrenceObject(obj: unknown): obj is OccurrenceObject {
   return (
-    obj &&
+    typeof obj === "object" &&
+    obj !== null &&
+    "occurredAt" in obj &&
     obj.occurredAt instanceof Date
   )
 }

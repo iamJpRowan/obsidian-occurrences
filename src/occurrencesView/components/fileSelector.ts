@@ -1,4 +1,4 @@
-import { Component, debounce, setIcon, setTooltip, TFile } from "obsidian"
+import { App, Component, debounce, setIcon, setTooltip, TFile } from "obsidian"
 
 export interface FileSelectorOptions {
   placeholder?: string
@@ -25,7 +25,7 @@ export class FileSelector extends Component {
   ) => void
   private debouncedSearchChange: (query: string) => void
   private options: FileSelectorOptions
-  private app: any
+  private app: App
   private currentActiveFile: TFile | null = null
   private selectedFile: TFile | null = null
   private isCurrentFileMode: boolean = false
@@ -35,7 +35,7 @@ export class FileSelector extends Component {
 
   constructor(
     container: HTMLElement,
-    app: any,
+    app: App,
     onFileChange: (filePath: string | null, isCurrentFile: boolean) => void,
     options: FileSelectorOptions = {}
   ) {

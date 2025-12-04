@@ -1,3 +1,5 @@
+import { OccurrenceObject } from "@/types"
+import { OccurrenceStore } from "@/occurrenceStore"
 import { SearchFilters, SearchOptions } from "../types"
 
 export class FilterService {
@@ -134,7 +136,7 @@ export class FilterService {
   /**
    * Check if an occurrence matches current filters
    */
-  public matchesCurrentFilters(occurrence: any, occurrenceStore: any): boolean {
+  public matchesCurrentFilters(occurrence: OccurrenceObject, occurrenceStore: OccurrenceStore): boolean {
     // Apply file filter if active (either current file mode or manual file selection)
     if (this.filters.currentFile || this.filters.selectedFile) {
       const searchResult = occurrenceStore.search({
@@ -142,7 +144,7 @@ export class FilterService {
       })
       if (
         !searchResult.items.some(
-          (item: any) => item.file.path === occurrence.file.path
+          (item: OccurrenceObject) => item.file.path === occurrence.file.path
         )
       ) {
         return false
