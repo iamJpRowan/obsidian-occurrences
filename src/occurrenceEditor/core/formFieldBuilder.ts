@@ -32,7 +32,7 @@ export function buildFormFields(options: FormFieldBuilderOptions): FormFieldBuil
   // Occurred At field
   const occurredAtContainer = createFieldContainer(formContainer, {
     icon: "calendar",
-    label: "Occurred At",
+    label: "Occurred at",
   })
   const dateTimeSelector = new DateTimeSelector(
     occurredAtContainer,
@@ -165,7 +165,7 @@ export function buildToProcessField(
 ): HTMLInputElement {
   const toProcessContainer = createFieldContainer(formContainer, {
     icon: "square-check-big",
-    label: "To Process",
+    label: "To process",
   })
   const toProcessCheckboxContainer = toProcessContainer.createEl("div", {
     cls: "occurrence-modal-to-process",
@@ -221,7 +221,7 @@ export function buildSubmitButton(
   }
 
   const submitButton = buttonContainer.createEl("button", {
-    text: isEditing ? "Update Occurrence" : "Create Occurrence",
+    text: isEditing ? "Update occurrence" : "Create occurrence",
     cls: "mod-cta",
   }) as HTMLButtonElement
 

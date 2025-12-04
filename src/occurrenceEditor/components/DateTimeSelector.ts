@@ -44,7 +44,7 @@ export class DateTimeSelector extends Component {
     this.datetimeInput = this.datetimeInputWrapper.createEl("input", {
       type: "datetime-local",
       attr: {
-        "aria-label": "Date and Time",
+        "aria-label": "Date and time",
       },
     }) as HTMLInputElement
     this.datetimeInput.classList.add("datetime-input-native")
