@@ -41,9 +41,9 @@ export class EventHandler extends Events {
   private async onFileCreated(file: TFile): Promise<void> {
     if (!this.fileOps.isRelevantFile(file.path)) return
 
-    await this.fileOps.waitForCacheAndAdd(file, file =>
+    await this.fileOps.waitForCacheAndAdd(file, file => {
       void this.addOccurrenceFromFile(file)
-    )
+    })
   }
 
   /**

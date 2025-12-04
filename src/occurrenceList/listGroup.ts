@@ -163,6 +163,8 @@ export class ListGroup<T = unknown> extends Component {
     }
 
     // Set the icon using Obsidian's utility
+    // iconEl is HTMLElement (from createEl) or Element (from querySelector), but setIcon accepts HTMLElement
+    // Since we're querying for a span element, it will be HTMLElement
     setIcon(iconEl as HTMLElement, icon)
 
     return this

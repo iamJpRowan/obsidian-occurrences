@@ -112,12 +112,12 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
           includeFoldersContainer,
           this.app,
           this.plugin.settings.fileSelectorFilters[filterKey].folders?.include || [],
-          async (folders: string[]) => {
+          (folders: string[]) => {
             this.plugin.settings.fileSelectorFilters[filterKey].folders = {
               ...this.plugin.settings.fileSelectorFilters[filterKey].folders,
               include: folders.length > 0 ? folders : undefined,
             }
-            await this.plugin.saveSettings()
+            void this.plugin.saveSettings()
           },
           {
             placeholder: 'Type to search folders...',
@@ -137,12 +137,12 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
           excludeFoldersContainer,
           this.app,
           this.plugin.settings.fileSelectorFilters[filterKey].folders?.exclude || [],
-          async (folders: string[]) => {
+          (folders: string[]) => {
             this.plugin.settings.fileSelectorFilters[filterKey].folders = {
               ...this.plugin.settings.fileSelectorFilters[filterKey].folders,
               exclude: folders.length > 0 ? folders : undefined,
             }
-            await this.plugin.saveSettings()
+            void this.plugin.saveSettings()
           },
           {
             placeholder: 'Type to search folders...',
@@ -162,12 +162,12 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
           includeTagsContainer,
           this.app,
           this.plugin.settings.fileSelectorFilters[filterKey].tags?.include || [],
-          async (tags: string[]) => {
+          (tags: string[]) => {
             this.plugin.settings.fileSelectorFilters[filterKey].tags = {
               ...this.plugin.settings.fileSelectorFilters[filterKey].tags,
               include: tags.length > 0 ? tags : undefined,
             }
-            await this.plugin.saveSettings()
+            void this.plugin.saveSettings()
           },
           {
             placeholder: 'Type to search tags...',
@@ -186,12 +186,12 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
           excludeTagsContainer,
           this.app,
           this.plugin.settings.fileSelectorFilters[filterKey].tags?.exclude || [],
-          async (tags: string[]) => {
+          (tags: string[]) => {
             this.plugin.settings.fileSelectorFilters[filterKey].tags = {
               ...this.plugin.settings.fileSelectorFilters[filterKey].tags,
               exclude: tags.length > 0 ? tags : undefined,
             }
-            await this.plugin.saveSettings()
+            void this.plugin.saveSettings()
           },
           {
             placeholder: 'Type to search tags...',

@@ -238,14 +238,15 @@ export class DateFilter extends Component {
           to: new Date(today.getTime() + 24 * 60 * 60 * 1000 - 1),
         }
 
-      case "yesterday":
+      case "yesterday": {
         const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000)
         return {
           from: yesterday,
           to: new Date(yesterday.getTime() + 24 * 60 * 60 * 1000 - 1),
         }
+      }
 
-      case "this-week":
+      case "this-week": {
         const startOfWeek = new Date(today)
         startOfWeek.setDate(today.getDate() - today.getDay())
         const endOfWeek = new Date(startOfWeek)
@@ -254,8 +255,9 @@ export class DateFilter extends Component {
           from: startOfWeek,
           to: new Date(endOfWeek.getTime() - 1),
         }
+      }
 
-      case "last-week":
+      case "last-week": {
         const lastWeekStart = new Date(today)
         lastWeekStart.setDate(today.getDate() - today.getDay() - 7)
         const lastWeekEnd = new Date(lastWeekStart)
@@ -264,8 +266,9 @@ export class DateFilter extends Component {
           from: lastWeekStart,
           to: new Date(lastWeekEnd.getTime() - 1),
         }
+      }
 
-      case "this-month":
+      case "this-month": {
         const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
         const endOfMonth = new Date(
           today.getFullYear(),
@@ -276,8 +279,9 @@ export class DateFilter extends Component {
           from: startOfMonth,
           to: new Date(endOfMonth.getTime() - 1),
         }
+      }
 
-      case "last-month":
+      case "last-month": {
         const lastMonthStart = new Date(
           today.getFullYear(),
           today.getMonth() - 1,
@@ -288,22 +292,25 @@ export class DateFilter extends Component {
           from: lastMonthStart,
           to: new Date(lastMonthEnd.getTime() - 1),
         }
+      }
 
-      case "this-year":
+      case "this-year": {
         const startOfYear = new Date(today.getFullYear(), 0, 1)
         const endOfYear = new Date(today.getFullYear() + 1, 0, 1)
         return {
           from: startOfYear,
           to: new Date(endOfYear.getTime() - 1),
         }
+      }
 
-      case "last-year":
+      case "last-year": {
         const lastYearStart = new Date(today.getFullYear() - 1, 0, 1)
         const lastYearEnd = new Date(today.getFullYear(), 0, 1)
         return {
           from: lastYearStart,
           to: new Date(lastYearEnd.getTime() - 1),
         }
+      }
 
       default:
         return {

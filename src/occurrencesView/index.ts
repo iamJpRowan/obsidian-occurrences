@@ -66,13 +66,13 @@ export class OccurrencesView extends ItemView {
   }
 
   onOpen(): Promise<void> {
-    const container = this.containerEl.children[1]
+    const container = this.containerEl.children[1] as HTMLElement
     container.empty()
     container.addClass("occurrences-view-container")
 
     // Create header element
     this.header = new Header(
-      container as HTMLElement,
+      container,
       this.app,
       this.occurrenceStore,
       this.filterService,
