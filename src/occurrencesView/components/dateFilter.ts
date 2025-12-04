@@ -39,7 +39,7 @@ export class DateFilter extends Component {
     this.dateContainer = container.createEl("div", {
       cls: "date-filter-container",
     })
-    this.dateContainer.style.display = "none"
+    this.dateContainer.addClass("is-hidden")
 
     // Create date input container
     this.dateInputContainer = this.dateContainer.createEl("div", {
@@ -92,7 +92,7 @@ export class DateFilter extends Component {
     this.toInputWrapper = inputWrapper.createEl("div", {
       cls: "date-to-section",
     })
-    this.toInputWrapper.style.display = "none"
+    this.toInputWrapper.addClass("is-hidden")
 
     // Create "and" text
     this.andText = this.toInputWrapper.createEl("span", {
@@ -113,7 +113,7 @@ export class DateFilter extends Component {
     this.periodWrapper = inputWrapper.createEl("div", {
       cls: "date-period-section",
     })
-    this.periodWrapper.style.display = "none"
+    this.periodWrapper.addClass("is-hidden")
 
     // Create period selector
     this.periodSelector = this.periodWrapper.createEl("select", {
@@ -149,7 +149,7 @@ export class DateFilter extends Component {
         "aria-label": "Clear dates",
       },
     })
-    this.clearButton.style.display = "none"
+    this.clearButton.addClass("is-hidden")
 
     // Add event listeners
     this.registerDomEvent(this.fromInput, "change", () => {
@@ -182,18 +182,20 @@ export class DateFilter extends Component {
     this.isPeriodMode = mode === "during"
 
     // Reset all elements to their default state
-    this.fromInput.style.display = "block"
-    this.toInputWrapper.style.display = "none"
-    this.periodWrapper.style.display = "none"
+    this.fromInput.removeClass("is-hidden")
+    this.toInputWrapper.addClass("is-hidden")
+    this.periodWrapper.addClass("is-hidden")
 
     if (this.isRangeMode) {
       // Show both date inputs for range mode
-      this.toInputWrapper.style.display = "flex"
+      this.toInputWrapper.removeClass("is-hidden")
+      this.toInputWrapper.addClass("is-visible-flex")
       this.fromInput.setAttribute("aria-label", "Start date")
     } else if (this.isPeriodMode) {
       // Hide date input and show period selector
-      this.fromInput.style.display = "none"
-      this.periodWrapper.style.display = "flex"
+      this.fromInput.addClass("is-hidden")
+      this.periodWrapper.removeClass("is-hidden")
+      this.periodWrapper.addClass("is-visible-flex")
       this.handlePeriodChange()
     } else {
       // Single date mode - clear other inputs
@@ -210,7 +212,7 @@ export class DateFilter extends Component {
   private handlePeriodChange(): void {
     const period = this.periodSelector.value
     if (!period) {
-      this.clearButton.style.display = "none"
+      this.clearButton.addClass("is-hidden")
       this.onDateChange(null, null)
       return
     }
@@ -218,7 +220,8 @@ export class DateFilter extends Component {
     const { from, to } = this.calculatePeriodDates(period)
 
     // Update clear button visibility
-    this.clearButton.style.display = "flex"
+    this.clearButton.removeClass("is-hidden")
+    this.clearButton.addClass("is-visible-flex")
 
     // Trigger callback
     this.onDateChange(from, to)
@@ -333,7 +336,13 @@ export class DateFilter extends Component {
         : null
 
     // Update clear button visibility
-    this.clearButton.style.display = fromDate || toDate ? "flex" : "none"
+    if (fromDate || toDate) {
+      this.clearButton.removeClass("is-hidden")
+      this.clearButton.addClass("is-visible-flex")
+    } else {
+      this.clearButton.addClass("is-hidden")
+      this.clearButton.removeClass("is-visible-flex")
+    }
 
     // Trigger callback
     this.onDateChange(fromDate, toDate)
@@ -346,7 +355,7 @@ export class DateFilter extends Component {
     this.fromInput.value = ""
     this.toInput.value = ""
     this.periodSelector.value = ""
-    this.clearButton.style.display = "none"
+    this.clearButton.addClass("is-hidden")
     this.onDateChange(null, null)
   }
 
@@ -354,14 +363,14 @@ export class DateFilter extends Component {
    * Show the date filter
    */
   public show(): void {
-    this.dateContainer.style.display = "block"
+    this.dateContainer.removeClass("is-hidden")
   }
 
   /**
    * Hide the date filter
    */
   public hide(): void {
-    this.dateContainer.style.display = "none"
+    this.dateContainer.addClass("is-hidden")
   }
 
   /**
@@ -437,7 +446,7 @@ export class DateFilter extends Component {
    * Check if the date filter is visible
    */
   public isVisible(): boolean {
-    return this.dateContainer.style.display === "block"
+    return !this.dateContainer.hasClass("is-hidden")
   }
 
   public getElement(): HTMLElement {

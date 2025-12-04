@@ -55,7 +55,7 @@ export class TagSelector extends Component {
     this.tagContainer = container.createEl("div", {
       cls: "occurrences-tag-container",
     })
-    this.tagContainer.style.display = "none"
+    this.tagContainer.addClass("is-hidden")
 
     // Create tag input container
     this.tagInputContainer = this.tagContainer.createEl("div", {
@@ -97,14 +97,14 @@ export class TagSelector extends Component {
         "aria-label": "Clear all tags",
       },
     })
-    this.tagClear.style.display = "none"
+    this.tagClear.addClass("is-hidden")
 
     // Create suggestions container and append to document.body
     // This ensures it's not affected by parent transforms/positioning
     this.suggestionsContainer = document.body.createEl("div", {
       cls: "tag-suggestions-container",
     })
-    this.suggestionsContainer.style.display = "none"
+    this.suggestionsContainer.addClass("is-hidden")
 
     this.suggestionsList = this.suggestionsContainer.createEl("div", {
       cls: "tag-suggestions-list",
@@ -625,7 +625,13 @@ export class TagSelector extends Component {
    * Update clear button visibility
    */
   private updateClearButton(): void {
-    this.tagClear.style.display = this.selectedTags.length > 0 ? "flex" : "none"
+    if (this.selectedTags.length > 0) {
+      this.tagClear.removeClass("is-hidden")
+      this.tagClear.addClass("is-visible-flex")
+    } else {
+      this.tagClear.addClass("is-hidden")
+      this.tagClear.removeClass("is-visible-flex")
+    }
   }
 
   /**
@@ -645,7 +651,7 @@ export class TagSelector extends Component {
    */
   public show(): void {
     if (!this.visible) {
-      this.tagContainer.style.display = "block"
+      this.tagContainer.removeClass("is-hidden")
       this.visible = true
       // Refresh tags when showing in case metadata cache has updated
       this.loadAvailableTags()
@@ -657,7 +663,7 @@ export class TagSelector extends Component {
    * Hide the tag selector
    */
   public hide(): void {
-    this.tagContainer.style.display = "none"
+    this.tagContainer.addClass("is-hidden")
     this.visible = false
     this.hideSuggestions()
   }
@@ -679,7 +685,7 @@ export class TagSelector extends Component {
    */
   private showSuggestions(): void {
     this.updateSuggestionsPosition()
-    this.suggestionsContainer.style.display = "block"
+    this.suggestionsContainer.removeClass("is-hidden")
     this.suggestionsVisible = true
 
     // Add scroll listener only when suggestions are visible
@@ -751,7 +757,7 @@ export class TagSelector extends Component {
    * Hide suggestions container
    */
   private hideSuggestions(): void {
-    this.suggestionsContainer.style.display = "none"
+    this.suggestionsContainer.addClass("is-hidden")
     this.suggestionsVisible = false
     this.selectedSuggestionIndex = -1
 

@@ -65,13 +65,8 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
           cls: 'file-filter-inline',
           attr: { 'data-property': property },
         })
-        filterSection.style.display = 'none'
-        filterSection.style.marginTop = '8px'
-        filterSection.style.marginBottom = '16px'
-        filterSection.style.padding = '12px'
-        filterSection.style.border = '1px solid var(--background-modifier-border)'
-        filterSection.style.borderRadius = '4px'
-        filterSection.style.backgroundColor = 'var(--background-secondary)'
+        filterSection.addClass("is-hidden")
+        filterSection.addClass("file-filter-section")
 
         // Enable toggle
         new Setting(filterSection)
@@ -98,10 +93,8 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
         const inputsContainer = filterSection.createEl('div', {
           cls: 'file-filter-inputs',
         })
-        inputsContainer.style.display = 'grid'
-        inputsContainer.style.gridTemplateColumns = '1fr 1fr'
-        inputsContainer.style.gap = '12px'
-        inputsContainer.style.marginTop = '12px'
+        inputsContainer.addClass("is-visible-grid")
+        // Styles are handled by CSS class .file-filter-inputs
 
         // Include folders
         const includeFoldersSetting = new Setting(inputsContainer)
@@ -126,7 +119,7 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
             pillStyle: 'folder',
           }
         )
-        includeFoldersSetting.settingEl.style.gridColumn = '1 / -1'
+        includeFoldersSetting.settingEl.addClass("file-filter-setting-full-width")
 
         // Exclude folders
         const excludeFoldersSetting = new Setting(inputsContainer)
@@ -151,7 +144,7 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
             pillStyle: 'folder',
           }
         )
-        excludeFoldersSetting.settingEl.style.gridColumn = '1 / -1'
+        excludeFoldersSetting.settingEl.addClass("file-filter-setting-full-width")
 
         // Include tags
         const includeTagsSetting = new Setting(inputsContainer)
@@ -175,7 +168,7 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
             suggestions: this.getAllTags(),
           }
         )
-        includeTagsSetting.settingEl.style.gridColumn = '1 / -1'
+        includeTagsSetting.settingEl.addClass("file-filter-setting-full-width")
 
         // Exclude tags
         const excludeTagsSetting = new Setting(inputsContainer)
@@ -199,12 +192,16 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
             suggestions: this.getAllTags(),
           }
         )
-        excludeTagsSetting.settingEl.style.gridColumn = '1 / -1'
+        excludeTagsSetting.settingEl.addClass("file-filter-setting-full-width")
 
         // Toggle filter section visibility
         filterButton.addEventListener('click', () => {
-          const isVisible = filterSection.style.display !== 'none'
-          filterSection.style.display = isVisible ? 'none' : 'block'
+          const isVisible = !filterSection.hasClass("is-hidden")
+          if (isVisible) {
+            filterSection.addClass("is-hidden")
+          } else {
+            filterSection.removeClass("is-hidden")
+          }
           setIcon(filterButton, isVisible ? 'filter' : 'filter')
         })
 
@@ -319,7 +316,13 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
   private updateFilterSectionVisibility(filterSection: HTMLElement, enabled: boolean): void {
     const inputsContainer = filterSection.querySelector('.file-filter-inputs') as HTMLElement
     if (inputsContainer) {
-      inputsContainer.style.display = enabled ? 'grid' : 'none'
+      if (enabled) {
+        inputsContainer.removeClass("is-hidden")
+        inputsContainer.addClass("is-visible-grid")
+      } else {
+        inputsContainer.addClass("is-hidden")
+        inputsContainer.removeClass("is-visible-grid")
+      }
     }
   }
 

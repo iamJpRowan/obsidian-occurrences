@@ -126,7 +126,7 @@ export class Summary extends Component {
       const hiddenSection = valueContainer.createEl("span", {
         cls: "details-hidden-section",
       })
-      hiddenSection.style.display = "none"
+      hiddenSection.addClass("is-hidden")
 
       // Add comma before hidden section if there are visible items
       if (visibleItems.length > 0) {
@@ -156,14 +156,18 @@ export class Summary extends Component {
 
       // Simple toggle functionality
       this.registerDomEvent(moreButton, "click", () => {
-        hiddenSection.style.display = "inline"
-        moreButton.style.display = "none"
+        hiddenSection.removeClass("is-hidden")
+        hiddenSection.addClass("is-visible-inline")
+        moreButton.addClass("is-hidden")
+        moreButton.removeClass("is-visible-inline")
       })
 
       // Also handle clicks on the "less" button
       this.registerDomEvent(lessButton, "click", () => {
-        hiddenSection.style.display = "none"
-        moreButton.style.display = "inline"
+        hiddenSection.addClass("is-hidden")
+        hiddenSection.removeClass("is-visible-inline")
+        moreButton.removeClass("is-hidden")
+        moreButton.addClass("is-visible-inline")
       })
     }
   }

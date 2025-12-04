@@ -44,6 +44,27 @@
   min-height: 24px;
 }
 
+/* Filter section styles */
+.file-filter-section {
+  margin-top: 8px;
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  background-color: var(--background-secondary);
+}
+
+.file-filter-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.file-filter-setting-full-width {
+  grid-column: 1 / -1;
+}
+
 .filter-multiselect-input {
   flex: 1;
   border: none;

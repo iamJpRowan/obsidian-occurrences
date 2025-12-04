@@ -82,7 +82,7 @@ export class FilterMultiSelect extends Component {
     this.suggestionsContainer = this.inputContainer.createEl("div", {
       cls: "filter-multiselect-suggestions",
     })
-    this.suggestionsContainer.style.display = "none"
+    this.suggestionsContainer.addClass("is-hidden")
 
     this.suggestionsList = this.suggestionsContainer.createEl("div", {
       cls: "filter-multiselect-suggestions-list",
@@ -238,7 +238,7 @@ export class FilterMultiSelect extends Component {
   }
 
   private handleKeydown(e: KeyboardEvent): void {
-    if (this.suggestionsContainer.style.display === "none") return
+    if (this.suggestionsContainer.hasClass("is-hidden")) return
 
     switch (e.key) {
       case "ArrowDown":
@@ -284,11 +284,11 @@ export class FilterMultiSelect extends Component {
   }
 
   private showSuggestions(): void {
-    this.suggestionsContainer.style.display = "block"
+    this.suggestionsContainer.removeClass("is-hidden")
   }
 
   private hideSuggestions(): void {
-    this.suggestionsContainer.style.display = "none"
+    this.suggestionsContainer.addClass("is-hidden")
     this.selectedSuggestionIndex = -1
   }
 

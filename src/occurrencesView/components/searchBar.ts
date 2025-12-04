@@ -37,7 +37,7 @@ export class SearchBar extends Component {
     this.searchContainer = container.createEl("div", {
       cls: "search-container",
     })
-    this.searchContainer.style.display = "none"
+    this.searchContainer.addClass("is-hidden")
 
     // Create search input container
     this.searchInputContainer = this.searchContainer.createEl("div", {
@@ -63,7 +63,7 @@ export class SearchBar extends Component {
         "aria-label": "Clear search",
       },
     })
-    this.searchClear.style.display = "none"
+    this.searchClear.addClass("is-hidden")
 
     // Add input event listener
     this.registerDomEvent(this.searchInput, "input", e => {
@@ -75,7 +75,7 @@ export class SearchBar extends Component {
     // Add clear button event listener
     this.registerDomEvent(this.searchClear, "click", () => {
       this.searchInput.value = ""
-      this.searchClear.style.display = "none"
+      this.searchClear.addClass("is-hidden")
       this.debouncedSearchChange("")
     })
   }
@@ -84,14 +84,20 @@ export class SearchBar extends Component {
    * Update clear button visibility based on input value
    */
   private updateClearButton(value: string): void {
-    this.searchClear.style.display = value.length > 0 ? "flex" : "none"
+    if (value.length > 0) {
+      this.searchClear.removeClass("is-hidden")
+      this.searchClear.addClass("is-visible-flex")
+    } else {
+      this.searchClear.addClass("is-hidden")
+      this.searchClear.removeClass("is-visible-flex")
+    }
   }
 
   /**
    * Show the search bar
    */
   public show(): void {
-    this.searchContainer.style.display = "block"
+    this.searchContainer.removeClass("is-hidden")
     this.searchInput.focus()
   }
 
@@ -99,9 +105,9 @@ export class SearchBar extends Component {
    * Hide the search bar
    */
   public hide(): void {
-    this.searchContainer.style.display = "none"
+    this.searchContainer.addClass("is-hidden")
     this.searchInput.value = ""
-    this.searchClear.style.display = "none"
+    this.searchClear.addClass("is-hidden")
   }
 
   /**
@@ -124,7 +130,7 @@ export class SearchBar extends Component {
    * Check if the search bar is visible
    */
   public isVisible(): boolean {
-    return this.searchContainer.style.display === "block"
+    return !this.searchContainer.hasClass("is-hidden")
   }
 
   public getElement(): HTMLElement {

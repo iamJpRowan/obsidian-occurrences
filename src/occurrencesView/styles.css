@@ -595,3 +595,24 @@
   outline: none;
   box-shadow: none;
 }
+
+/* Utility classes for visibility (replaces direct style.display assignments) */
+.is-hidden {
+  display: none !important;
+}
+
+.is-visible {
+  display: block;
+}
+
+.is-visible-flex {
+  display: flex !important;
+}
+
+.is-visible-inline {
+  display: inline !important;
+}
+
+.is-visible-grid {
+  display: grid !important;
+}

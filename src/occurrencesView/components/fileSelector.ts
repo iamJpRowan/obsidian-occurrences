@@ -59,7 +59,7 @@ export class FileSelector extends Component {
     this.fileContainer = container.createEl("div", {
       cls: "file-container",
     })
-    this.fileContainer.style.display = "none"
+    this.fileContainer.addClass("is-hidden")
 
     // Create file input container (using custom classes)
     this.fileInputContainer = this.fileContainer.createEl("div", {
@@ -95,7 +95,7 @@ export class FileSelector extends Component {
         "aria-label": "Clear file selection",
       },
     })
-    this.fileClear.style.display = "none"
+    this.fileClear.addClass("is-hidden")
 
     // Create target button (inside input container, to the right)
     this.targetButton = this.fileInputContainer.createEl("div", {
@@ -113,7 +113,7 @@ export class FileSelector extends Component {
     this.suggestionsContainer = this.fileContainer.createEl("div", {
       cls: "file-suggestions-container",
     })
-    this.suggestionsContainer.style.display = "none"
+    this.suggestionsContainer.addClass("is-hidden")
 
     this.suggestionsList = this.suggestionsContainer.createEl("div", {
       cls: "file-suggestions-list",
@@ -147,7 +147,7 @@ export class FileSelector extends Component {
     // Add clear button event listener
     this.registerDomEvent(this.fileClear, "click", () => {
       this.fileInput.value = ""
-      this.fileClear.style.display = "none"
+      this.fileClear.addClass("is-hidden")
       this.clearSelection()
     })
 
@@ -344,7 +344,7 @@ export class FileSelector extends Component {
    * Handle keyboard navigation
    */
   private handleKeydown(e: KeyboardEvent): void {
-    if (this.suggestionsContainer.style.display === "none") return
+    if (this.suggestionsContainer.hasClass("is-hidden")) return
 
     switch (e.key) {
       case "ArrowDown":
@@ -394,7 +394,13 @@ export class FileSelector extends Component {
    * Update clear button visibility
    */
   private updateClearButton(value: string): void {
-    this.fileClear.style.display = value.length > 0 ? "flex" : "none"
+    if (value.length > 0) {
+      this.fileClear.removeClass("is-hidden")
+      this.fileClear.addClass("is-visible-flex")
+    } else {
+      this.fileClear.addClass("is-hidden")
+      this.fileClear.removeClass("is-visible-flex")
+    }
   }
 
   /**
@@ -415,7 +421,7 @@ export class FileSelector extends Component {
    */
   public show(): void {
     if (!this.visible) {
-      this.fileContainer.style.display = "block"
+      this.fileContainer.removeClass("is-hidden")
       this.visible = true
       this.fileInput.focus()
     }
@@ -425,7 +431,7 @@ export class FileSelector extends Component {
    * Hide the file selector
    */
   public hide(): void {
-    this.fileContainer.style.display = "none"
+    this.fileContainer.addClass("is-hidden")
     this.visible = false
     this.hideSuggestions()
   }
@@ -446,14 +452,14 @@ export class FileSelector extends Component {
    * Show suggestions container
    */
   private showSuggestions(): void {
-    this.suggestionsContainer.style.display = "block"
+    this.suggestionsContainer.removeClass("is-hidden")
   }
 
   /**
    * Hide suggestions container
    */
   private hideSuggestions(): void {
-    this.suggestionsContainer.style.display = "none"
+    this.suggestionsContainer.addClass("is-hidden")
     this.selectedSuggestionIndex = -1
   }
 
