@@ -32,10 +32,19 @@ export default defineConfig([
       "@typescript-eslint/no-unnecessary-type-assertion": "error",
       "@typescript-eslint/await-thenable": "error",
       "@typescript-eslint/require-await": "error",
+      "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-unsafe-assignment": "error",
+      "@typescript-eslint/no-unsafe-member-access": "error",
+      "@typescript-eslint/no-unsafe-call": "error",
+      "@typescript-eslint/no-unsafe-argument": "error",
+      "@typescript-eslint/no-unsafe-return": "error",
       
       // Obsidian plugin rules (ensure command rules are enabled)
       "obsidianmd/commands/no-plugin-id-in-command-id": "error",
       "obsidianmd/commands/no-plugin-name-in-command-name": "error",
+      "obsidianmd/ui/sentence-case": "error",
+      "obsidianmd/no-static-styles-assignment": "error",
     },
   },
 ]);
