@@ -210,8 +210,8 @@ export class OccurrenceFileOperations {
     // Create the file
     const file = await app.vault.create(filePath, content)
 
-    // Wait for metadata cache to be ready
-    await app.metadataCache.getFileCache(file)
+    // Check if metadata cache is ready (synchronous call)
+    app.metadataCache.getFileCache(file)
 
     return file
   }
