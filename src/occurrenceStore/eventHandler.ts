@@ -97,7 +97,7 @@ export class EventHandler extends Events {
 
     // Compare old and new items - only update if they're different
     // cachedItem is OccurrenceObject | undefined, but we've checked it's not undefined above
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- TypeScript cannot infer that cachedItem is defined after null check
     if (!this.fileOps.occurrencesEqual(cachedItem, newItem)) {
       this.storeOps.updateOccurrence(newItem)
     }
@@ -138,7 +138,7 @@ export class EventHandler extends Events {
       await this.app.fileManager.renameFile(file, newFilePath)
     } catch (error) {
       // Error type is unknown in catch blocks
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Error objects in catch blocks are type-unsafe
       console.error(
         `Error renaming file ${file.path} to ${newFilePath}:`,
         error

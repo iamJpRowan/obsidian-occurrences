@@ -40,7 +40,7 @@ export const COMPUTED_PROPERTIES = new Set<string>(["children"])
  * Transform a value before storing it in frontmatter based on the property type
  * Frontmatter values can be of various types (string, number, Date, array, object, etc.)
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Frontmatter transformation handles multiple dynamic types
 function transformValueForFrontmatter(key: string, value: any): any {
   // Handle null/undefined values
   if (value === null || value === undefined) {
@@ -72,11 +72,11 @@ function transformValueForFrontmatter(key: string, value: any): any {
     value.length > 0 &&
       typeof value[0] === "object" &&
       value[0] !== null &&
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- Array element type is validated but member access is type-unsafe
       value[0].target
   ) {
     return value
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- Array element type is validated but member access is type-unsafe
       .map(item => (item && item.target ? `[[${item.target}]]` : null))
       .filter(item => item !== null)
   }
@@ -87,9 +87,9 @@ function transformValueForFrontmatter(key: string, value: any): any {
   }
 
   // Handle single objects with target (like links) - convert to string format
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- Object type is validated but member access is type-unsafe
   if (value && typeof value === "object" && value.target) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- Object type is validated but member access is type-unsafe
     return `[[${value.target}]]`
   }
 
@@ -104,7 +104,7 @@ function transformValueForFrontmatter(key: string, value: any): any {
  * @param frontmatter - Obsidian's frontmatter object (inherently any type)
  */
 export function applyFrontmatterUpdates<T extends OccurrenceObject>(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Obsidian frontmatter is inherently any type
   frontmatter: any,
   updates: Partial<T>,
   propertyMapping: Record<string, string>
@@ -116,7 +116,7 @@ export function applyFrontmatterUpdates<T extends OccurrenceObject>(
     if (updates[interfaceProperty as keyof T] !== undefined) {
       const value = updates[interfaceProperty as keyof T]
       // transformValueForFrontmatter returns any due to frontmatter type flexibility
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Frontmatter assignment is type-unsafe by design
       const transformedValue = transformValueForFrontmatter(
         interfaceProperty,
         value
@@ -124,18 +124,18 @@ export function applyFrontmatterUpdates<T extends OccurrenceObject>(
 
       if (Array.isArray(transformedValue) && transformedValue.length === 0) {
         // Remove empty arrays
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- Frontmatter field access is dynamic and type-unsafe
         delete frontmatter[frontmatterField]
       } else if (
         transformedValue !== undefined &&
         transformedValue !== null &&
         transformedValue !== ""
       ) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access -- Frontmatter assignment is type-unsafe by design
         frontmatter[frontmatterField] = transformedValue
       } else {
         // Remove undefined/null/empty values
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- Frontmatter field access is dynamic and type-unsafe
         delete frontmatter[frontmatterField]
       }
     }
@@ -160,7 +160,7 @@ export function applyFrontmatterUpdates<T extends OccurrenceObject>(
       !isFrontmatterFieldName
     ) {
       // transformValueForFrontmatter returns any due to frontmatter type flexibility
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Frontmatter assignment is type-unsafe by design
       const transformedValue = transformValueForFrontmatter(key, value)
 
       if (
@@ -168,11 +168,11 @@ export function applyFrontmatterUpdates<T extends OccurrenceObject>(
         transformedValue !== null &&
         transformedValue !== ""
       ) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access -- Frontmatter assignment is type-unsafe by design
         frontmatter[key] = transformedValue
       } else {
         // Remove undefined/null/empty values
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- Frontmatter field access is dynamic and type-unsafe
         delete frontmatter[key]
       }
     }

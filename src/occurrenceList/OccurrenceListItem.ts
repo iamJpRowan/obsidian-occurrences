@@ -122,7 +122,7 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
     this.menu.addItem(item => {
       item
         // "Occurrence" is a proper noun (plugin's main concept)
-        // eslint-disable-next-line obsidianmd/ui/sentence-case
+        // eslint-disable-next-line obsidianmd/ui/sentence-case -- "Occurrence" is a proper noun representing the plugin's core concept
         .setTitle("Delete Occurrence")
         .setIcon("trash")
         .onClick(() => {
@@ -130,7 +130,7 @@ export class OccurrenceListItem extends ListItem<OccurrenceObject> {
         })
       // Add a danger class to the item for styling
       // Accessing Obsidian's internal MenuItem.dom property
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access -- Obsidian MenuItem.dom is not in public types but is required for styling
       const itemDom = (item as any).dom as HTMLElement
       if (itemDom) {
         itemDom.addClass("menu-item-danger")

@@ -53,42 +53,42 @@ export class FileOperations {
 
     // Extract values from frontmatter using dynamic field names
     // Obsidian's frontmatter is inherently any type
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access -- Frontmatter field access is dynamic and type-unsafe by design
     const occurredAt = frontmatter[occurredAtField]
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access -- Frontmatter field access is dynamic and type-unsafe by design
     const toProcess = frontmatter[toProcessField]
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access -- Frontmatter field access is dynamic and type-unsafe by design
     const location = frontmatter[locationField]
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access -- Frontmatter field access is dynamic and type-unsafe by design
     const participants = frontmatter[participantsField]
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access -- Frontmatter field access is dynamic and type-unsafe by design
     const topics = frontmatter[topicsField]
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access -- Frontmatter field access is dynamic and type-unsafe by design
     const tags = frontmatter[tagsField]
 
     const occurrence: OccurrenceObject = {
       path: file.path,
       file,
       title: this.removeDatePrefix(file.basename, OCCURRENCE_DATE_FORMAT),
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Frontmatter date value is validated but type-unsafe
       occurredAt: new Date(occurredAt),
       toProcess:
         !occurredAt ||
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Frontmatter date value is validated but type-unsafe
         isNaN(new Date(occurredAt).getTime()) ||
         toProcess
           ? true
           : false,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Frontmatter array values are validated but type-unsafe
       participants: convertListToLinks(participants),
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Frontmatter array values are validated but type-unsafe
       topics: convertListToLinks(topics),
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Frontmatter location value is validated but type-unsafe
       location:
         location && typeof location === "string"
           ? parseLink(location)
           : null,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Frontmatter tags value is validated but type-unsafe
       tags: this.normalizeTags(tags),
     }
 
@@ -137,14 +137,14 @@ export class FileOperations {
 
     const occurredAtField = getFrontmatterFieldName("occurredAt", this.settings)
     // Obsidian's frontmatter is inherently any type
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access -- Frontmatter field access is dynamic and type-unsafe by design
     const occurredAt = frontmatter[occurredAtField]
 
     if (occurredAt) {
       const title = this.removeDatePrefix(file.basename, OCCURRENCE_DATE_FORMAT)
       return this.applyDatePrefix(
         title,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Frontmatter date value is validated but type-unsafe
         new Date(occurredAt),
         OCCURRENCE_DATE_FORMAT
       )
@@ -187,7 +187,7 @@ export class FileOperations {
     if (!tags) return []
     if (Array.isArray(tags)) {
       // Frontmatter tags can be any array type, filter to strings only
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Type guard ensures return is string[], but filter result is type-unsafe
       return tags.filter((tag): tag is string => typeof tag === "string")
     }
     if (typeof tags === "string") return [tags]

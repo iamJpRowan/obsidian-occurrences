@@ -166,7 +166,7 @@ export class OccurrencesView extends ItemView {
       // Add occurrences to the list
       for (const occurrence of searchResult.items) {
         const listItem = this.occurrenceList.addItem(occurrence)
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- OccurrenceObject.file.path is validated but member access is type-unsafe
         this.occurrenceListItems.set(occurrence.file.path, listItem)
       }
     }
@@ -205,7 +205,7 @@ export class OccurrencesView extends ItemView {
 
     // Diff against current state
     const currentPaths = new Set(this.occurrenceListItems.keys())
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Set and array types are validated but argument passing is type-unsafe
     const diff = this.searchService.diffResults(
       currentPaths,
       searchResult.items

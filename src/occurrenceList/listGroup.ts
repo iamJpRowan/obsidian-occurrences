@@ -2,7 +2,7 @@ import { App, Component, setIcon, setTooltip } from "obsidian"
 import { ListItem } from "./listItem"
 
 // Generic type parameter allows flexibility for different item types
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Generic type parameter allows flexible item types
 export class ListGroup<T = any> extends Component {
   private app: App
   private isCollapsed: boolean
@@ -65,14 +65,14 @@ export class ListGroup<T = any> extends Component {
     // Set up collapsible behavior if enabled
     if (this.showCollapsible) {
       // Dynamic cursor style needed for interactive element
-      // eslint-disable-next-line obsidianmd/no-static-styles-assignment
+      // eslint-disable-next-line obsidianmd/no-static-styles-assignment -- Cursor style must be set dynamically for interactive elements
       this.headerContainer.style.cursor = "pointer"
       this.headerContainer.addClass("is-collapsible")
 
       // Set initial collapsed state
       if (this.isCollapsed) {
         // Dynamic display toggle needed for collapsible functionality
-        // eslint-disable-next-line obsidianmd/no-static-styles-assignment
+        // eslint-disable-next-line obsidianmd/no-static-styles-assignment -- Display state must be set dynamically for collapsible UI
         this.itemContainer.style.display = "none"
         this.itemContainer.addClass("is-collapsed")
         setIcon(this.iconContainer, "chevron-right")
@@ -201,13 +201,13 @@ export class ListGroup<T = any> extends Component {
 
     if (this.isCollapsed) {
       // Dynamic display toggle needed for collapsible functionality
-      // eslint-disable-next-line obsidianmd/no-static-styles-assignment
+      // eslint-disable-next-line obsidianmd/no-static-styles-assignment -- Display state must be set dynamically for collapsible UI
       this.itemContainer.style.display = "none"
       this.itemContainer.addClass("is-collapsed")
       setIcon(this.iconContainer, "chevron-right")
     } else {
       // Dynamic display toggle needed for collapsible functionality
-      // eslint-disable-next-line obsidianmd/no-static-styles-assignment
+      // eslint-disable-next-line obsidianmd/no-static-styles-assignment -- Display state must be set dynamically for collapsible UI
       this.itemContainer.style.display = "block"
       this.itemContainer.removeClass("is-collapsed")
       setIcon(this.iconContainer, "chevron-down")

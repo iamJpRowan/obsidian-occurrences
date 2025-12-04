@@ -62,7 +62,7 @@ export class OccurrenceStore {
       }
     } catch (error) {
       // Error type is unknown in catch blocks
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Error objects in catch blocks are type-unsafe
       console.error(`Error loading OccurrenceStore`, error)
     } finally {
       this.isLoading = false
@@ -127,7 +127,7 @@ export class OccurrenceStore {
    * Subscribe to store events
    * Event callbacks can have various argument types
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Event system requires flexible callback signatures
   public on(event: string, callback: (...args: any[]) => void) {
     return this.eventHandler.on(event, callback)
   }
@@ -136,7 +136,7 @@ export class OccurrenceStore {
    * Unsubscribe from store events
    * Event callbacks can have various argument types
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Event system requires flexible callback signatures
   public off(event: string, callback: (...args: any[]) => void) {
     this.eventHandler.off(event, callback)
   }
@@ -145,9 +145,9 @@ export class OccurrenceStore {
    * Trigger store events
    * Event arguments can be of various types
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Event system requires flexible argument types
   public trigger(event: string, ...args: any[]) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Event arguments are validated but type-unsafe
     this.eventHandler.trigger(event, ...args)
   }
 }
