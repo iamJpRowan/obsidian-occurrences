@@ -2,8 +2,7 @@ import { App, Component, setIcon, setTooltip } from "obsidian"
 import { ListItem } from "./listItem"
 
 // Generic type parameter allows flexibility for different item types
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Generic type parameter allows flexible item types
-export class ListGroup<T = any> extends Component {
+export class ListGroup<T = unknown> extends Component {
   private app: App
   private isCollapsed: boolean
   private listItems: ListItem<T>[] = []

@@ -150,8 +150,7 @@ export function isLink(str: string): boolean {
  * //   { type: "wiki", target: "link2", alias: "alias" }
  * // ]
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Frontmatter link arrays can be strings or objects, type is dynamic
-export function convertListToLinks(list: any): ObsidianLink[] {
+export function convertListToLinks(list: unknown): ObsidianLink[] {
   // Handle cases where the yaml doesn't match the expected format
   if (!Array.isArray(list) || (list.length === 1 && list[0] === null)) return []
 

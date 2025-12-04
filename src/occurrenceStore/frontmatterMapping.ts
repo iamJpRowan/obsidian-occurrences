@@ -40,8 +40,7 @@ export const COMPUTED_PROPERTIES = new Set<string>(["children"])
  * Transform a value before storing it in frontmatter based on the property type
  * Frontmatter values can be of various types (string, number, Date, array, object, etc.)
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Frontmatter transformation handles multiple dynamic types
-function transformValueForFrontmatter(key: string, value: any): any {
+function transformValueForFrontmatter(key: string, value: unknown): unknown {
   // Handle null/undefined values
   if (value === null || value === undefined) {
     return undefined
@@ -72,13 +71,19 @@ function transformValueForFrontmatter(key: string, value: any): any {
     value.length > 0 &&
       typeof value[0] === "object" &&
       value[0] !== null &&
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- Array element type is validated but member access is type-unsafe
-      value[0].target
+      "target" in value[0]
   ) {
     return value
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- Array element type is validated but member access is type-unsafe
-      .map(item => (item && item.target ? `[[${item.target}]]` : null))
-      .filter(item => item !== null)
+      .map(item => {
+        if (item && typeof item === "object" && item !== null && "target" in item) {
+          const linkItem = item as { target: unknown }
+          if (typeof linkItem.target === "string") {
+            return `[[${linkItem.target}]]`
+          }
+        }
+        return null
+      })
+      .filter((item): item is string => item !== null)
   }
 
   // Handle arrays with null values - filter out nulls
@@ -87,10 +92,11 @@ function transformValueForFrontmatter(key: string, value: any): any {
   }
 
   // Handle single objects with target (like links) - convert to string format
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- Object type is validated but member access is type-unsafe
-  if (value && typeof value === "object" && value.target) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- Object type is validated but member access is type-unsafe
-    return `[[${value.target}]]`
+  if (value && typeof value === "object" && value !== null && "target" in value) {
+    const linkObject = value as { target: unknown }
+    if (typeof linkObject.target === "string") {
+      return `[[${linkObject.target}]]`
+    }
   }
 
   return value
@@ -104,8 +110,7 @@ function transformValueForFrontmatter(key: string, value: any): any {
  * @param frontmatter - Obsidian's frontmatter object (inherently any type)
  */
 export function applyFrontmatterUpdates<T extends OccurrenceObject>(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Obsidian frontmatter is inherently any type
-  frontmatter: any,
+  frontmatter: Record<string, unknown>,
   updates: Partial<T>,
   propertyMapping: Record<string, string>
 ): void {
