@@ -87,7 +87,7 @@ export class OccurrenceForm extends ItemView implements OccurrenceFormView {
     this.closeButton = header.createEl("button", {
       cls: "clickable-icon",
       attr: { "aria-label": "Close" },
-    }) as HTMLButtonElement
+    })
     setIcon(this.closeButton, "x")
     this.closeButtonHandler = () => {
       this.leaf.detach()

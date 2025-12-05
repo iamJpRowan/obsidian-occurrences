@@ -45,7 +45,7 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
               await this.plugin.saveSettings()
               // Update store settings and reload to apply new mappings
               this.plugin.occurrenceStore.updateSettings(this.plugin.settings)
-              await this.plugin.occurrenceStore.load()
+              void this.plugin.occurrenceStore.load()
             })
         })
 
@@ -247,17 +247,18 @@ export class OccurrencesSettingsTab extends PluginSettingTab {
     
     allFiles.forEach(file => {
       const fileCache = this.app.metadataCache.getFileCache(file)
-      const fileTags = fileCache?.frontmatter?.tags || []
+      const frontmatter = fileCache?.frontmatter as Record<string, unknown> | undefined
+      const fileTagsRaw = frontmatter?.tags
       
       // Handle both array and single tag formats
-      if (Array.isArray(fileTags)) {
-        fileTags.forEach(tag => {
+      if (Array.isArray(fileTagsRaw)) {
+        fileTagsRaw.forEach(tag => {
           if (typeof tag === 'string' && tag.trim()) {
             tags.add(tag.trim())
           }
         })
-      } else if (typeof fileTags === 'string' && fileTags.trim()) {
-        tags.add(fileTags.trim())
+      } else if (typeof fileTagsRaw === 'string' && fileTagsRaw.trim()) {
+        tags.add(fileTagsRaw.trim())
       }
     })
     

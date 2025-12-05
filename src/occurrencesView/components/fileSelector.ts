@@ -49,7 +49,7 @@ export class FileSelector extends Component {
     this.onFileChange = onFileChange
     this.debouncedSearchChange = debounce((query: string) => {
       this.searchFiles(query)
-    }, this.options.debounceMs!)
+    }, this.options.debounceMs ?? 300)
     this.render(container)
     this.updateCurrentActiveFile()
   }
@@ -85,7 +85,7 @@ export class FileSelector extends Component {
         id: "file-input",
         spellcheck: "false",
       },
-    }) as HTMLInputElement
+    })
     this.fileInput.classList.add("file-input")
 
     // Create clear button (as child of input wrapper)
@@ -287,12 +287,12 @@ export class FileSelector extends Component {
         pathText = suggestion.fullPath
       }
 
-      const fileName = suggestionEl.createEl("div", {
+      suggestionEl.createEl("div", {
         cls: "file-suggestion-name",
         text: displayName,
       })
 
-      const filePath = suggestionEl.createEl("div", {
+      suggestionEl.createEl("div", {
         cls: "file-suggestion-path",
         text: pathText,
       })

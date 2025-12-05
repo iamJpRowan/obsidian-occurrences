@@ -37,7 +37,7 @@ export class Summary extends Component {
     // Add click handler
     this.registerDomEvent(linkEl, "click", event => {
       event.preventDefault()
-      this.app.workspace.openLinkText(target, "", false)
+      void this.app.workspace.openLinkText(target, "", false)
     })
 
     // Add hover preview
@@ -119,7 +119,7 @@ export class Summary extends Component {
     if (hiddenCount > 0) {
       const moreButton = valueContainer.createEl("span", {
         cls: "details-more-button",
-        text: " more...",
+        text: " More...",
       })
 
       // Create hidden section with all remaining items
@@ -151,7 +151,7 @@ export class Summary extends Component {
       // Add "less" button at the end of the hidden section
       const lessButton = hiddenSection.createEl("span", {
         cls: "details-more-button",
-        text: " less",
+        text: " Less",
       })
 
       // Simple toggle functionality
@@ -231,9 +231,9 @@ export class Summary extends Component {
       cls: "summary-details-text",
     })
 
-    const detailsText = detailsElement.createEl("span", {
+    detailsElement.createEl("span", {
       cls: "details-text",
-      text: "details",
+      text: "Details",
     })
 
     const caret = detailsElement.createEl("span", {

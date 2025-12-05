@@ -76,7 +76,7 @@ export class FilterMultiSelect extends Component {
       attr: {
         spellcheck: "false",
       },
-    }) as HTMLInputElement
+    })
 
     // Create suggestions container (as child of inputContainer for proper positioning)
     this.suggestionsContainer = this.inputContainer.createEl("div", {

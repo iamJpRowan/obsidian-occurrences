@@ -64,7 +64,7 @@ export class TagSelector extends Component {
         id: "modal-tag-input",
         spellcheck: "false",
       },
-    }) as HTMLInputElement
+    })
     this.tagInput.classList.add("occurrence-modal-file-input")
 
     // Create suggestions container (matches occurrence-modal-file-suggestions-container)

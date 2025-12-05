@@ -150,7 +150,7 @@ export function buildTitleField(
       "aria-label": "Title",
       placeholder: "Enter occurrence title...",
     },
-  }) as HTMLInputElement
+  })
   titleInput.value = formData.title
   return titleInput
 }
@@ -175,7 +175,7 @@ export function buildToProcessField(
     attr: {
       id: "occurrence-to-process",
     },
-  }) as HTMLInputElement
+  })
   toProcessCheckbox.checked = formData.toProcess
   toProcessCheckbox.addEventListener("change", () => {
     onToProcessChange(toProcessCheckbox.checked)
@@ -223,7 +223,7 @@ export function buildSubmitButton(
   const submitButton = buttonContainer.createEl("button", {
     text: isEditing ? "Update occurrence" : "Create occurrence",
     cls: "mod-cta",
-  }) as HTMLButtonElement
+  })
 
   return submitButton
 }

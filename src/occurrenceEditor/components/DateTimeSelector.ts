@@ -46,7 +46,7 @@ export class DateTimeSelector extends Component {
       attr: {
         "aria-label": "Date and time",
       },
-    }) as HTMLInputElement
+    })
     this.datetimeInput.classList.add("datetime-input-native")
 
     // Create timezone select
@@ -56,7 +56,7 @@ export class DateTimeSelector extends Component {
         "aria-label": "Timezone",
         tabindex: "-1",
       },
-    }) as HTMLSelectElement
+    })
     this.timezoneSelect.classList.add("datetime-input-native")
 
     // Populate timezone options
@@ -332,7 +332,7 @@ export class DateTimeSelector extends Component {
     
     const allFocusable = Array.from(
       document.querySelectorAll(focusableSelectors)
-    ) as HTMLElement[]
+    ).filter((el): el is HTMLElement => el instanceof HTMLElement)
     
     // Find the datetime input in the list
     const currentIndex = allFocusable.findIndex(el => el === this.datetimeInput)
@@ -377,7 +377,7 @@ export class DateTimeSelector extends Component {
     
     const allFocusable = Array.from(
       document.querySelectorAll(focusableSelectors)
-    ) as HTMLElement[]
+    ).filter((el): el is HTMLElement => el instanceof HTMLElement)
     
     // Find the datetime input in the list
     const currentIndex = allFocusable.findIndex(el => el === this.datetimeInput)

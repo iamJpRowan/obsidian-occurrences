@@ -100,7 +100,7 @@ export class OccurrenceFormBase {
     let savedTimezoneOffset: string | null = null
     if (this.occurrence) {
       const fileCache = this.plugin.app.metadataCache.getFileCache(this.occurrence.file)
-      const frontmatter = fileCache?.frontmatter ?? {}
+      const frontmatter = (fileCache?.frontmatter ?? {}) as Record<string, unknown>
       const occurredAtField = getFrontmatterFieldName("occurredAt", this.plugin.settings)
       const occurredAtValue = frontmatter[occurredAtField]
 
@@ -126,7 +126,7 @@ export class OccurrenceFormBase {
         "aria-label": "Title",
         placeholder: "Enter occurrence title...",
       },
-    }) as HTMLInputElement
+    })
     this.titleInput.value = this.formData.title
 
     // Build form container
@@ -171,7 +171,7 @@ export class OccurrenceFormBase {
     )
 
     this.submitButtonHandler = () => {
-      this.handleSubmit()
+      void this.handleSubmit()
     }
     this.submitButton.addEventListener("click", this.submitButtonHandler)
 
@@ -179,7 +179,7 @@ export class OccurrenceFormBase {
     this.keyboardHandler = (e: KeyboardEvent) => {
       if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && !this.isSubmitting) {
         e.preventDefault()
-        this.handleSubmit()
+        void this.handleSubmit()
       }
     }
     document.addEventListener("keydown", this.keyboardHandler)

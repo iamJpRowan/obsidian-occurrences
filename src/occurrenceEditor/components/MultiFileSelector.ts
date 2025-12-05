@@ -88,7 +88,7 @@ export class MultiFileSelector extends Component {
       attr: {
         spellcheck: "false",
       },
-    }) as HTMLInputElement
+    })
     this.fileInput.classList.add("occurrence-modal-file-input")
 
     // Create suggestions container

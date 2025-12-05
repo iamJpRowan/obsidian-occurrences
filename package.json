@@ -8,7 +8,7 @@
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
     "version": "node version-bump.mjs && git add src/manifest.json manifest.json versions.json",
     "prepare": "husky",
-    "lint": "eslint src/**/*.ts"
+    "lint": "eslint src"
   },
   "keywords": [
     "obsidian",

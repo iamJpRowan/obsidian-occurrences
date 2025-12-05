@@ -86,7 +86,7 @@ export class SingleFileSelector extends Component {
       attr: {
         spellcheck: "false",
       },
-    }) as HTMLInputElement
+    })
     this.fileInput.classList.add("occurrence-modal-file-input")
 
     // Create clear button

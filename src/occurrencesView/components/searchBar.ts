@@ -28,7 +28,7 @@ export class SearchBar extends Component {
     this.onSearchChange = onSearchChange
     this.debouncedSearchChange = debounce((query: string) => {
       this.onSearchChange(query)
-    }, this.options.debounceMs!)
+    }, this.options.debounceMs ?? 300)
     this.render(container)
   }
 
@@ -53,7 +53,7 @@ export class SearchBar extends Component {
         enterkeyhint: "search",
         spellcheck: "false",
       },
-    }) as HTMLInputElement
+    })
     this.searchInput.classList.add("search-input")
 
     // Create clear button (following Obsidian's structure)

@@ -63,19 +63,19 @@ export class DateFilter extends Component {
       attr: {
         "aria-label": "Toggle between single date and date range",
       },
-    }) as HTMLSelectElement
+    })
 
     // Add options to the select
-    const onOption = this.rangeToggle.createEl("option", {
-      text: "on",
+    this.rangeToggle.createEl("option", {
+      text: "On",
       attr: { value: "on" },
     })
-    const betweenOption = this.rangeToggle.createEl("option", {
-      text: "between",
+    this.rangeToggle.createEl("option", {
+      text: "Between",
       attr: { value: "between" },
     })
-    const duringOption = this.rangeToggle.createEl("option", {
-      text: "during",
+    this.rangeToggle.createEl("option", {
+      text: "During",
       attr: { value: "during" },
     })
 
@@ -86,7 +86,7 @@ export class DateFilter extends Component {
         id: "date-from-input",
         "aria-label": "Date",
       },
-    }) as HTMLInputElement
+    })
 
     // Create wrapper for "and" text and "to" date input (initially hidden)
     this.toInputWrapper = inputWrapper.createEl("div", {
@@ -96,7 +96,7 @@ export class DateFilter extends Component {
 
     // Create "and" text
     this.andText = this.toInputWrapper.createEl("span", {
-      text: "and",
+      text: "And",
       cls: "date-and-text",
     })
 
@@ -107,7 +107,7 @@ export class DateFilter extends Component {
         id: "date-to-input",
         "aria-label": "End date",
       },
-    }) as HTMLInputElement
+    })
 
     // Create wrapper for period selector (initially hidden)
     this.periodWrapper = inputWrapper.createEl("div", {
@@ -121,7 +121,7 @@ export class DateFilter extends Component {
       attr: {
         "aria-label": "Select time period",
       },
-    }) as HTMLSelectElement
+    })
 
     // Add period options
     const periods = [

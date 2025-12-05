@@ -55,7 +55,11 @@ export class FileFilterUtils {
     const tags = filterSettings.tags
     return files.filter(file => {
       const fileCache = app.metadataCache.getFileCache(file)
-      const fileTags = fileCache?.frontmatter?.tags || []
+      const frontmatter = fileCache?.frontmatter as Record<string, unknown> | undefined
+      const fileTagsRaw = frontmatter?.tags
+      const fileTags = Array.isArray(fileTagsRaw) 
+        ? fileTagsRaw.filter((tag): tag is string => typeof tag === "string")
+        : []
 
       // Include: must have at least one tag
       if (tags.include?.length) {

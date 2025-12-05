@@ -1,5 +1,5 @@
 import { OccurrenceStore } from "@/occurrenceStore"
-import { Component, debounce, setIcon } from "obsidian"
+import { Component, debounce, setCssProps, setIcon } from "obsidian"
 
 export interface TagSelectorOptions {
   placeholder?: string
@@ -44,7 +44,7 @@ export class TagSelector extends Component {
     this.onTagsChange = onTagsChange
     this.debouncedSearchChange = debounce((query: string) => {
       this.filterTags(query)
-    }, this.options.debounceMs!)
+    }, this.options.debounceMs ?? 300)
     this.render(container)
     this.loadAvailableTags()
     this.updatePlaceholder()
@@ -87,7 +87,7 @@ export class TagSelector extends Component {
         id: "tag-input",
         spellcheck: "false",
       },
-    }) as HTMLInputElement
+    })
     this.tagInput.classList.add("tag-input")
 
     // Create clear button
@@ -280,7 +280,7 @@ export class TagSelector extends Component {
       }
 
       // Create a container for the count
-      const countEl = suggestionEl.createEl("span", {
+      suggestionEl.createEl("span", {
         cls: "tag-suggestion-count",
         text: count.toString(),
       })
@@ -335,7 +335,7 @@ export class TagSelector extends Component {
 
       // Remove # symbol for display
       const displayTag = tag.startsWith("#") ? tag.slice(1) : tag
-      const tagText = tagPill.createEl("span", {
+      tagPill.createEl("span", {
         cls: "tag-pill-text",
         text: displayTag,
       })
@@ -389,7 +389,9 @@ export class TagSelector extends Component {
 
     // Temporarily remove height constraint to measure natural height
     const originalHeight = wrapper.style.height
-    wrapper.style.height = "auto"
+    // Use setCssProps for dynamic height calculation
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    setCssProps(wrapper, { height: "auto" })
 
     // Measure the natural height
     const naturalHeight = wrapper.scrollHeight
