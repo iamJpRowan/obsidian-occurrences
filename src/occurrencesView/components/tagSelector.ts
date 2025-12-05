@@ -390,8 +390,8 @@ export class TagSelector extends Component {
     // Temporarily remove height constraint to measure natural height
     const originalHeight = wrapper.style.height
     // Use setCssProps for dynamic height calculation
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    setCssProps(wrapper, { height: "auto" })
+    // setCssProps is properly typed in Obsidian but TypeScript inference may fail
+    ;(setCssProps as (el: HTMLElement, props: { height: string }) => void)(wrapper, { height: "auto" })
 
     // Measure the natural height
     const naturalHeight = wrapper.scrollHeight

@@ -53,30 +53,28 @@ export class FileOperations {
 
     // Extract values from frontmatter using dynamic field names
     // Obsidian's frontmatter is inherently any type
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Frontmatter field access is dynamic and type-unsafe by design
-    const occurredAt = frontmatter[occurredAtField]
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Frontmatter field access is dynamic and type-unsafe by design
-    const toProcess = frontmatter[toProcessField]
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Frontmatter field access is dynamic and type-unsafe by design
-    const location = frontmatter[locationField]
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Frontmatter field access is dynamic and type-unsafe by design
-    const participants = frontmatter[participantsField]
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Frontmatter field access is dynamic and type-unsafe by design
-    const topics = frontmatter[topicsField]
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Frontmatter field access is dynamic and type-unsafe by design
-    const tags = frontmatter[tagsField]
+    const occurredAt = frontmatter[occurredAtField] as unknown
+    const toProcess = frontmatter[toProcessField] as unknown
+    const location = frontmatter[locationField] as unknown
+    const participants = frontmatter[participantsField] as unknown
+    const topics = frontmatter[topicsField] as unknown
+    const tags = frontmatter[tagsField] as unknown
+
+    // Validate and convert occurredAt to Date
+    const occurredAtDate =
+      occurredAt && (typeof occurredAt === "string" || typeof occurredAt === "number" || occurredAt instanceof Date)
+        ? new Date(occurredAt)
+        : new Date(NaN)
 
     const occurrence: OccurrenceObject = {
       path: file.path,
       file,
       title: this.removeDatePrefix(file.basename, OCCURRENCE_DATE_FORMAT),
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Frontmatter date value is validated but type-unsafe
-      occurredAt: new Date(occurredAt),
+      occurredAt: occurredAtDate,
       toProcess:
         !occurredAt ||
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Frontmatter date value is validated but type-unsafe
-        isNaN(new Date(occurredAt).getTime()) ||
-        toProcess
+        isNaN(occurredAtDate.getTime()) ||
+        (typeof toProcess === "boolean" ? toProcess : false)
           ? true
           : false,
       participants: convertListToLinks(participants),
@@ -133,14 +131,12 @@ export class FileOperations {
 
     const occurredAtField = getFrontmatterFieldName("occurredAt", this.settings)
     // Obsidian's frontmatter is inherently any type
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Frontmatter field access is dynamic and type-unsafe by design
-    const occurredAt = frontmatter[occurredAtField]
+    const occurredAt = frontmatter[occurredAtField] as unknown
 
-    if (occurredAt) {
+    if (occurredAt && (typeof occurredAt === "string" || typeof occurredAt === "number" || occurredAt instanceof Date)) {
       const title = this.removeDatePrefix(file.basename, OCCURRENCE_DATE_FORMAT)
       return this.applyDatePrefix(
         title,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Frontmatter date value is validated but type-unsafe
         new Date(occurredAt),
         OCCURRENCE_DATE_FORMAT
       )
